@@ -70,10 +70,10 @@
     <script>
     window.onload = function() {
       // Begin Swagger UI call region
+      const url = document.URL;
       const ui = SwaggerUIBundle({
-        urls: [   
-        { url: "http://petstore.swagger.io/v2/swagger.json", name: "3PL - Embarcador" },  
-        { url: "https://idratherbewriting.com/learnapidoc/docs/rest_api_specifications/openapi_openweathermap.yml", name: "MDF-e" }  
+        urls: [
+        { url: url+"/t3pl/swagger.json", name: "3PL - Embarcador" },  
         ],  
         "urls.primaryName": "Pets", 
         dom_id: '#swagger-ui',
