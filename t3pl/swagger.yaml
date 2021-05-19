@@ -1,0 +1,2194 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: API pública do 3PL para integração com parceiros
+  description: Esse documento é de uso restrito a parceiros homologados pela Hive.Cloud
+tags:
+  - name: Importações
+    description: Definição dos endpoints que deverão ser utilizados para importar informações de embarques no 3PL
+  - name: Simulação de Frete
+    description: Definição dos endpoints que deverão ser utilizados para simulações de fretes no 3PL
+  - name: Tracking
+    description: Definição dos endpoints que deverão ser utilizados para tracking de mercadorias no 3PL
+  - name: Cargas
+    description: Definição dos endpoints que deverão ser utilizados para as cargas
+  - name: Documentos
+    description: Definição dos endpoints que deverão ser utilizados para recuperar documentos de cobrança e de transportes
+  - name: Ações
+    description: Definição dos endpoints que deverão ser utilizados para executar ações no 3PL
+servers:
+  - url: https://api-t3ple.hivecloud.com.br/
+    description: Servidor de Produção
+paths:
+  /shipments:
+    post:
+      tags: 
+        - Importações
+      security: 
+        - AuthToken: []
+      summary: Endpoint para importação de Embarque | Romaneio | Carga
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shipment'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ResponseApi'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            integrationId:
+                              type: string
+                              format: uuid
+                            shipmentCode:
+                              type: string
+                              example: "123456"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  
+  /invoices:
+    post:
+      tags: 
+        - Importações
+      security: 
+        - AuthToken: []
+      summary: Endpoint para importação das Notas Fiscais
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/ResponseApi'
+                    - type: object
+                      properties:
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              integrationId:
+                                type: string
+                                format: uuid
+                              invoiceCode:
+                                type: string
+                                example: "123456"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/ResponseApi'
+                    - type: object
+                      properties:
+                        data:
+                          type: array
+                          items:
+                            type: array
+                            items:
+                              type: string
+                              example: "Já existe uma mercadoria com série: 1 e número: 123456"
+                  example: 
+                    code: 400
+                    message: "Erro na importação das notas fiscais"
+                    data:
+                      - - "Já existe uma mercadoria com série: 1 e número: 123456"
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /freightSimulations:
+    post:
+      tags:
+        - Simulação de Frete
+      security: 
+        - AuthToken: []
+      summary: Endpoint para iniciar uma simulação de frete
+      requestBody:
+        $ref: '#/components/requestBodies/FreightSimulationBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreightSimulation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  "/freightSimulations/{id}":
+    get:
+      tags:
+        - Simulação de Frete
+      security: 
+        - AuthToken: []
+      summary: Endpoint para exibir uma simulação de frente
+      description: Ao consultar esse endpoint é importante verificar o status, em alguns casos o processamento pode demorar um pouco devido ao alto volume de negociações, portanto para garantir que todas as negociações estão disponíveis o status da simulação deve ser FINALIZADO_SUCESSO.
+      parameters: 
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: ID da simulação de frete
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreightSimulation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /trackings:
+    get:
+      tags:
+        - Tracking
+      security: 
+        - AuthToken: []
+      summary: Listagem de trackings
+      parameters:
+        - in: query
+          description: 'Número da página'
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          description: 'Quantidade de registros por página'
+          name: perPage
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          description: 'Número da Nota Fiscal'
+          name: 'invoice.documentNumber'
+          schema:
+            type: integer
+        - in: query
+          description: 'Número de Série da nota fiscal'
+          name: 'invoice.serieNumber'
+          schema:
+            type: integer
+        - in: query
+          description: 'Ocorrência: Data de Início'
+          name: 'occurrenceStartDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-01'
+        - in: query
+          description: 'Ocorrencia: Data Final'
+          name: 'occurrenceEndDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-31'
+        - in: query
+          description: 'Código do Evento conforme padrão PROCEDA'
+          name: 'event.eventCode'
+          schema:
+            type: string
+            example: '01'
+        - in: query
+          description: 'Retornar os trackings cancelados?'
+          name: 'isCanceled'
+          schema:
+            type: boolean
+            example: false
+      responses:
+        '200':
+          $ref: '#/components/responses/TrackingList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  
+  /billingDocuments:
+    get:
+      tags:
+        - Documentos
+      security: 
+        - AuthToken: []
+      summary: "Listagem de documentos de cobrança"
+      parameters:
+        - in: query
+          description: 'Número da página'
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          description: 'Quantidade de registros por página'
+          name: perPage
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          description: 'Número do Documento de Cobrança'
+          name: 'numbers'
+          schema:
+            type: integer
+        - in: query
+          description: 'Status da Auditoria'
+          name: 'audit.analysisResult'
+          schema:
+            type: string
+            enum:
+              - COM_DIVERGENCIA
+              - SEM_DIVERGENCIA
+        - in: query
+          description: 'Situação da Auditoria'
+          name: 'audit.situation'
+          schema:
+            type: string
+            enum:
+              - PENDENTE_ANALISE
+              - AUTORIZADO
+              - REJEITADO
+              - PAGAMENTO_REALIZADO
+              - CONFIRMADO
+              - CANCELADO
+        - in: query
+          description: 'Vencimento: Data de Início'
+          name: 'dueStartDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-01'
+        - in: query
+          description: 'Vencimento: Data Final'
+          name: 'dueEndDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-31'
+        - in: query
+          description: 'Faturamento: Data de Início'
+          name: 'revenueStartDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-01'
+        - in: query
+          description: 'Faturamento: Data Final'
+          name: 'revenueEndDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-31'
+        - in: query
+          description: 'Confirmação: Data de Início'
+          name: 'confirmationStartDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-01'
+        - in: query
+          description: 'Confirmação: Data Final'
+          name: 'confirmationEndDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-31'
+        - in: query
+          description: 'Valor Líquido: Inicial'
+          name: 'totals.initialNetAmount'
+          schema:
+            type: number
+            example: 100.98
+        - in: query
+          description: 'Valor Líquido: Final'
+          name: 'totals.finalNetAmount'
+          schema:
+            type: number
+            example: 150.98
+        - in: query
+          description: 'Valor Bruto: Inicial'
+          name: 'totals.initialGrossAmount'
+          schema:
+            type: number
+            example: 100.98
+        - in: query
+          description: 'Valor Bruto: Final'
+          name: 'totals.finalGrossAmount'
+          schema:
+            type: number
+            example: 150.98
+        - in: query
+          description: 'Desconto: Inicial'
+          name: 'totals.initialDiscount'
+          schema:
+            type: number
+            example: 100.98
+        - in: query
+          description: 'Desconto: Final'
+          name: 'totals.finalDiscount'
+          schema:
+            type: number
+            example: 150.98
+        - in: query
+          description: 'Retornar os trackings cancelados?'
+          name: 'isConfirmed'
+          schema:
+            type: boolean
+            example: false
+      responses:
+        '200':
+          $ref: '#/components/responses/BillingDocumentList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'    
+      
+  /transportDocuments:
+    get:
+      tags:
+        - Documentos
+      security: 
+        - AuthToken: []
+      summary: "Listagem de documentos de transportes"
+      parameters:
+        - in: query
+          description: 'Número da página'
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          description: 'Quantidade de registros por página'
+          name: perPage
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          description: 'Números dos Documentos de Transporte'
+          name: 'number'
+          schema:
+            type: integer
+            example: "123,456,789"
+        - in: query
+          description: 'Tipo de Documento'
+          name: 'type'
+          schema:
+            type: string
+            enum:
+              - MINUTA
+              - CTE
+        - in: query
+          description: 'Status do Documento'
+          name: 'status'
+          schema:
+            type: string
+            enum:
+              - AUTORIZADO
+              - CANCELADO
+        - in: query
+          description: 'Números das Notas Fiscais'
+          name: 'invoices.number'
+          schema:
+            type: integer
+            example: "123,456,789"
+        - in: query
+          description: 'Chave de Acesso CT-e'
+          name: 'taxDocument.accessKey'
+          schema:
+            type: string
+            example: "1234567890"
+        - in: query
+          description: 'Tipo de Serviço'
+          name: 'taxDocument.type'
+          schema:
+            type: string
+            enum:
+              - NORMAL
+              - REDESPACHO
+              - REDESPACHO_INTERMEDIARIO
+              - SUBCONTRATACAO
+              - MULTIMODAL
+        - in: query
+          description: 'Finalidade da Emissão'
+          name: 'taxDocument.purposeOfTheIssue'
+          schema:
+            type: string
+            enum:
+              - NORMAL
+              - ANULACAO
+              - COMPLEMENTAR
+              - SUBSTITUICAO
+        - in: query
+          description: 'Situação da Auditoria'
+          name: 'audit.situation'
+          schema:
+            type: string
+            enum:
+              - PENDENTE_ANALISE
+              - AUTORIZADO
+              - REJEITADO
+        - in: query
+          description: 'Prestação do Serviço: Data de Início'
+          name: 'serviceRenderedStartDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-01'
+        - in: query
+          description: 'Prestação do Serviço: Data Final'
+          name: 'serviceRenderedEndDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-31'
+      responses:
+        '200':
+          $ref: '#/components/responses/TransportDocumentList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'    
+
+  "/invoices/{invoiceNumber}/updateStatus":
+    patch:
+      tags:
+        - Ações
+      security: 
+        - AuthToken: []
+      summary: Endpoint para atualização do status de uma fatura
+      parameters: 
+        - in: path
+          name: invoiceNumber
+          schema:
+            type: integer
+          required: true
+          description: Número da fatura a ser atualizada
+      requestBody:
+        $ref: '#/components/requestBodies/ChangeStatusBody'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  /cargos:
+    get:
+      tags:
+        - Cargas
+      security: 
+        - AuthToken: []
+      summary: "Listagem das cargas"
+      parameters:
+        - in: query
+          description: 'Número da página'
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          description: 'Quantidade de registros por página'
+          name: perPage
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          description: 'Status da Carga'
+          name: 'status'
+          schema:
+            type: string
+            enum:
+              - PENDENTE_LIBERACAO
+              - PENDENTE
+              - ENVIANDO_PEDIDO_LIBERACAO
+              - AGUARDANDO
+              - FINALIZADA
+              - RECUSADA
+              - ABERTA
+        - in: query
+          description: 'Tipo da Carga'
+          name: 'type'
+          schema:
+            type: string
+            enum:
+              - LOTACAO
+              - FRACIONADA
+        - in: query
+          description: 'Número(s) do(s) Embarque(s)'
+          name: 'shipments.number'
+          schema:
+            type: integer
+            example: "123,456,789"
+        - in: query
+          description: 'Número(s) da(s) Nota(s) Fiscais'
+          name: 'goods.invoice.number'
+          schema:
+            type: integer
+            example: "123,456,789"
+        - in: query
+          description: 'Número da Ordem de Serviço'
+          name: 'serviceOrder.number'
+          schema:
+            type: integer
+            example: "123,456,789"
+        - in: query
+          description: 'Criação: Data de Início'
+          name: 'createdStartDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-01'
+        - in: query
+          description: 'Criação: Data Final'
+          name: 'createdEndDate'
+          schema:
+            type: string
+            format: date
+            example: '2021-01-31'
+      responses:
+        '200':
+          $ref: '#/components/responses/CargoList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'    
+
+  "/cargos/generate":
+    post:
+      tags:
+        - Ações
+      security: 
+        - AuthToken: []
+      summary: "Endpoint para geração de cargas no 3PL"
+      requestBody:
+        $ref: '#/components/requestBodies/GenerateCargosBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/ResponseApi'
+                    - type: object
+                      properties:
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              integrationId:
+                                type: string
+                                format: uuid
+                              shipmentCode:
+                                type: string
+                                example: "123456"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  "/cargos/pickupOrder/request":
+    post:
+      tags:
+        - Ações
+      security: 
+        - AuthToken: []
+      summary: "Endpoint para solicitação de coleta da carga"
+      requestBody:
+        $ref: '#/components/requestBodies/PickupOrderRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Solicitação de coleta realizada'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  "/cargos/pickupOrder/finalize":
+    post:
+      tags:
+        - Ações
+      security: 
+        - AuthToken: []
+      summary: "Endpoint para finalização da solicitação de coleta"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shipment:
+                  type: string
+                  description: Número do embarque
+                  example: "0001"
+                finishedAt:
+                  type: string
+                  format: date-time
+                  description: Data de finalização da coleta
+                  example: "2021-02-20 15:30:00"
+              required: 
+                - shipment
+                - finishedAt
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Solicitação de coleta realizada'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  "/cargos/pickupOrder/update":
+    patch:
+      tags:
+        - Ações
+      security: 
+        - AuthToken: []
+      summary: "Endpoint para atualização da solicitação de coleta"
+      requestBody:
+        $ref: '#/components/requestBodies/PickupOrderRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Solicitação de coleta realizada'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+
+  "/cargos/finalize":
+    post:
+      tags:
+        - Ações
+      security: 
+        - AuthToken: []
+      summary: "Endpoint para finalização da carga"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shipment:
+                  type: string
+                  description: Número do embarque
+                  example: "0001"
+              required: 
+                - shipment
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ResponseApi'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            integrationId:
+                              type: string
+                              format: uuid
+                            shipmentCode:
+                              type: string
+                              example: "123456"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'  
+  
+  "/cargos/serviceOrders/generate":
+    post:
+      tags:
+        - Ações
+      security: 
+        - AuthToken: []
+      summary: "Endpoint para geração da ordem de serviço"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shipment:
+                  type: string
+                  description: Número do embarque
+                  example: "0001"
+              required: 
+                - shipment
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ResponseApi'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            integrationId:
+                              type: string
+                              format: uuid
+                            shipmentCode:
+                              type: string
+                              example: "123456"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'  
+
+  "/cargos/serviceOrders/send":
+    post:
+      tags:
+        - Ações
+      security: 
+        - AuthToken: []
+      summary: "Endpoint para o envio da ordem de serviço para o transportador"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shipment:
+                  type: string
+                  description: Número do embarque
+                  example: "0001"
+              required: 
+                - shipment
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ResponseApi'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            integrationId:
+                              type: string
+                              format: uuid
+                            shipmentCode:
+                              type: string
+                              example: "123456"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+          
+components:
+  securitySchemes:
+    AuthToken:
+      type: apiKey
+      in: header
+      name: H-AUTH-TOKEN
+      
+  responses:
+    CargoList:
+      description: Resposta paginada das cargas
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cargo'
+              links:
+                $ref: '#/components/schemas/Link'
+              meta:
+                $ref: '#/components/schemas/Meta'
+  
+    TrackingList:
+      description: Resposta paginada dos trackings
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tracking'
+              links:
+                $ref: '#/components/schemas/Link'
+              meta:
+                $ref: '#/components/schemas/Meta'
+
+    BillingDocumentList:
+      description: Resposta paginada dos documentos de cobrança
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BillingDocument'
+              links:
+                $ref: '#/components/schemas/Link'
+              meta:
+                $ref: '#/components/schemas/Meta'
+
+    TransportDocumentList:
+      description: Resposta paginada dos documentos de transportes
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransportDocument'
+              links:
+                $ref: '#/components/schemas/Link'
+              meta:
+                $ref: '#/components/schemas/Meta'
+
+    UnprocessableEntity:
+      description: Os dados enviados contém erros
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnprocessableEntityError'
+
+    BadRequest:
+      description: Problemas na requisição
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestError'
+            
+  requestBodies:
+    ChangeStatusBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ChangeStatus'
+    
+    PickupOrderRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              shipment:
+                type: string
+                description: Número do embarque
+                example: "0001"
+              driver:
+                type: object
+                description: Dados do Entregador
+                properties:
+                  name:
+                    type: string
+                    description: Nome do motorista
+                    example: "Thiago José da Silva"
+                  document:
+                    type: string
+                    description: CPF do motorista
+                    example: "03276893200"
+                  phoneNumber:
+                    type: string
+                    description: Telefone do motorista
+                    example: "81987650123"
+                  notes:
+                    type: string
+                    description: Observações
+                    example: "Nenhuma observação para o motorista"
+              vehicle:
+                type: object
+                description: Veículo que será carregado
+                properties:
+                  plateNumber:
+                    type: string
+                    description: Placa do veículo
+                    example: "PGI-32A2"
+                  capacity:
+                    type: integer
+                    description: Capacidade de carga do veículo (em ton.)
+                    example: 3
+                  classification:
+                    type: string
+                    description: Classificação do veículo
+                    enum:
+                      - UTILITARIO
+                      - LEVE_3_4
+                      - TOCO
+                      - TRUCK
+                      - CARRETA_BAU
+                      - CARRETA_SIDERS
+                      - CARRETA_FRIGORIFICO
+                      - CARRETA_TANQUE
+                      - CARRETA_SILO
+                      - CARRETA_CARROCERIA_ABERTA
+                      - CARRETA_GRADE_BAIXA
+                      - CARRETA_CEGONHEIRA
+                      - CARRETA_CACAMBA
+                      - CARRETA_PLATAFORMAS
+                  packageOrganizationType:
+                    type: string
+                    description: Forma de organização dos pacotes
+                    enum:
+                      - NAO_INFORMADO
+                      - PALETIZADO
+                      - ESTIVADO
+              pickupOrder:
+                type: object
+                description: Janela de carregamento
+                properties:
+                  startedAt:
+                    type: string
+                    format: date-time
+                    description: Data e Hora de início do carregamento
+                    example: "2021-02-02 13:45:00"
+                  finishedAt:
+                    type: string
+                    format: date-time
+                    description: Data e Hora de término do carregamento
+                    example: "2021-02-02 16:45:00"
+                required:
+                  - startedAt
+                  - finishedAt
+              notes:
+                type: string
+                description: Observações
+                example: "Nenhuma observação para a coleta"
+            required:
+              - shipment
+              - pickupOrder
+              
+    GenerateCargosBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              shipments:
+                type: array
+                description: Lista de embarques para gerar cargas
+                items:
+                  type: string
+                example:
+                  - "001"
+                  - "002"
+                  - "003"
+              groupByCourier:
+                type: boolean
+                description: Agrupar por transportadora?
+                default: false
+                enum:
+                  - true
+                  - false
+            
+    FreightSimulationBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              zipcodePickup:
+                type: string
+                description: "CEP de Origem"
+                example: "5003000"
+              zipcodeDelivery:
+                type: string
+                description: "CEP de Destino"
+                example: "50920200"
+              parameters:
+                $ref: '#/components/schemas/Totals'
+            
+  schemas:
+    Cargo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID da Carga
+        number:
+          type: integer
+          description: Número da Carga
+        status:
+          type: string
+          description: Status da Carga
+          enum:
+            - PENDENTE_LIBERACAO
+            - PENDENTE
+            - ENVIANDO_PEDIDO_LIBERACAO
+            - AGUARDANDO
+            - FINALIZADA
+            - RECUSADA
+            - ABERTA
+        type:
+          type: string
+          description: Tipo de Carga
+          enum:
+            - LOTACAO
+            - FRACIONADA
+        serviceType:
+          type: string
+          description: Tipo de Serviço
+        company:
+          $ref: '#/components/schemas/Company'
+        courier:
+          $ref: '#/components/schemas/Company'
+        forwarder:
+          $ref: '#/components/schemas/Company'
+        pickupSite:
+          $ref: '#/components/schemas/Address'
+        receiver:
+          $ref: '#/components/schemas/Company'
+        pickupDelivery:
+          $ref: '#/components/schemas/Address'
+        totals:
+          $ref: '#/components/schemas/Totals'
+        pickupOrder:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            number:
+              type: integer
+            status:
+              type: string
+            issuedAt:
+              type: string
+              format: date-time
+            schedule:
+              type: object
+              properties:
+                startedAt:
+                  type: string
+                  format: date-time
+                finishedAt:
+                  type: string
+                  format: date-time
+            finishedLoadingAt:
+              type: string
+              format: date-time
+            driverData:
+              type: object
+              properties:
+                name:
+                  type: string
+                document:
+                  type: string
+                phoneNumber:
+                  type: string
+                notes:
+                  type: string
+            vehicle:
+              type: object
+              properties:
+                plateNumber:
+                  type: string
+                capacity:
+                  type: number
+                type:
+                  type: string
+                packageOrganizationType:
+                  type: string
+            notes:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              description: Data de Criação
+            updatedAt:
+              type: string
+              format: date-time
+              description: Data de Atualziação
+        shipments:
+          type: array
+          items:
+            type: object
+            properties:
+              number:
+                type: string
+              date:
+                type: string
+                format: date-time
+              serviceType:
+                type: string
+              operationType:
+                type: string
+        serviceOrder:
+          type: object
+          properties:
+            number:
+              type: integer
+            status:
+              type: string
+            date:
+              type: string
+              format: date-time
+        goods:
+          type: array
+          items:
+            $ref: '#/components/schemas/Good'
+        groupingCriteria:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          description: Data de Criação
+        updatedAt:
+          type: string
+          format: date-time
+          description: Data de Atualziação
+    
+    Good:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID da Mercadoria
+        issuer:
+          $ref: '#/components/schemas/Company'
+        shipper:
+          $ref: '#/components/schemas/Company'
+        receiver:
+          $ref: '#/components/schemas/Company'
+        pickupSite:
+          $ref: '#/components/schemas/Address'
+        pickupDelivery:
+          $ref: '#/components/schemas/Address'
+        type:
+          type: string
+          example: "SAIDA"
+          enum:
+            - SAIDA
+            - ENTRADA
+        invoice:
+          type: object
+          properties:
+            type:
+              type: string
+              example: NFE
+            number:
+              type: integer
+              example: 123
+            serie:
+              type: integer
+              example: 1
+            issuedAt:
+              type: string
+              format: date-time
+            invoice:
+              type: string
+              example: "https://invoice.hivecloud.com.br/1234"
+        totals: 
+          $ref: '#/components/schemas/Totals'
+        createdAt:
+          type: string
+          format: date-time
+          description: Data de Criação
+        updatedAt:
+          type: string
+          format: date-time
+          description: Data de Atualziação
+        
+    Tracking:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID do Tracking
+        event:
+          type: object
+          properties:
+            eventCode:
+              type: string
+              description: Código do Evento
+              example: "01"
+            eventDescription:
+              type: string
+              description: Descrição do Evento
+              example: "Entrega - Realizada Normalmente"
+            eventNote:
+              type: string
+              description: Observações do Evento
+              example: "ENTREGA REALIZADA"
+            registratedAt:
+              type: string
+              format: date-time
+              description: Data de Registro da Ocorrência
+            occurredAt:
+              type: string
+              format: date-time
+              description: Data da Ocorrência
+            eventStatus:
+              type: string
+              description: Status do Evento
+              example: "EM_BAIXA"
+            isCanceled:
+              type: boolean
+              description: Evento Cancelado?
+              example: false
+        delivery:
+          type: object
+          properties:
+            deliveryNumber:
+              type: string
+              description: Número da Entrega
+            deliveryType:
+              type: string
+              description: Tipo de Entrega
+              example: "NORMAL"
+            deliveryStatus:
+              type: string
+              description: Status da Entrega
+              example: "FINALIZADO"
+            deliveryTime:
+              type: integer
+              description: Prazo de Entrega
+              example: 10
+            deadlineType:
+              type: string
+              description: Tipo do Prazo de Entrega
+              example: 'DIASUTEIS'
+            expectedAt:
+              type: string
+              format: date-time
+              description: Data de Previsão de Entrega
+            totals:
+              $ref: '#/components/schemas/Totals'
+        company:
+          $ref: '#/components/schemas/Company'
+        customer:
+          $ref: '#/components/schemas/Company'
+        courier:
+          $ref: '#/components/schemas/Company'
+        pickupSite:
+          $ref: '#/components/schemas/Address'
+        pickupDelivery:
+          $ref: '#/components/schemas/Address'
+        invoice:
+          type: object
+          properties:
+            documentType:
+              type: string
+              example: "NFE"
+            documentNumber:
+              type: integer
+              example: 34512
+            emittedAt:
+              type: string
+              format: date-time
+            serieNumber:
+              type: integer
+              example: 1
+            accessKey:
+              type: string
+              example: "343453453453453453453453453452342"
+        createdAt:
+          type: string
+          format: date-time
+          description: Data de Criação
+        updatedAt:
+          type: string
+          format: date-time
+          description: Data de Atualziação
+
+    BillingDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID do Documento do Cobrança
+        number:
+          type: integer
+          example: 125
+        dueDate:
+          type: string
+          format: date-time
+        canceledAt:
+          type: string
+          format: date-time
+        bankData:
+          type: object
+          properties:
+            branchNumber:
+              type: string
+              example: "2341-9"
+            accountNumber:
+              type: string
+              example: "12365-8"
+            name:
+              type: string
+              example: "104 - Caixa Econômica Federal"
+        totals:
+          type: object
+          properties:
+            netAmount:
+              type: number
+              example: 100.54
+            grossAmount:
+              type: number
+              example: 115.98
+            discount:
+              type: number
+              example: 0.00
+        audit:
+          type: object
+          properties:
+            amountOfAuditedDocuments:
+              type: number
+              example: 100.98
+            analysisResult:
+              type: string
+              example: "SEM_DIVERGENCIA"
+              enum:
+                - COM_DIVERGENCIA
+                - SEM_DIVERGENCIA
+            situation:
+              type: string
+              example: "PENDENTE_ANALISE"
+              enum:
+                - PENDENTE_ANALISE
+                - AUTORIZADO
+                - REJEITADO
+                - PAGAMENTO_REALIZADO
+                - CONFIRMADO
+                - CANCELADO
+        company:
+          $ref: '#/components/schemas/Company'
+        courier:
+          $ref: '#/components/schemas/Company'
+        transportDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransportDocument'
+        createdAt:
+          type: string
+          format: date-time
+          description: Data de Criação
+        updatedAt:
+          type: string
+          format: date-time
+          description: Data de Atualziação
+
+    TransportDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID do Documento de Transporte
+        number:
+          type: integer
+          example: 125
+        serie:
+          type: integer
+          example: 1
+        type:
+          type: string
+          example: "CTE"
+          enum:
+            - CTE
+            - MINUTA
+        serviceRendered:
+          type: string
+          format: date-time
+        status:
+          type: string
+          example: "AUTORIZADO"
+          enum:
+            - AUTORIZADO
+            - CANCELADO
+        billingStatus:
+          type: string
+          example: "NAO_FATURADO"
+        amount:
+          type: number
+          example: 100.99
+        cargoTotals:
+          type: object
+          properties:
+            grossWeight:
+              type: number
+              format: float
+              description: Peso Bruto (kg)
+              example: 1500.97
+            netWeight:
+              type: number
+              format: float
+              description: Peso Líquido (kg)
+              example: 1460.88
+            volumeQuantity:
+              type: integer
+              description: Quantidade de Volumes
+              example: 24
+            volume:
+              type: number
+              format: float
+              description: Volume (m3)
+              example: 50.67
+            amount:
+              type: number
+              format: float
+              description: Valor Total do Embarque (R$)
+              example: 50987.65
+        company:
+          $ref: '#/components/schemas/Company'
+        courier:
+          $ref: '#/components/schemas/Company'
+        shipper:
+          $ref: '#/components/schemas/Company'
+        receiver:
+          $ref: '#/components/schemas/Company'
+        forwarder:
+          $ref: '#/components/schemas/Company'
+        issuer:
+          $ref: '#/components/schemas/Company'
+        pickupSite:
+          $ref: '#/components/schemas/Address'
+        pickupDelivery:
+          $ref: '#/components/schemas/Address'
+        invoices:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              number:
+                type: integer
+              serie:
+                type: integer
+              accessKey:
+                type: string
+        taxDocument:
+          type: object
+          properties:
+            accessKey:
+              type: string
+            modal:
+              type: string
+            serviceType:
+              type: string
+              example: "NORMAL"
+              enum:
+                - NORMAL
+                - REDESPACHO
+                - REDESPACHO_INTERMEDIARIO
+                - SUBCONTRATACAO
+                - MULTIMODAL
+            cfop:
+              type: string
+              example: "1234"
+            purposeOfTheIssue:
+              type: string
+              example: "NORMAL"
+              enum:
+                - NORMAL
+                - ANULACAO
+                - COMPLEMENTAR
+                - SUBSTITUICAO
+            natureOfTheOperation:
+              type: string
+            xmlDocument:
+              type: string
+        audit:
+          type: object
+          properties:
+            analysisResult:
+              type: string
+              example: "SEM_DIVERGENCIA"
+              enum:
+                - COM_DIVERGENCIA
+                - SEM_DIVERGENCIA
+            situation:
+              type: string
+              example: "PENDENTE_ANALISE"
+              enum:
+                - PENDENTE_ANALISE
+                - AUTORIZADO
+                - REJEITADO
+            divergence:
+              type: number
+              example: 100.98
+            discount:
+              type: number
+              example: 0
+            precalculatedValue:
+              type: number
+              example: 100.98
+            rejectReason:
+              type: string
+        cancellation:
+          type: object
+          properties:
+            date:
+              type: string
+              format: date-time
+            document: 
+              type: string
+            reason:
+              type: string
+        notes:
+          type: string
+        billingDocument:
+          $ref: '#/components/schemas/BillingDocument'
+        createdAt:
+          type: string
+          format: date-time
+          description: Data de Criação
+        updatedAt:
+          type: string
+          format: date-time
+          description: Data de Atualziação
+          
+    ChangeStatus:
+      type: object
+      properties:
+        companyDocument:
+          type: string
+          description: CNPJ da empresa
+          example: "01730240000104"
+        courierDocument:
+          type: string
+          description: CNPJ da transportadora
+          example: "39402572000132"
+        status:
+          type: string
+          description: Status da fatura
+          enum:
+            - AUTHORIZE
+            - CANCEL-AUTHORIZATION
+            - CONFIRM-PAYMENT
+            - CANCEL-PAYMENT
+    
+    FreightSimulation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        codeFreightSimulation:
+          type: number
+          example: 10
+        status:
+          type: string
+          example: FINALIZADA_SUCESSO
+        summary:
+          type: object
+          properties:
+            lowestPrice:
+              type: number
+              example: 150.50
+            biggestPrice:
+              type: number
+              example: 320.80
+            shortestDeliveryTime:
+              type: number
+              example: 3
+            longerDeliveryTime:
+              type: number
+              example: 6
+        parameters:
+          $ref: '#/components/schemas/Totals'
+        pickupSite:
+          $ref: '#/components/schemas/Address'
+        pickupDelivery:
+          $ref: '#/components/schemas/Address'
+        privateNegotiations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Negotiation'
+        freightForSales:
+          type: array
+          items:
+            $ref: '#/components/schemas/Negotiation'
+    
+    Negotiation:
+      type: object
+      properties:
+        modal:
+          type: string
+          example: RODOVIARIO
+        courier:
+          type: object
+          properties:
+            companyName:
+              type: string
+              example: Hive.Cloud Transportes
+            document:
+              type: string
+              example: "25362591000178"
+        summary:
+          type: object
+          properties:
+            price:
+              type: number
+              example: 150.50
+            shortestDeliveryTime:
+              type: number
+              example: 3
+            longerDeliveryTime:
+              type: number
+              example: 6
+            percentage:
+              type: number
+              example: 1.5
+        deadlineType:
+          type: string
+          example: DIASUTEIS
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Logradouro da Empresa
+        number:
+          type: string
+          description: Número
+        city:
+          type: object
+          description: Cidade
+          properties:
+            code:
+              type: string
+              description: Código IBGE
+            name:
+              type: string
+              description: Nome da Cidade
+        district:
+          type: string
+          description: Bairro
+        state:
+          type: object
+          description: UF
+          properties:
+            code:
+              type: string
+              description: Código IBGE
+            alias:
+              type: string
+              description: Sigla da UF
+        country:
+          type: object
+          description: País de Origem da Empresa
+          properties:
+            code:
+              type: string
+              description: Código IBGE
+            name:
+              type: string
+              description: Nome do País
+        zipCode:
+          type: string
+          description: CEP
+        complement:
+          type: string
+          description: Complemento do Endereço
+      example:
+        street: "Rua Wicar Bastos Cavalcante"
+        number: "940"
+        city:
+          code: "2304400"
+          name: "Fortaleza"
+        district: "Barra do Ceará"
+        state:
+          code: "23"
+          alias: "CE"
+        country:
+          code: "1058"
+          name: "Brasil"
+        zipCode: "60334225"
+        complement: "Próx. a Praça Central"
+
+    Company:
+      type: object
+      required: 
+        - companyName
+        - document
+      properties:
+        companyName:
+          type: string
+          description: Razão Social
+        tradeName:
+          type: string
+          description: Nome Fantasia
+        document:
+          type: string
+          description: CNPJ
+        email:
+          type: string
+          format: email
+          description: E-mail corporativo
+        phoneNumber:
+          type: string
+          description: Número de Telefone
+        stateRegistration:
+          type: string
+          description: Inscrição Estadual (IE)
+        address:
+          description: Endereço da Empresa
+          allOf:
+            - $ref: '#/components/schemas/Address'
+          
+    Courier:
+      $ref: '#/components/schemas/Company'
+    
+    Totals:
+      type: object
+      properties:
+        grossWeight:
+          type: number
+          format: float
+          description: Peso Bruto (kg)
+          example: 1500.97
+        netWeight:
+          type: number
+          format: float
+          description: Peso Líquido (kg)
+          example: 1460.88
+        cubedWeight:
+          type: number
+          format: float
+          description: Peso Cubado (kg/m3)
+          example: 1549.87
+        volumeQuantity:
+          type: integer
+          description: Quantidade de Volumes
+          example: 24
+        volume:
+          type: number
+          format: float
+          description: Volume (m3)
+          example: 50.67
+        amount:
+          type: number
+          format: float
+          description: Valor Total do Embarque (R$)
+          example: 50987.65
+    
+    Order:
+      type: object
+      required:
+        - orderNumber
+        - customer
+        - totals
+      properties:
+        orderNumber:
+          type: string
+          description: Código do Pedido
+          example: "123456"
+        isMostDistant:
+          type: boolean
+          default: false
+          description: Define o pedido como o mais diante
+        company:
+          description: Empresa que faturou o Pedido
+          allOf:
+            - $ref: '#/components/schemas/Company'
+          example: 
+            companyName: "Hive SuperMarket Ltda."
+            tradeName: "Hive SuperMarket"
+            document: "25362591000178"
+            email: "compras@hivesupermarket.com"
+            phoneNumber: "85984150310"
+            stateRegistration: "609793888"
+            address:
+              street: "Rua Wicar Bastos Cavalcante"
+              number: "940"
+              city:
+                code: "2304400"
+                name: "Fortaleza"
+              district: "Barra do Ceará"
+              state:
+                code: "23"
+                alias: "CE"
+              country:
+                code: "1058"
+                name: "Brasil"
+              zipCode: "60334225"
+              complement: "Próx. a Praça Central"
+        customer:
+          description: Cliente do Pedido
+          allOf:
+            - $ref: '#/components/schemas/Company'
+          example: 
+            companyName: "Hive SuperMarket Ltda."
+            tradeName: "Hive SuperMarket"
+            document: "25362591000178"
+            email: "compras@hivesupermarket.com"
+            phoneNumber: "85984150310"
+            stateRegistration: "609793888"
+            address:
+              street: "Rua Wicar Bastos Cavalcante"
+              number: "940"
+              city:
+                code: "2304400"
+                name: "Fortaleza"
+              district: "Barra do Ceará"
+              state:
+                code: "23"
+                alias: "CE"
+              country:
+                code: "1058"
+                name: "Brasil"
+              zipCode: "60334225"
+              complement: "Próx. a Praça Central"
+        totals:
+          description: Totais do Pedido
+          allOf:
+            - $ref: '#/components/schemas/Totals'
+
+    Shipment:
+      type: object
+      description: Esse objeto descreve o que alguns sistemas chamam de EMBARQUE ou ROMANEIO ou CARGA. Para simplificar iremos denominar a entidade apenas como EMBARQUE
+      required:
+        - shipmentNumber
+        - shipmentDate
+        - serviceType
+        - operationType
+        - company
+        - totals
+        - freightMode
+        - orders
+      properties:
+        shipmentNumber:
+          type: string
+          description: Número do Embarque
+          example: "123456"
+        shipmentDate:
+          type: string
+          format: date
+          description: Data do Embarque
+          example: "2020-11-01"
+        serviceType:
+          type: string
+          description: Tipo de Serviço
+          example: DISTRIBUICAO
+          default: DISTRIBUICAO
+          enum:
+            - DISTRIBUICAO
+            - TRANSFERENCIA
+        operationType:
+          type: string
+          description: Tipo de Operação
+          example: FRACIONADA
+          default: FRACIONADA
+          enum:
+            - FRACIONADA
+            - LOTACAO
+        vehicleType:
+          type: string
+          description: Tipo de Veículo
+          example: TRUCK
+          enum: 
+            - UTILITARIO
+            - LEVE_3_4
+            - TOCO
+            - TRUCK
+            - CARRETA_BAU
+            - CARRETA_SIDERS
+            - CARRETA_FRIGORIFICO
+            - CARRETA_TANQUE
+            - CARRETA_SILO
+            - CARRETA_CARROCERIA_ABERTA
+            - CARRETA_GRADE_BAIXA
+            - CARRETA_CEGONHEIRA
+            - CARRETA_CACAMBA
+            - CARRETA_PLATAFORMAS
+        company:
+          description: Empresa de Origem do Embarque
+          allOf:
+            - $ref: '#/components/schemas/Company'
+          example: 
+            companyName: "Hive FoodService Ltda."
+            tradeName: "Hive FoodService"
+            document: "01730240000104"
+            email: "vendas@hivefoodservice.com"
+            phoneNumber: "81994467491"
+            stateRegistration: "589408046"
+            address:
+              street: "Avenida Jerônimo Pires"
+              number: "155"
+              city:
+                code: "2601607"
+                name: "Belém do São Francisco"
+              district: "Centro"
+              state:
+                code: "26"
+                alias: "PE"
+              country:
+                code: "1058"
+                name: "Brasil"
+              zipCode: "56440970"
+              complement: "Próx. a Igreja"
+        courier:
+          description: Empresa Responsável pelo Transporte
+          allOf:
+            - $ref: '#/components/schemas/Courier'
+          example: 
+            companyName: "Hive Logistics Express Ltda."
+            tradeName: "Hive Logistics Express"
+            document: "39402572000132"
+            email: "logistica@hivelogisticsexpress.com"
+            phoneNumber: "81999909157"
+            stateRegistration: "907481230"
+            address:
+              street: "Rua Água Branca"
+              number: "907"
+              city:
+                code: "2607901"
+                name: "Jaboatão dos Guararapes"
+              district: "Floriano"
+              state:
+                code: "26"
+                alias: "PE"
+              country:
+                code: "1058"
+                name: "Brasil"
+              zipCode: "54245050"
+              complement: "Próx. a Estação do Metrô"
+        totals:
+          description: Totalizadores do Embarque
+          allOf:
+            - $ref: '#/components/schemas/Totals'
+        freightMode:
+          type: string
+          description: Indicativo do Pagador do Frete
+          default: CIF
+          example: CIF
+          enum:
+            - CIF
+            - FOB
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+    
+    Invoice:
+      description: Nota fiscal que será enviado
+      type: object
+      required:
+        - shipmentNumber
+        - orders
+      properties:
+        shipmentNumber:
+          type: string
+          description: Número do Embarque
+          example: "123456"
+        orders:
+          type: array
+          items:
+            type: object
+            required:
+              - orderNumber
+              - invoiceXML
+            properties:
+              orderNumber:
+                type: string
+                description: Número do Pedido
+                example: "123456"
+              invoiceXML:
+                type: array
+                description: String com o XML ou URL da Nota Fiscal
+                items:
+                  type: string
+                example: 
+                  - '<?xml version="1.0" encoding="UTF-8" ?><nfeProc versao="4.00"...'
+                  - 'https://nfe.hivecloud.com.br/NFe23453464534534534423423534534.xml'
+
+    ResponseApi:
+      type: object
+      properties:
+        code:
+          description: Código HTTP
+          type: integer
+          example: 200
+        message:
+          description: Mensagem de retorno da operação
+          type: string
+          example: Importação realizada com sucesso
+      
+    UnprocessableEntityError:
+      allOf:
+        - $ref: '#/components/schemas/ResponseApi'
+        - type: object
+          properties:
+            data:
+              description: Lista de erros de validações
+              type: object
+              properties:
+                attribute:
+                  type: array
+                  description: Mensagens
+                  items:
+                    type: string
+      example:
+        code: 422
+        message: Erro na importação
+        data:
+          attribute1:
+            - Attribute1 é obrigatório
+            - Attribute1 não pode ser vazio
+          attribute2:
+            - Attribute2 não contém um valor válido
+
+    BadRequestError:
+      allOf:
+        - $ref: '#/components/schemas/ResponseApi'
+        - type: object
+          properties:
+            data:
+              description: Lista de erros de validações
+              type: array
+              items:
+                type: string
+      example: 
+        code: 400
+        message: Falha na requisição
+        data:
+          - Este romaneio já foi importado!
+
+    Meta:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          example: 1
+        from:
+          type: integer
+          example: 1
+        lastPage:
+          type: integer
+          example: 1
+        path:
+          type: string
+          format: url
+        perPage:
+          type: integer
+          example: 1
+        to:
+          type: integer
+          example: 1
+        total:
+          type: integer
+          example: 1
+
+    Link:
+      type: object
+      properties:
+        first:
+          type: string
+          format: url
+        last:
+          type: string
+          format: url
+        prev:
+          type: string
+          format: url
+        next:
+          type: string
+          format: url
