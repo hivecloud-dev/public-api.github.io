@@ -1,0 +1,3589 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API pública do 3PL para integração com parceiros",
+    "description": "Esse documento é de uso restrito a parceiros homologados pela Hive.Cloud",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api-t3ple.hivecloud.com.br/",
+      "description": "Servidor de Produção"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Importações",
+      "description": "Definição dos endpoints que deverão ser utilizados para importar informações de embarques no 3PL"
+    },
+    {
+      "name": "Simulação de Frete",
+      "description": "Definição dos endpoints que deverão ser utilizados para simulações de fretes no 3PL"
+    },
+    {
+      "name": "Tracking",
+      "description": "Definição dos endpoints que deverão ser utilizados para tracking de mercadorias no 3PL"
+    },
+    {
+      "name": "Cargas",
+      "description": "Definição dos endpoints que deverão ser utilizados para as cargas"
+    },
+    {
+      "name": "Documentos",
+      "description": "Definição dos endpoints que deverão ser utilizados para recuperar documentos de cobrança e de transportes"
+    },
+    {
+      "name": "Ações",
+      "description": "Definição dos endpoints que deverão ser utilizados para executar ações no 3PL"
+    }
+  ],
+  "paths": {
+    "/shipments": {
+      "post": {
+        "tags": [
+          "Importações"
+        ],
+        "summary": "Endpoint para importação de Embarque | Romaneio | Carga",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Shipment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/invoices": {
+      "post": {
+        "tags": [
+          "Importações"
+        ],
+        "summary": "Endpoint para importação das Notas Fiscais",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Invoice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ResponseApi"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "integrationId": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "invoiceCode": {
+                                  "type": "string",
+                                  "example": "123456"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "example": {
+                      "code": 400,
+                      "message": "Erro na importação das notas fiscais",
+                      "data": [
+                        [
+                          "Já existe uma mercadoria com série: 1 e número: 123456"
+                        ]
+                      ]
+                    },
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ResponseApi"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "example": "Já existe uma mercadoria com série: 1 e número: 123456"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/freightSimulations": {
+      "post": {
+        "tags": [
+          "Simulação de Frete"
+        ],
+        "summary": "Endpoint para iniciar uma simulação de frete",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/FreightSimulationBody"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreightSimulation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/freightSimulations/{id}": {
+      "get": {
+        "tags": [
+          "Simulação de Frete"
+        ],
+        "summary": "Endpoint para exibir uma simulação de frente",
+        "description": "Ao consultar esse endpoint é importante verificar o status, em alguns casos o processamento pode demorar um pouco devido ao alto volume de negociações, portanto para garantir que todas as negociações estão disponíveis o status da simulação deve ser FINALIZADO_SUCESSO.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID da simulação de frete",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreightSimulation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/trackings": {
+      "get": {
+        "tags": [
+          "Tracking"
+        ],
+        "summary": "Listagem de trackings",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número da página",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "Quantidade de registros por página",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "invoice.documentNumber",
+            "in": "query",
+            "description": "Número da Nota Fiscal",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "invoice.serieNumber",
+            "in": "query",
+            "description": "Número de Série da nota fiscal",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "occurrenceStartDate",
+            "in": "query",
+            "description": "Ocorrência: Data de Início",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-01"
+            }
+          },
+          {
+            "name": "occurrenceEndDate",
+            "in": "query",
+            "description": "Ocorrencia: Data Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-31"
+            }
+          },
+          {
+            "name": "event.eventCode",
+            "in": "query",
+            "description": "Código do Evento conforme padrão PROCEDA",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "01"
+            }
+          },
+          {
+            "name": "isCanceled",
+            "in": "query",
+            "description": "Retornar os trackings cancelados?",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta paginada dos trackings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/billingDocuments": {
+      "get": {
+        "tags": [
+          "Documentos"
+        ],
+        "summary": "Listagem de documentos de cobrança",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número da página",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "Quantidade de registros por página",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "numbers",
+            "in": "query",
+            "description": "Número do Documento de Cobrança",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "audit.analysisResult",
+            "in": "query",
+            "description": "Status da Auditoria",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "COM_DIVERGENCIA",
+                "SEM_DIVERGENCIA"
+              ]
+            }
+          },
+          {
+            "name": "audit.situation",
+            "in": "query",
+            "description": "Situação da Auditoria",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDENTE_ANALISE",
+                "AUTORIZADO",
+                "REJEITADO",
+                "PAGAMENTO_REALIZADO",
+                "CONFIRMADO",
+                "CANCELADO"
+              ]
+            }
+          },
+          {
+            "name": "dueStartDate",
+            "in": "query",
+            "description": "Vencimento: Data de Início",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-01"
+            }
+          },
+          {
+            "name": "dueEndDate",
+            "in": "query",
+            "description": "Vencimento: Data Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-31"
+            }
+          },
+          {
+            "name": "revenueStartDate",
+            "in": "query",
+            "description": "Faturamento: Data de Início",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-01"
+            }
+          },
+          {
+            "name": "revenueEndDate",
+            "in": "query",
+            "description": "Faturamento: Data Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-31"
+            }
+          },
+          {
+            "name": "confirmationStartDate",
+            "in": "query",
+            "description": "Confirmação: Data de Início",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-01"
+            }
+          },
+          {
+            "name": "confirmationEndDate",
+            "in": "query",
+            "description": "Confirmação: Data Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-31"
+            }
+          },
+          {
+            "name": "totals.initialNetAmount",
+            "in": "query",
+            "description": "Valor Líquido: Inicial",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number",
+              "example": 100.98
+            }
+          },
+          {
+            "name": "totals.finalNetAmount",
+            "in": "query",
+            "description": "Valor Líquido: Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number",
+              "example": 150.98
+            }
+          },
+          {
+            "name": "totals.initialGrossAmount",
+            "in": "query",
+            "description": "Valor Bruto: Inicial",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number",
+              "example": 100.98
+            }
+          },
+          {
+            "name": "totals.finalGrossAmount",
+            "in": "query",
+            "description": "Valor Bruto: Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number",
+              "example": 150.98
+            }
+          },
+          {
+            "name": "totals.initialDiscount",
+            "in": "query",
+            "description": "Desconto: Inicial",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number",
+              "example": 100.98
+            }
+          },
+          {
+            "name": "totals.finalDiscount",
+            "in": "query",
+            "description": "Desconto: Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number",
+              "example": 150.98
+            }
+          },
+          {
+            "name": "isConfirmed",
+            "in": "query",
+            "description": "Retornar os trackings cancelados?",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta paginada dos documentos de cobrança",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/transportDocuments": {
+      "get": {
+        "tags": [
+          "Documentos"
+        ],
+        "summary": "Listagem de documentos de transportes",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número da página",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "Quantidade de registros por página",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "number",
+            "in": "query",
+            "description": "Números dos Documentos de Transporte",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Tipo de Documento",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "MINUTA",
+                "CTE"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status do Documento",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AUTORIZADO",
+                "CANCELADO"
+              ]
+            }
+          },
+          {
+            "name": "invoices.number",
+            "in": "query",
+            "description": "Números das Notas Fiscais",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "taxDocument.accessKey",
+            "in": "query",
+            "description": "Chave de Acesso CT-e",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "1234567890"
+            }
+          },
+          {
+            "name": "taxDocument.type",
+            "in": "query",
+            "description": "Tipo de Serviço",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NORMAL",
+                "REDESPACHO",
+                "REDESPACHO_INTERMEDIARIO",
+                "SUBCONTRATACAO",
+                "MULTIMODAL"
+              ]
+            }
+          },
+          {
+            "name": "taxDocument.purposeOfTheIssue",
+            "in": "query",
+            "description": "Finalidade da Emissão",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NORMAL",
+                "ANULACAO",
+                "COMPLEMENTAR",
+                "SUBSTITUICAO"
+              ]
+            }
+          },
+          {
+            "name": "audit.situation",
+            "in": "query",
+            "description": "Situação da Auditoria",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDENTE_ANALISE",
+                "AUTORIZADO",
+                "REJEITADO"
+              ]
+            }
+          },
+          {
+            "name": "serviceRenderedStartDate",
+            "in": "query",
+            "description": "Prestação do Serviço: Data de Início",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-01"
+            }
+          },
+          {
+            "name": "serviceRenderedEndDate",
+            "in": "query",
+            "description": "Prestação do Serviço: Data Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-31"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta paginada dos documentos de transportes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/invoices/{invoiceNumber}/updateStatus": {
+      "patch": {
+        "tags": [
+          "Ações"
+        ],
+        "summary": "Endpoint para atualização do status de uma fatura",
+        "parameters": [
+          {
+            "name": "invoiceNumber",
+            "in": "path",
+            "description": "Número da fatura a ser atualizada",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ChangeStatusBody"
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/cargos": {
+      "get": {
+        "tags": [
+          "Cargas"
+        ],
+        "summary": "Listagem das cargas",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Número da página",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "Quantidade de registros por página",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status da Carga",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDENTE_LIBERACAO",
+                "PENDENTE",
+                "ENVIANDO_PEDIDO_LIBERACAO",
+                "AGUARDANDO",
+                "FINALIZADA",
+                "RECUSADA",
+                "ABERTA"
+              ]
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Tipo da Carga",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "LOTACAO",
+                "FRACIONADA"
+              ]
+            }
+          },
+          {
+            "name": "shipments.number",
+            "in": "query",
+            "description": "Número(s) do(s) Embarque(s)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "goods.invoice.number",
+            "in": "query",
+            "description": "Número(s) da(s) Nota(s) Fiscais",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "serviceOrder.number",
+            "in": "query",
+            "description": "Número da Ordem de Serviço",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "createdStartDate",
+            "in": "query",
+            "description": "Criação: Data de Início",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-01"
+            }
+          },
+          {
+            "name": "createdEndDate",
+            "in": "query",
+            "description": "Criação: Data Final",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2021-01-31"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resposta paginada das cargas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_4"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/cargos/generate": {
+      "post": {
+        "tags": [
+          "Ações"
+        ],
+        "summary": "Endpoint para geração de cargas no 3PL",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/GenerateCargosBody"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ResponseApi"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "integrationId": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "shipmentCode": {
+                                  "type": "string",
+                                  "example": "123456"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/cargos/pickupOrder/request": {
+      "post": {
+        "tags": [
+          "Ações"
+        ],
+        "summary": "Endpoint para solicitação de coleta da carga",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PickupOrderRequestBody"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_5"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/cargos/pickupOrder/finalize": {
+      "post": {
+        "tags": [
+          "Ações"
+        ],
+        "summary": "Endpoint para finalização da solicitação de coleta",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_5"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/cargos/pickupOrder/update": {
+      "patch": {
+        "tags": [
+          "Ações"
+        ],
+        "summary": "Endpoint para atualização da solicitação de coleta",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/PickupOrderRequestBody"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_5"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/cargos/finalize": {
+      "post": {
+        "tags": [
+          "Ações"
+        ],
+        "summary": "Endpoint para finalização da carga",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/body_1"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_6"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/cargos/serviceOrders/generate": {
+      "post": {
+        "tags": [
+          "Ações"
+        ],
+        "summary": "Endpoint para geração da ordem de serviço",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/body_2"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_6"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    },
+    "/cargos/serviceOrders/send": {
+      "post": {
+        "tags": [
+          "Ações"
+        ],
+        "summary": "Endpoint para o envio da ordem de serviço para o transportador",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/body_3"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_6"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problemas na requisição",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Os dados enviados contém erros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnprocessableEntityError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cargo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da Carga",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Número da Carga"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status da Carga",
+            "enum": [
+              "PENDENTE_LIBERACAO",
+              "PENDENTE",
+              "ENVIANDO_PEDIDO_LIBERACAO",
+              "AGUARDANDO",
+              "FINALIZADA",
+              "RECUSADA",
+              "ABERTA"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo de Carga",
+            "enum": [
+              "LOTACAO",
+              "FRACIONADA"
+            ]
+          },
+          "serviceType": {
+            "type": "string",
+            "description": "Tipo de Serviço"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "courier": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "forwarder": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "pickupSite": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "receiver": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "pickupDelivery": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/Totals"
+          },
+          "pickupOrder": {
+            "$ref": "#/components/schemas/Cargo_pickupOrder"
+          },
+          "shipments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cargo_shipments"
+            }
+          },
+          "serviceOrder": {
+            "$ref": "#/components/schemas/Cargo_serviceOrder"
+          },
+          "goods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Good"
+            }
+          },
+          "groupingCriteria": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de Criação",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data de Atualziação",
+            "format": "date-time"
+          }
+        }
+      },
+      "Good": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da Mercadoria",
+            "format": "uuid"
+          },
+          "issuer": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "shipper": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "receiver": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "pickupSite": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "pickupDelivery": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "type": {
+            "type": "string",
+            "example": "SAIDA",
+            "enum": [
+              "SAIDA",
+              "ENTRADA"
+            ]
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/Good_invoice"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/Totals"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de Criação",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data de Atualziação",
+            "format": "date-time"
+          }
+        }
+      },
+      "Tracking": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do Tracking",
+            "format": "uuid"
+          },
+          "event": {
+            "$ref": "#/components/schemas/Tracking_event"
+          },
+          "delivery": {
+            "$ref": "#/components/schemas/Tracking_delivery"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "courier": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "pickupSite": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "pickupDelivery": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "invoice": {
+            "$ref": "#/components/schemas/Tracking_invoice"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de Criação",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data de Atualziação",
+            "format": "date-time"
+          }
+        }
+      },
+      "BillingDocument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do Documento do Cobrança",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "integer",
+            "example": 125
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "canceledAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "bankData": {
+            "$ref": "#/components/schemas/BillingDocument_bankData"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/BillingDocument_totals"
+          },
+          "audit": {
+            "$ref": "#/components/schemas/BillingDocument_audit"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "courier": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "transportDocuments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransportDocument"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de Criação",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data de Atualziação",
+            "format": "date-time"
+          }
+        }
+      },
+      "TransportDocument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do Documento de Transporte",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "integer",
+            "example": 125
+          },
+          "serie": {
+            "type": "integer",
+            "example": 1
+          },
+          "type": {
+            "type": "string",
+            "example": "CTE",
+            "enum": [
+              "CTE",
+              "MINUTA"
+            ]
+          },
+          "serviceRendered": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "example": "AUTORIZADO",
+            "enum": [
+              "AUTORIZADO",
+              "CANCELADO"
+            ]
+          },
+          "billingStatus": {
+            "type": "string",
+            "example": "NAO_FATURADO"
+          },
+          "amount": {
+            "type": "number",
+            "example": 100.99
+          },
+          "cargoTotals": {
+            "$ref": "#/components/schemas/TransportDocument_cargoTotals"
+          },
+          "company": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "courier": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "shipper": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "receiver": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "forwarder": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "issuer": {
+            "$ref": "#/components/schemas/Company"
+          },
+          "pickupSite": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "pickupDelivery": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "invoices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransportDocument_invoices"
+            }
+          },
+          "taxDocument": {
+            "$ref": "#/components/schemas/TransportDocument_taxDocument"
+          },
+          "audit": {
+            "$ref": "#/components/schemas/TransportDocument_audit"
+          },
+          "cancellation": {
+            "$ref": "#/components/schemas/TransportDocument_cancellation"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "billingDocument": {
+            "$ref": "#/components/schemas/BillingDocument"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de Criação",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data de Atualziação",
+            "format": "date-time"
+          }
+        }
+      },
+      "ChangeStatus": {
+        "type": "object",
+        "properties": {
+          "companyDocument": {
+            "type": "string",
+            "description": "CNPJ da empresa",
+            "example": "01730240000104"
+          },
+          "courierDocument": {
+            "type": "string",
+            "description": "CNPJ da transportadora",
+            "example": "39402572000132"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status da fatura",
+            "enum": [
+              "AUTHORIZE",
+              "CANCEL-AUTHORIZATION",
+              "CONFIRM-PAYMENT",
+              "CANCEL-PAYMENT"
+            ]
+          }
+        }
+      },
+      "FreightSimulation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "codeFreightSimulation": {
+            "type": "number",
+            "example": 10
+          },
+          "status": {
+            "type": "string",
+            "example": "FINALIZADA_SUCESSO"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/FreightSimulation_summary"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/Totals"
+          },
+          "pickupSite": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "pickupDelivery": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "privateNegotiations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Negotiation"
+            }
+          },
+          "freightForSales": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Negotiation"
+            }
+          }
+        }
+      },
+      "Negotiation": {
+        "type": "object",
+        "properties": {
+          "modal": {
+            "type": "string",
+            "example": "RODOVIARIO"
+          },
+          "courier": {
+            "$ref": "#/components/schemas/Negotiation_courier"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/Negotiation_summary"
+          },
+          "deadlineType": {
+            "type": "string",
+            "example": "DIASUTEIS"
+          }
+        }
+      },
+      "Address": {
+        "type": "object",
+        "properties": {
+          "street": {
+            "type": "string",
+            "description": "Logradouro da Empresa"
+          },
+          "number": {
+            "type": "string",
+            "description": "Número"
+          },
+          "city": {
+            "$ref": "#/components/schemas/Address_city"
+          },
+          "district": {
+            "type": "string",
+            "description": "Bairro"
+          },
+          "state": {
+            "$ref": "#/components/schemas/Address_state"
+          },
+          "country": {
+            "$ref": "#/components/schemas/Address_country"
+          },
+          "zipCode": {
+            "type": "string",
+            "description": "CEP"
+          },
+          "complement": {
+            "type": "string",
+            "description": "Complemento do Endereço"
+          }
+        },
+        "example": {
+          "street": "Rua Wicar Bastos Cavalcante",
+          "number": "940",
+          "city": {
+            "code": "2304400",
+            "name": "Fortaleza"
+          },
+          "district": "Barra do Ceará",
+          "state": {
+            "code": "23",
+            "alias": "CE"
+          },
+          "country": {
+            "code": "1058",
+            "name": "Brasil"
+          },
+          "zipCode": "60334225",
+          "complement": "Próx. a Praça Central"
+        }
+      },
+      "Company": {
+        "required": [
+          "companyName",
+          "document"
+        ],
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string",
+            "description": "Razão Social"
+          },
+          "tradeName": {
+            "type": "string",
+            "description": "Nome Fantasia"
+          },
+          "document": {
+            "type": "string",
+            "description": "CNPJ"
+          },
+          "email": {
+            "type": "string",
+            "description": "E-mail corporativo",
+            "format": "email"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Número de Telefone"
+          },
+          "stateRegistration": {
+            "type": "string",
+            "description": "Inscrição Estadual (IE)"
+          },
+          "address": {
+            "description": "Endereço da Empresa",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Address"
+              }
+            ]
+          }
+        }
+      },
+      "Courier": {
+        "$ref": "#/components/schemas/Company"
+      },
+      "Totals": {
+        "type": "object",
+        "properties": {
+          "grossWeight": {
+            "type": "number",
+            "description": "Peso Bruto (kg)",
+            "format": "float",
+            "example": 1500.97
+          },
+          "netWeight": {
+            "type": "number",
+            "description": "Peso Líquido (kg)",
+            "format": "float",
+            "example": 1460.88
+          },
+          "cubedWeight": {
+            "type": "number",
+            "description": "Peso Cubado (kg/m3)",
+            "format": "float",
+            "example": 1549.87
+          },
+          "volumeQuantity": {
+            "type": "integer",
+            "description": "Quantidade de Volumes",
+            "example": 24
+          },
+          "volume": {
+            "type": "number",
+            "description": "Volume (m3)",
+            "format": "float",
+            "example": 50.67
+          },
+          "amount": {
+            "type": "number",
+            "description": "Valor Total do Embarque (R$)",
+            "format": "float",
+            "example": 50987.65
+          }
+        }
+      },
+      "Order": {
+        "required": [
+          "customer",
+          "orderNumber",
+          "totals"
+        ],
+        "type": "object",
+        "properties": {
+          "orderNumber": {
+            "type": "string",
+            "description": "Código do Pedido",
+            "example": "123456"
+          },
+          "isMostDistant": {
+            "type": "boolean",
+            "description": "Define o pedido como o mais diante",
+            "default": false
+          },
+          "company": {
+            "description": "Empresa que faturou o Pedido",
+            "example": {
+              "companyName": "Hive SuperMarket Ltda.",
+              "tradeName": "Hive SuperMarket",
+              "document": "25362591000178",
+              "email": "compras@hivesupermarket.com",
+              "phoneNumber": "85984150310",
+              "stateRegistration": "609793888",
+              "address": {
+                "street": "Rua Wicar Bastos Cavalcante",
+                "number": "940",
+                "city": {
+                  "code": "2304400",
+                  "name": "Fortaleza"
+                },
+                "district": "Barra do Ceará",
+                "state": {
+                  "code": "23",
+                  "alias": "CE"
+                },
+                "country": {
+                  "code": "1058",
+                  "name": "Brasil"
+                },
+                "zipCode": "60334225",
+                "complement": "Próx. a Praça Central"
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Company"
+              }
+            ]
+          },
+          "customer": {
+            "description": "Cliente do Pedido",
+            "example": {
+              "companyName": "Hive SuperMarket Ltda.",
+              "tradeName": "Hive SuperMarket",
+              "document": "25362591000178",
+              "email": "compras@hivesupermarket.com",
+              "phoneNumber": "85984150310",
+              "stateRegistration": "609793888",
+              "address": {
+                "street": "Rua Wicar Bastos Cavalcante",
+                "number": "940",
+                "city": {
+                  "code": "2304400",
+                  "name": "Fortaleza"
+                },
+                "district": "Barra do Ceará",
+                "state": {
+                  "code": "23",
+                  "alias": "CE"
+                },
+                "country": {
+                  "code": "1058",
+                  "name": "Brasil"
+                },
+                "zipCode": "60334225",
+                "complement": "Próx. a Praça Central"
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Company"
+              }
+            ]
+          },
+          "totals": {
+            "description": "Totais do Pedido",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Totals"
+              }
+            ]
+          }
+        }
+      },
+      "Shipment": {
+        "required": [
+          "company",
+          "freightMode",
+          "operationType",
+          "orders",
+          "serviceType",
+          "shipmentDate",
+          "shipmentNumber",
+          "totals"
+        ],
+        "type": "object",
+        "properties": {
+          "shipmentNumber": {
+            "type": "string",
+            "description": "Número do Embarque",
+            "example": "123456"
+          },
+          "shipmentDate": {
+            "type": "string",
+            "description": "Data do Embarque",
+            "format": "date",
+            "example": "2020-11-01"
+          },
+          "serviceType": {
+            "type": "string",
+            "description": "Tipo de Serviço",
+            "example": "DISTRIBUICAO",
+            "default": "DISTRIBUICAO",
+            "enum": [
+              "DISTRIBUICAO",
+              "TRANSFERENCIA"
+            ]
+          },
+          "operationType": {
+            "type": "string",
+            "description": "Tipo de Operação",
+            "example": "FRACIONADA",
+            "default": "FRACIONADA",
+            "enum": [
+              "FRACIONADA",
+              "LOTACAO"
+            ]
+          },
+          "vehicleType": {
+            "type": "string",
+            "description": "Tipo de Veículo",
+            "example": "TRUCK",
+            "enum": [
+              "UTILITARIO",
+              "LEVE_3_4",
+              "TOCO",
+              "TRUCK",
+              "CARRETA_BAU",
+              "CARRETA_SIDERS",
+              "CARRETA_FRIGORIFICO",
+              "CARRETA_TANQUE",
+              "CARRETA_SILO",
+              "CARRETA_CARROCERIA_ABERTA",
+              "CARRETA_GRADE_BAIXA",
+              "CARRETA_CEGONHEIRA",
+              "CARRETA_CACAMBA",
+              "CARRETA_PLATAFORMAS"
+            ]
+          },
+          "company": {
+            "description": "Empresa de Origem do Embarque",
+            "example": {
+              "companyName": "Hive FoodService Ltda.",
+              "tradeName": "Hive FoodService",
+              "document": "01730240000104",
+              "email": "vendas@hivefoodservice.com",
+              "phoneNumber": "81994467491",
+              "stateRegistration": "589408046",
+              "address": {
+                "street": "Avenida Jerônimo Pires",
+                "number": "155",
+                "city": {
+                  "code": "2601607",
+                  "name": "Belém do São Francisco"
+                },
+                "district": "Centro",
+                "state": {
+                  "code": "26",
+                  "alias": "PE"
+                },
+                "country": {
+                  "code": "1058",
+                  "name": "Brasil"
+                },
+                "zipCode": "56440970",
+                "complement": "Próx. a Igreja"
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Company"
+              }
+            ]
+          },
+          "courier": {
+            "description": "Empresa Responsável pelo Transporte",
+            "example": {
+              "companyName": "Hive Logistics Express Ltda.",
+              "tradeName": "Hive Logistics Express",
+              "document": "39402572000132",
+              "email": "logistica@hivelogisticsexpress.com",
+              "phoneNumber": "81999909157",
+              "stateRegistration": "907481230",
+              "address": {
+                "street": "Rua Água Branca",
+                "number": "907",
+                "city": {
+                  "code": "2607901",
+                  "name": "Jaboatão dos Guararapes"
+                },
+                "district": "Floriano",
+                "state": {
+                  "code": "26",
+                  "alias": "PE"
+                },
+                "country": {
+                  "code": "1058",
+                  "name": "Brasil"
+                },
+                "zipCode": "54245050",
+                "complement": "Próx. a Estação do Metrô"
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Courier"
+              }
+            ]
+          },
+          "totals": {
+            "description": "Totalizadores do Embarque",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Totals"
+              }
+            ]
+          },
+          "freightMode": {
+            "type": "string",
+            "description": "Indicativo do Pagador do Frete",
+            "example": "CIF",
+            "default": "CIF",
+            "enum": [
+              "CIF",
+              "FOB"
+            ]
+          },
+          "orders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Order"
+            }
+          }
+        },
+        "description": "Esse objeto descreve o que alguns sistemas chamam de EMBARQUE ou ROMANEIO ou CARGA. Para simplificar iremos denominar a entidade apenas como EMBARQUE"
+      },
+      "Invoice": {
+        "required": [
+          "orders",
+          "shipmentNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "shipmentNumber": {
+            "type": "string",
+            "description": "Número do Embarque",
+            "example": "123456"
+          },
+          "orders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Invoice_orders"
+            }
+          }
+        },
+        "description": "Nota fiscal que será enviado"
+      },
+      "ResponseApi": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "Código HTTP",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "Mensagem de retorno da operação",
+            "example": "Importação realizada com sucesso"
+          }
+        }
+      },
+      "UnprocessableEntityError": {
+        "example": {
+          "code": 422,
+          "message": "Erro na importação",
+          "data": {
+            "attribute1": [
+              "Attribute1 é obrigatório",
+              "Attribute1 não pode ser vazio"
+            ],
+            "attribute2": [
+              "Attribute2 não contém um valor válido"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseApi"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/UnprocessableEntityError_data"
+              }
+            }
+          }
+        ]
+      },
+      "BadRequestError": {
+        "example": {
+          "code": 400,
+          "message": "Falha na requisição",
+          "data": [
+            "Este romaneio já foi importado!"
+          ]
+        },
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseApi"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "description": "Lista de erros de validações",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Meta": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "integer",
+            "example": 1
+          },
+          "from": {
+            "type": "integer",
+            "example": 1
+          },
+          "lastPage": {
+            "type": "integer",
+            "example": 1
+          },
+          "path": {
+            "type": "string",
+            "format": "url"
+          },
+          "perPage": {
+            "type": "integer",
+            "example": 1
+          },
+          "to": {
+            "type": "integer",
+            "example": 1
+          },
+          "total": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "string",
+            "format": "url"
+          },
+          "last": {
+            "type": "string",
+            "format": "url"
+          },
+          "prev": {
+            "type": "string",
+            "format": "url"
+          },
+          "next": {
+            "type": "string",
+            "format": "url"
+          }
+        }
+      },
+      "inline_response_200": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseApi"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/inline_response_200_data"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "inline_response_200_1": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tracking"
+            }
+          },
+          "links": {
+            "$ref": "#/components/schemas/Link"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        }
+      },
+      "inline_response_200_2": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BillingDocument"
+            }
+          },
+          "links": {
+            "$ref": "#/components/schemas/Link"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        }
+      },
+      "inline_response_200_3": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TransportDocument"
+            }
+          },
+          "links": {
+            "$ref": "#/components/schemas/Link"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        }
+      },
+      "inline_response_200_4": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Cargo"
+            }
+          },
+          "links": {
+            "$ref": "#/components/schemas/Link"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        }
+      },
+      "inline_response_200_5": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Solicitação de coleta realizada"
+          }
+        }
+      },
+      "body": {
+        "required": [
+          "finishedAt",
+          "shipment"
+        ],
+        "type": "object",
+        "properties": {
+          "shipment": {
+            "type": "string",
+            "description": "Número do embarque",
+            "example": "0001"
+          },
+          "finishedAt": {
+            "type": "string",
+            "description": "Data de finalização da coleta",
+            "format": "date-time"
+          }
+        }
+      },
+      "body_1": {
+        "required": [
+          "shipment"
+        ],
+        "type": "object",
+        "properties": {
+          "shipment": {
+            "type": "string",
+            "description": "Número do embarque",
+            "example": "0001"
+          }
+        }
+      },
+      "inline_response_200_6": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResponseApi"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/inline_response_200_data"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "body_2": {
+        "required": [
+          "shipment"
+        ],
+        "type": "object",
+        "properties": {
+          "shipment": {
+            "type": "string",
+            "description": "Número do embarque",
+            "example": "0001"
+          }
+        }
+      },
+      "body_3": {
+        "required": [
+          "shipment"
+        ],
+        "type": "object",
+        "properties": {
+          "shipment": {
+            "type": "string",
+            "description": "Número do embarque",
+            "example": "0001"
+          }
+        }
+      },
+      "Cargo_pickupOrder_schedule": {
+        "type": "object",
+        "properties": {
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Cargo_pickupOrder_driverData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "document": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "Cargo_pickupOrder_vehicle": {
+        "type": "object",
+        "properties": {
+          "plateNumber": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string"
+          },
+          "packageOrganizationType": {
+            "type": "string"
+          }
+        }
+      },
+      "Cargo_pickupOrder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "schedule": {
+            "$ref": "#/components/schemas/Cargo_pickupOrder_schedule"
+          },
+          "finishedLoadingAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "driverData": {
+            "$ref": "#/components/schemas/Cargo_pickupOrder_driverData"
+          },
+          "vehicle": {
+            "$ref": "#/components/schemas/Cargo_pickupOrder_vehicle"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de Criação",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data de Atualziação",
+            "format": "date-time"
+          }
+        }
+      },
+      "Cargo_shipments": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "serviceType": {
+            "type": "string"
+          },
+          "operationType": {
+            "type": "string"
+          }
+        }
+      },
+      "Cargo_serviceOrder": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Good_invoice": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "NFE"
+          },
+          "number": {
+            "type": "integer",
+            "example": 123
+          },
+          "serie": {
+            "type": "integer",
+            "example": 1
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "invoice": {
+            "type": "string",
+            "example": "https://invoice.hivecloud.com.br/1234"
+          }
+        }
+      },
+      "Tracking_event": {
+        "type": "object",
+        "properties": {
+          "eventCode": {
+            "type": "string",
+            "description": "Código do Evento",
+            "example": "01"
+          },
+          "eventDescription": {
+            "type": "string",
+            "description": "Descrição do Evento",
+            "example": "Entrega - Realizada Normalmente"
+          },
+          "eventNote": {
+            "type": "string",
+            "description": "Observações do Evento",
+            "example": "ENTREGA REALIZADA"
+          },
+          "registratedAt": {
+            "type": "string",
+            "description": "Data de Registro da Ocorrência",
+            "format": "date-time"
+          },
+          "occurredAt": {
+            "type": "string",
+            "description": "Data da Ocorrência",
+            "format": "date-time"
+          },
+          "eventStatus": {
+            "type": "string",
+            "description": "Status do Evento",
+            "example": "EM_BAIXA"
+          },
+          "isCanceled": {
+            "type": "boolean",
+            "description": "Evento Cancelado?",
+            "example": false
+          }
+        }
+      },
+      "Tracking_delivery": {
+        "type": "object",
+        "properties": {
+          "deliveryNumber": {
+            "type": "string",
+            "description": "Número da Entrega"
+          },
+          "deliveryType": {
+            "type": "string",
+            "description": "Tipo de Entrega",
+            "example": "NORMAL"
+          },
+          "deliveryStatus": {
+            "type": "string",
+            "description": "Status da Entrega",
+            "example": "FINALIZADO"
+          },
+          "deliveryTime": {
+            "type": "integer",
+            "description": "Prazo de Entrega",
+            "example": 10
+          },
+          "deadlineType": {
+            "type": "string",
+            "description": "Tipo do Prazo de Entrega",
+            "example": "DIASUTEIS"
+          },
+          "expectedAt": {
+            "type": "string",
+            "description": "Data de Previsão de Entrega",
+            "format": "date-time"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/Totals"
+          }
+        }
+      },
+      "Tracking_invoice": {
+        "type": "object",
+        "properties": {
+          "documentType": {
+            "type": "string",
+            "example": "NFE"
+          },
+          "documentNumber": {
+            "type": "integer",
+            "example": 34512
+          },
+          "emittedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "serieNumber": {
+            "type": "integer",
+            "example": 1
+          },
+          "accessKey": {
+            "type": "string",
+            "example": "343453453453453453453453453452342"
+          }
+        }
+      },
+      "BillingDocument_bankData": {
+        "type": "object",
+        "properties": {
+          "branchNumber": {
+            "type": "string",
+            "example": "2341-9"
+          },
+          "accountNumber": {
+            "type": "string",
+            "example": "12365-8"
+          },
+          "name": {
+            "type": "string",
+            "example": "104 - Caixa Econômica Federal"
+          }
+        }
+      },
+      "BillingDocument_totals": {
+        "type": "object",
+        "properties": {
+          "netAmount": {
+            "type": "number",
+            "example": 100.54
+          },
+          "grossAmount": {
+            "type": "number",
+            "example": 115.98
+          },
+          "discount": {
+            "type": "number",
+            "example": 0
+          }
+        }
+      },
+      "BillingDocument_audit": {
+        "type": "object",
+        "properties": {
+          "amountOfAuditedDocuments": {
+            "type": "number",
+            "example": 100.98
+          },
+          "analysisResult": {
+            "type": "string",
+            "example": "SEM_DIVERGENCIA",
+            "enum": [
+              "COM_DIVERGENCIA",
+              "SEM_DIVERGENCIA"
+            ]
+          },
+          "situation": {
+            "type": "string",
+            "example": "PENDENTE_ANALISE",
+            "enum": [
+              "PENDENTE_ANALISE",
+              "AUTORIZADO",
+              "REJEITADO",
+              "PAGAMENTO_REALIZADO",
+              "CONFIRMADO",
+              "CANCELADO"
+            ]
+          }
+        }
+      },
+      "TransportDocument_cargoTotals": {
+        "type": "object",
+        "properties": {
+          "grossWeight": {
+            "type": "number",
+            "description": "Peso Bruto (kg)",
+            "format": "float",
+            "example": 1500.97
+          },
+          "netWeight": {
+            "type": "number",
+            "description": "Peso Líquido (kg)",
+            "format": "float",
+            "example": 1460.88
+          },
+          "volumeQuantity": {
+            "type": "integer",
+            "description": "Quantidade de Volumes",
+            "example": 24
+          },
+          "volume": {
+            "type": "number",
+            "description": "Volume (m3)",
+            "format": "float",
+            "example": 50.67
+          },
+          "amount": {
+            "type": "number",
+            "description": "Valor Total do Embarque (R$)",
+            "format": "float",
+            "example": 50987.65
+          }
+        }
+      },
+      "TransportDocument_invoices": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "serie": {
+            "type": "integer"
+          },
+          "accessKey": {
+            "type": "string"
+          }
+        }
+      },
+      "TransportDocument_taxDocument": {
+        "type": "object",
+        "properties": {
+          "accessKey": {
+            "type": "string"
+          },
+          "modal": {
+            "type": "string"
+          },
+          "serviceType": {
+            "type": "string",
+            "example": "NORMAL",
+            "enum": [
+              "NORMAL",
+              "REDESPACHO",
+              "REDESPACHO_INTERMEDIARIO",
+              "SUBCONTRATACAO",
+              "MULTIMODAL"
+            ]
+          },
+          "cfop": {
+            "type": "string",
+            "example": "1234"
+          },
+          "purposeOfTheIssue": {
+            "type": "string",
+            "example": "NORMAL",
+            "enum": [
+              "NORMAL",
+              "ANULACAO",
+              "COMPLEMENTAR",
+              "SUBSTITUICAO"
+            ]
+          },
+          "natureOfTheOperation": {
+            "type": "string"
+          },
+          "xmlDocument": {
+            "type": "string"
+          }
+        }
+      },
+      "TransportDocument_audit": {
+        "type": "object",
+        "properties": {
+          "analysisResult": {
+            "type": "string",
+            "example": "SEM_DIVERGENCIA",
+            "enum": [
+              "COM_DIVERGENCIA",
+              "SEM_DIVERGENCIA"
+            ]
+          },
+          "situation": {
+            "type": "string",
+            "example": "PENDENTE_ANALISE",
+            "enum": [
+              "PENDENTE_ANALISE",
+              "AUTORIZADO",
+              "REJEITADO"
+            ]
+          },
+          "divergence": {
+            "type": "number",
+            "example": 100.98
+          },
+          "discount": {
+            "type": "number",
+            "example": 0
+          },
+          "precalculatedValue": {
+            "type": "number",
+            "example": 100.98
+          },
+          "rejectReason": {
+            "type": "string"
+          }
+        }
+      },
+      "TransportDocument_cancellation": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "document": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "FreightSimulation_summary": {
+        "type": "object",
+        "properties": {
+          "lowestPrice": {
+            "type": "number",
+            "example": 150.5
+          },
+          "biggestPrice": {
+            "type": "number",
+            "example": 320.8
+          },
+          "shortestDeliveryTime": {
+            "type": "number",
+            "example": 3
+          },
+          "longerDeliveryTime": {
+            "type": "number",
+            "example": 6
+          }
+        }
+      },
+      "Negotiation_courier": {
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string",
+            "example": "Hive.Cloud Transportes"
+          },
+          "document": {
+            "type": "string",
+            "example": "25362591000178"
+          }
+        }
+      },
+      "Negotiation_summary": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number",
+            "example": 150.5
+          },
+          "shortestDeliveryTime": {
+            "type": "number",
+            "example": 3
+          },
+          "longerDeliveryTime": {
+            "type": "number",
+            "example": 6
+          },
+          "percentage": {
+            "type": "number",
+            "example": 1.5
+          }
+        }
+      },
+      "Address_city": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código IBGE"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome da Cidade"
+          }
+        },
+        "description": "Cidade"
+      },
+      "Address_state": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código IBGE"
+          },
+          "alias": {
+            "type": "string",
+            "description": "Sigla da UF"
+          }
+        },
+        "description": "UF"
+      },
+      "Address_country": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código IBGE"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do País"
+          }
+        },
+        "description": "País de Origem da Empresa"
+      },
+      "Invoice_orders": {
+        "required": [
+          "invoiceXML",
+          "orderNumber"
+        ],
+        "type": "object",
+        "properties": {
+          "orderNumber": {
+            "type": "string",
+            "description": "Número do Pedido",
+            "example": "123456"
+          },
+          "invoiceXML": {
+            "type": "array",
+            "description": "String com o XML ou URL da Nota Fiscal",
+            "example": [
+              "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><nfeProc versao=\"4.00\"...",
+              "https://nfe.hivecloud.com.br/NFe23453464534534534423423534534.xml"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UnprocessableEntityError_data": {
+        "type": "object",
+        "properties": {
+          "attribute": {
+            "type": "array",
+            "description": "Mensagens",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "description": "Lista de erros de validações"
+      },
+      "inline_response_200_data": {
+        "type": "object",
+        "properties": {
+          "integrationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "shipmentCode": {
+            "type": "string",
+            "example": "123456"
+          }
+        }
+      }
+    },
+    "responses": {
+      "CargoList": {
+        "description": "Resposta paginada das cargas",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/inline_response_200_4"
+            }
+          }
+        }
+      },
+      "TrackingList": {
+        "description": "Resposta paginada dos trackings",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/inline_response_200_1"
+            }
+          }
+        }
+      },
+      "BillingDocumentList": {
+        "description": "Resposta paginada dos documentos de cobrança",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/inline_response_200_2"
+            }
+          }
+        }
+      },
+      "TransportDocumentList": {
+        "description": "Resposta paginada dos documentos de transportes",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/inline_response_200_3"
+            }
+          }
+        }
+      },
+      "UnprocessableEntity": {
+        "description": "Os dados enviados contém erros",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UnprocessableEntityError"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Problemas na requisição",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "ChangeStatusBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ChangeStatus"
+            }
+          }
+        },
+        "required": true
+      },
+      "PickupOrderRequestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "required": [
+                "pickupOrder",
+                "shipment"
+              ],
+              "type": "object",
+              "properties": {
+                "shipment": {
+                  "type": "string",
+                  "description": "Número do embarque",
+                  "example": "0001"
+                },
+                "driver": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Nome do motorista",
+                      "example": "Thiago José da Silva"
+                    },
+                    "document": {
+                      "type": "string",
+                      "description": "CPF do motorista",
+                      "example": "03276893200"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Telefone do motorista",
+                      "example": "81987650123"
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Observações",
+                      "example": "Nenhuma observação para o motorista"
+                    }
+                  },
+                  "description": "Dados do Entregador"
+                },
+                "vehicle": {
+                  "type": "object",
+                  "properties": {
+                    "plateNumber": {
+                      "type": "string",
+                      "description": "Placa do veículo",
+                      "example": "PGI-32A2"
+                    },
+                    "capacity": {
+                      "type": "integer",
+                      "description": "Capacidade de carga do veículo (em ton.)",
+                      "example": 3
+                    },
+                    "classification": {
+                      "type": "string",
+                      "description": "Classificação do veículo",
+                      "enum": [
+                        "UTILITARIO",
+                        "LEVE_3_4",
+                        "TOCO",
+                        "TRUCK",
+                        "CARRETA_BAU",
+                        "CARRETA_SIDERS",
+                        "CARRETA_FRIGORIFICO",
+                        "CARRETA_TANQUE",
+                        "CARRETA_SILO",
+                        "CARRETA_CARROCERIA_ABERTA",
+                        "CARRETA_GRADE_BAIXA",
+                        "CARRETA_CEGONHEIRA",
+                        "CARRETA_CACAMBA",
+                        "CARRETA_PLATAFORMAS"
+                      ]
+                    },
+                    "packageOrganizationType": {
+                      "type": "string",
+                      "description": "Forma de organização dos pacotes",
+                      "enum": [
+                        "NAO_INFORMADO",
+                        "PALETIZADO",
+                        "ESTIVADO"
+                      ]
+                    }
+                  },
+                  "description": "Veículo que será carregado"
+                },
+                "pickupOrder": {
+                  "required": [
+                    "finishedAt",
+                    "startedAt"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "startedAt": {
+                      "type": "string",
+                      "description": "Data e Hora de início do carregamento",
+                      "format": "date-time"
+                    },
+                    "finishedAt": {
+                      "type": "string",
+                      "description": "Data e Hora de término do carregamento",
+                      "format": "date-time"
+                    }
+                  },
+                  "description": "Janela de carregamento"
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Observações",
+                  "example": "Nenhuma observação para a coleta"
+                }
+              }
+            }
+          }
+        },
+        "required": true
+      },
+      "GenerateCargosBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "shipments": {
+                  "type": "array",
+                  "description": "Lista de embarques para gerar cargas",
+                  "example": [
+                    "001",
+                    "002",
+                    "003"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "groupByCourier": {
+                  "type": "boolean",
+                  "description": "Agrupar por transportadora?",
+                  "default": false,
+                  "enum": [
+                    true,
+                    false
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "required": true
+      },
+      "FreightSimulationBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "zipcodePickup": {
+                  "type": "string",
+                  "description": "CEP de Origem",
+                  "example": "5003000"
+                },
+                "zipcodeDelivery": {
+                  "type": "string",
+                  "description": "CEP de Destino",
+                  "example": "50920200"
+                },
+                "parameters": {
+                  "$ref": "#/components/schemas/Totals"
+                }
+              }
+            }
+          }
+        },
+        "required": true
+      }
+    },
+    "securitySchemes": {
+      "AuthToken": {
+        "type": "apiKey",
+        "name": "H-AUTH-TOKEN",
+        "in": "header"
+      }
+    }
+  }
+}
