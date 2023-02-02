@@ -660,9 +660,8 @@ paths:
               $ref: "#/components/schemas/CteIntegracao"
         required: true
       responses:
-        responses:
-          '201':
-            $ref: '#/components/responses/CreateResponseId'
+        '201':
+          $ref: '#/components/responses/CreateResponseId'
 
 components:
   securitySchemes:
@@ -1490,6 +1489,7 @@ components:
           example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
 
     PageMetadata:
+      description: Page metadata
       properties:
         size:
           type: integer
@@ -1511,7 +1511,6 @@ components:
     PagedResource:
       properties:
         pageMetadata:
-          description: Page metadata
           $ref: '#/components/schemas/PageMetadata'
         nextLink:
           type: string
