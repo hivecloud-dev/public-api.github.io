@@ -3413,7 +3413,7 @@ components:
           maxLength: 8
         complemento:
           type: "string"
-          maxLength: 60        -
+          maxLength: 60
     FreteIntegracao:
       description: "Valores do frete deste transporte"
       type: "object"
