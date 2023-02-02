@@ -6,25 +6,6 @@ info:
 
 paths:
   /v1/empresas:
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Empresas'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmpresaCreate'
-      responses:
-        '201':
-          $ref: '#/components/responses/CreateResponse'
-        '409':
-          $ref: '#/components/responses/Conflict'
     get:
       security:
         - tokenAuth: []
@@ -50,26 +31,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmpresaResource'
-    delete:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Empresas'
-      summary: ''
-      description: 'Delete em lote'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DeleteItens'
-      responses:
-        '204':
-          description: Empresas deletadas
-        '207':
-          $ref: '#/components/responses/MultiStatus'
-        '400':
-          $ref: '#/components/responses/BadRequest'
 
   /v1/empresas/{id}:
     parameters:
@@ -148,70 +109,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-
-  /v1/empresas/suggestion:
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Empresas'
-      summary: ''
-      description: ''
-      parameters:
-        - $ref: '#/components/parameters/empresaCampoPesquisaParam'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/EmpresaSuggestion'
-
-  /v1/empresas/{id}/logo:
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Empresas'
-      parameters:
-        - $ref: '#/components/parameters/empresaIdPathParam'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/octet-stream:
-            schema:
-              # a binary file of any type
-              type: string
-              format: binary
-      responses:
-        '204':
-          description: Empresa atualizada
-
-  /v1/empresas/{id}/exportar-certificado:
-    parameters:
-      - $ref: '#/components/parameters/empresaIdPathParam'
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Empresas'
-      summary: ''
-      description: 'Download do certificado'
-      responses:
-        '200':
-          description: 'Ok'
-          headers:
-            Content-Disposition:
-              schema:
-                description: Used only with `application/octet-stream` responses
-                example: attachment; filename="certificado.pfx"
 
   /v1/envolvidos:
     post:
@@ -351,153 +248,6 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/envolvidos/suggestion:
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Envolvidos'
-      summary: ''
-      description: ''
-      parameters:
-        - $ref: '#/components/parameters/empresaCampoPesquisaParam'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/EmpresaSuggestion'
-
-  /v1/configuracoes/link/aplicativo-a3:
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Configurações'
-      summary: ''
-      description: 'Download do Applicativo A3'
-      responses:
-        '200':
-          description: 'Ok'
-          content:
-            application/json:
-              schema:
-                type: string
-                example: 'http://hivecloud.com.br/aplicativo.jnlp'
-
-  /v1/configuracoes/autorizados-xml:
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Configurações'
-      parameters:
-        - $ref: '#/components/parameters/pageNumberParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - $ref: '#/components/parameters/autorizadoXmlCpfCnpjParam'
-        - $ref: '#/components/parameters/tipoDocumentoParam'
-      summary: ''
-      description: 'Lista dos documentos (cpf/cnpj) autorizados a baixar o xml'
-      responses:
-        '200':
-          description: 'Ok'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AutorizadoXmlResource'
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Configurações'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AutorizadoXmlCreate'
-      responses:
-        '201':
-          $ref: '#/components/responses/CreateResponse'
-
-  /v1/configuracoes/autorizados-xml/{id}:
-    parameters:
-      - $ref: '#/components/parameters/autorizadoXmlIdPathParam'
-    delete:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Configurações'
-      summary: ''
-      description: ''
-      responses:
-        '204':
-          description: AutorizadoXml deletado
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-    put:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Configurações'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AutorizadoXmlCreate'
-      responses:
-        '204':
-          description: AutorizadoXml atualizado
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  /v1/configuracoes/seguros/cte:
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Configurações'
-      parameters:
-        - $ref: '#/components/parameters/pageNumberParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-        - $ref: '#/components/parameters/cpfCnpjRemetenteParam'
-        - $ref: '#/components/parameters/cpfCnpjDestinatarioParam'
-        - $ref: '#/components/parameters/cpfCnpjTomadorParam'
-        - $ref: '#/components/parameters/cpfCnpjEmpresaParam'
-        - $ref: '#/components/parameters/cpfCnpjRecebedorParam'
-        - $ref: '#/components/parameters/cpfCnpjExpedidorParam'
-        - $ref: '#/components/parameters/empresaIdHeaderParam'
-      summary: ''
-      description: 'Lista dos nomes dos seguros e cpf ou cnpj do tomador do seguro'
-      responses:
-        '200':
-          description: 'Ok'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SeguroResource'
-
   /v1/ctes:
     get:
       security:
@@ -543,211 +293,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CteResource'
-
-  /v1/ctes/importar-nfe/{id}:
-    get:
-      parameters:
-        - $ref: '#/components/parameters/importarNfeIdPathParam'
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: 'Dados da NFe'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DadosNfe'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  /v1/ctes/importar-nfe-com-certificado:
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ImportarNfeComCertificado'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: string
-                example: fca2a27b-034c-4b31-939a-9ea31730039e
-        '404':
-          description: 'É necessário informar um id de empresa, uma chave de acesso e um tipo de documento válidos'
-
-  /v1/ctes/importar-nfe-com-certificado/{id}/consultar-status:
-    parameters:
-      - $ref: '#/components/parameters/idTransacaoAssincrona'
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
-        '404':
-          description: 'É necessário informar um id de transação válido'
-
-  /v1/ctes/info-cte-globalizado/consultar:
-    parameters:
-      - $ref: '#/components/parameters/empresaIdHeaderParam'
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MensagemCteGlobalizado'
-        '404':
-          description: 'É necessário informar um id de empresa válido'
-
-  /v1/ctes/importar-nfe-com-certificado/{id}/obter-resultado:
-    parameters:
-      - $ref: '#/components/parameters/idTransacaoAssincrona'
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DadosNfe'
-        '404':
-          description: 'É necessário informar um id de transação válido'
-
-  /v1/ctes/calcular-tributacao:
-    post:
-      parameters:
-        - $ref: '#/components/parameters/empresaIdHeaderParam'
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CalcularTributacaoRequest'
-      responses:
-        '200':
-          description: 'Dados da NFe'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CalcularTributacaoResponse'
-
-  /v1/ctes/validar-cte-por-id/{id}:
-    parameters:
-      - $ref: '#/components/parameters/validarCtePorIdPathParam'
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: boolean
-                example: '1'
-        '500':
-          description: 'CT-e (Série: 999, Número: 1607855) não está Em Digitação!'
-
-  /v1/ctes/numero-mais-recente-por-serie/{serie}:
-    parameters:
-      - $ref: '#/components/parameters/numeroMaisRecentePorSeriePathParam'
-      - $ref: '#/components/parameters/empresaIdHeaderParam'
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: '**empresaId** sempre segue no header'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: number
-                example: 1
-        '404':
-          description: 'Não Encontrado'
-
-  /v1/ctes/importar-cte-nfe:
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ArquivoNfeCte'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImportarCteNfe'
-        '404':
-          description: 'É necessário informar um id de empresa, uma chave de acesso e um tipo de documento válidos'
 
   /v1/ctes/emitir:
     post:
@@ -857,7 +402,7 @@ paths:
       tags:
         - 'CTe'
       summary: ''
-      description: 'Impressão de Relação de CTes'
+      description: 'Impressão de Relatório de CTes'
       requestBody:
         content:
           application/json:
@@ -921,31 +466,6 @@ paths:
         '404':
           description: 'É necessário informar um id de transação válido'
 
-  /v1/ctes/calcular-icms:
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OperacaoCalculoIcms'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResultadoCalculoIcms'
-        '404':
-          description: 'É necessário informar um id de empresa, uma chave de acesso e um tipo de documento válidos'
-
   /v1/ctes/enviar-email:
     parameters:
       - $ref: '#/components/parameters/idsCteEnviarEmail'
@@ -968,33 +488,6 @@ paths:
                 example: '1'
         '500':
           $ref: '#/components/responses/BadRequest'
-
-  /v1/ctes/importar-xml-cte:
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ArquivoXmlCte'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OperacaoImportacaoResponse'
-        '404':
-          description: 'É permitido importar apenas documento Cte'
-        '409':
-          description: 'Não é permitido o envio de documentos Cte e Nfe juntos'
 
   /v1/ctes/{id}:
     parameters:
@@ -1058,26 +551,6 @@ paths:
         '500':
           $ref: '#/components/responses/MultiStatus'
 
-    parameters:
-      - $ref: '#/components/parameters/idsCtesRemoveCtesPorIdPathParam'
-    delete:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: boolean
-                example: 1
-        '500':
-          description: 'CT-e (Série: 789, Número: 56965966), não é possível excluir CT-e com status em Processamento, Cancelado ou Autorizado! - OU - "message": "Impossível Remover um CT-e gerado através de Integração!",'
 
   /v1/ctes/imprimir-documento-cte:
     parameters:
@@ -1101,37 +574,6 @@ paths:
         '500':
           $ref: '#/components/responses/MultiStatus'
 
-  /v1/ctes/vincular-informacao-cte-multmodal/{id}:
-    parameters:
-      - $ref: '#/components/parameters/idCteVincularInformacaoCteMultmodalPathParam'
-    put:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VincularInformacaoCteMultmodalRequest'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CteRetOperacaoElementResponse'
-        '500':
-          $ref: '#/components/responses/MultiStatus'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
   /v1/ctes/substituir-cte/{id}:
     parameters:
       - $ref: '#/components/parameters/idCteSubstituirCtePathParam'
@@ -1150,27 +592,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubstituicaoCteResponse'
-        '500':
-          $ref: '#/components/responses/MultiStatus'
-
-  /v1/ctes/duplicar-cte/{id}:
-    parameters:
-      - $ref: '#/components/parameters/idCteDuplicarCtePathParam'
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DuplicacaoCteResponse'
         '500':
           $ref: '#/components/responses/MultiStatus'
 
@@ -1224,46 +645,6 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
 
-  /v1/ctes/valores-iniciais-dados-gerais/:
-    parameters:
-      - $ref: '#/components/parameters/empresaIdHeaderParam'
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValoresIniciaisDadosGerais'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-
-  /v1/ctes/remover-ctes/:
-    delete:
-      security:
-        - tokenAuth: [ ]
-        - tenantAuth: [ ]
-      tags:
-        - 'CTe'
-      summary: ''
-      description: 'Delete em lote'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DeleteItens'
-      responses:
-        '200':
-          description: ''
-        '500':
-          description: ''
   /v1/integrar:
     post:
       security:
@@ -1282,48 +663,6 @@ paths:
         responses:
           '201':
             $ref: '#/components/responses/CreateResponseId'
-
-  /v1/utils/consultar-cep/{cep}:
-    parameters:
-      - $ref: '#/components/parameters/cepConsultarEnderecoPathParam'
-    get:
-      security:
-        - tokenAuth: [ ]
-        - tenantAuth: [ ]
-      tags:
-        - 'Endereço'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Localidade'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  /v1/ambientes/existe-tenant-cadastrado:
-    get:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'Tenant'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CriacaoTenantResponse'
-        '404':
-          $ref: '#/components/responses/NotFound'
 
 components:
   securitySchemes:
@@ -2742,80 +2081,6 @@ components:
           example: ''
           nullable: false
 
-    DadosNfe:
-      properties:
-        remetente:
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/Pessoa'
-          nullable: false
-        destinatario:
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/Pessoa'
-          nullable: false
-        remetenteId:
-          type: string
-          example: '111'
-          nullable: false
-        destinatarioId:
-          type: string
-          example: '111'
-          nullable: false
-        pesoLiquido:
-          type: number
-          example: 11545.65
-          nullable: false
-        pesoBruto:
-          type: number
-          example: 2124.44
-          nullable: false
-        pesoCubado:
-          type: number
-          example: 2124.44
-          nullable: false
-        qtdVolumes:
-          type: number
-          example: 10
-          nullable: false
-        volume:
-          type: number
-          example: 2333.89
-          nullable: false
-        valorMercadoria:
-          type: number
-          example: 1000000.00
-          nullable: false
-        chaveAcesso:
-          type: string
-          example: 'as4d5as4d5a4sd5asd4'
-          nullable: false
-        numero:
-          type: number
-          example: 56
-          nullable: false
-        dataEmissao:
-          type: string
-          example: '2021-08-28T09:30:00-0300'
-        serie:
-          type: string
-          example: '544'
-
-    ImportarNfeComCertificado:
-      properties:
-        idEmpresa:
-          type: string
-          example: 8adaa926-8aa0-4e9a-8e83-d9763e268130
-          nullable: false
-        chaveAcesso:
-          type: string
-          example: 51080701212344000127550010000000981364117781
-          nullable: false
-        tipoDocumento:
-          type: string
-          example: NFE
-          nullable: false
-
     MensagemCteGlobalizado:
       properties:
         texto:
@@ -2851,139 +2116,6 @@ components:
           type: string
           format: binary
 
-    ArquivoCtes:
-      type: object
-      properties:
-        arquivo:
-          type: string
-          format: binary
-
-    ArquivoXmlCte:
-      type: object
-      properties:
-        arquivo:
-          type: string
-          format: binary
-
-    ImportarCteNfe:
-      properties:
-        remetenteId:
-          type: string
-          example: 97bc8044-35bd-4194-99fa-4a285b527efe
-          nullable: false
-        destinatarioId:
-          type: string
-          example: 867eb902-8a0a-4fb4-872f-65467029c282
-          nullable: false
-        tomadorId:
-          type: string
-          example: bee0cfac-6793-41d5-90ac-db54e8e589d5
-          nullable: false
-        edocsEmiDocAnts:
-          type: 'array'
-          items:
-            $ref: '#/components/schemas/EdocsEmiDocAnt'
-          nullable: true
-        documento:
-          type: object
-          $ref: '#/components/schemas/Documento'
-          nullable: false
-        produtoPredominante:
-          type: string
-          example: TESTE
-          nullable: false
-        valorTotalCarga:
-          type: integer
-          example: 2748.89
-          nullable: false
-        volumeTotalM3:
-          type: integer
-          example: 0.0
-          nullable: false
-        pesoLiquidoKg:
-          type: integer
-          example: 0.0
-          nullable: false
-        pesoBrutoTotalKg:
-          type: integer
-          example: 0.0
-          nullable: false
-        quantidadeVolume:
-          type: integer
-          example: 0.0
-          nullable: false
-        infQ:
-          type: 'array'
-          items:
-            $ref: '#/components/schemas/infQ'
-          nullable: true
-        dadosNfeList:
-          type: 'array'
-          items:
-            $ref: '#/components/schemas/DadosNfe'
-          nullable: true
-        pesoLiquidoTotal:
-          type: integer
-          example: 0.0
-          nullable: false
-        pesoBrutoTotal:
-          type: integer
-          example: 111.475
-          nullable: false
-        pesoCubadoTotal:
-          type: integer
-          example: 111.475
-          nullable: false
-        qtdVolumesTotal:
-          type: integer
-          example: 35
-          nullable: false
-        volumeTotal:
-          type: integer
-          example: 0
-          nullable: false
-        valorMercadoriaTotal:
-          type: integer
-          example: 455.84
-          nullable: false
-        chaveAcessoList:
-          type: array
-          items:
-            type: string
-          example: ['35160747508411005700551000008815071094160730']
-
-    EdocsEmiDocAnt:
-      properties:
-        cnpj:
-          type: string
-          example: '07067114000106'
-          nullable: false
-        cpf:
-          type: string
-          example: ''
-          nullable: false
-        ie:
-          type: string
-          example: '9047087128'
-          nullable: false
-        uf:
-          type: string
-          example: PR
-          nullable: false
-        xNome:
-          type: string
-          example: LOGIN TRANSPORTES NACIONAIS E INTERNACIONAIS LTDA
-          nullable: false
-        chaveAcessoReferenciada:
-          type: array
-          items:
-            type: string
-          example:
-            [
-              '9c015cc6-8471-4838-8391-e17fbc5a0a75',
-              '7d231cf5-5111-456b-93d0-df6401762adb',
-            ]
-
     Documento:
       properties:
         nfeList:
@@ -3017,181 +2149,6 @@ components:
           example: 275.04
           nullable: false
 
-    CalcularTributacaoRequest:
-      properties:
-        ufEmpresa:
-          allOf:
-            - $ref: '#/components/schemas/IcmsUf'
-          example: 'PE'
-          nullable: false
-        ufTomador:
-          allOf:
-            - $ref: '#/components/schemas/IcmsUf'
-          example: 'SP'
-          nullable: false
-        ufOrigem:
-          allOf:
-            - $ref: '#/components/schemas/IcmsUf'
-          example: 'SP'
-          nullable: false
-        ufDestino:
-          allOf:
-            - $ref: '#/components/schemas/IcmsUf'
-          example: 'RJ'
-          nullable: false
-        cnpjTomador:
-          type: string
-          example: '47508411005700'
-          nullable: false
-        ieTomador:
-          type: string
-          example: '492175190118'
-          nullable: false
-        cnpjRemetente:
-          type: string
-          example: '47508411005700'
-          nullable: false
-        ieRemetente:
-          type: string
-          example: '492175190118'
-          nullable: false
-        cnpjDestinatario:
-          type: string
-          example: '47508411255499'
-          nullable: false
-        ieDestinatario:
-          type: string
-          example: '87139735'
-          nullable: false
-        produtoPredominante:
-          type: string
-          example: 'Tijolo'
-          nullable: true
-        empresaSN:
-          type: boolean
-          example: false
-          nullable: false
-        consumidorFinal:
-          type: boolean
-          example: false
-          nullable: false
-        destinatarioContribuinte:
-          type: boolean
-          example: true
-          nullable: false
-        tomadorContribuinte:
-          type: boolean
-          example: true
-          nullable: false
-        modal:
-          allOf:
-            - $ref: '#/components/schemas/IcmsModal'
-          example: 'RODO'
-          nullable: false
-        tipoServico:
-          type: string
-          example: 'Transporte'
-          nullable: true
-        cfopOperation:
-          type: object
-          allOf:
-            - $ref: '#/components/schemas/cfopOperation'
-          nullable: false
-        tipoTributacao:
-          allOf:
-            - $ref: '#/components/schemas/TipoTributacao'
-          example: 'CONTRIBUINTE'
-          nullable: false
-
-    cfopOperation:
-      properties:
-        ufOrigem:
-          allOf:
-            - $ref: '#/components/schemas/IcmsUf'
-          example: 'SP'
-          nullable: false
-        ufDestino:
-          allOf:
-            - $ref: '#/components/schemas/IcmsUf'
-          example: 'RJ'
-          nullable: false
-        ufServico:
-          allOf:
-            - $ref: '#/components/schemas/IcmsUf'
-          example: 'PE'
-          nullable: false
-        ufDestinatario:
-          allOf:
-            - $ref: '#/components/schemas/IcmsUf'
-          example: 'RJ'
-          nullable: false
-        tipoServico:
-          allOf:
-            - $ref: '#/components/schemas/TipoServico'
-          example: 'NORMAL'
-          nullable: false
-        atividadeTomador:
-          allOf:
-            - $ref: '#/components/schemas/AtividadeTomador'
-          example: 'COMERCIO'
-          nullable: false
-        contribuinte:
-          type: boolean
-          example: true
-          nullable: false
-
-    CalcularTributacaoResponse:
-      properties:
-        tipoIcms:
-          allOf:
-            - $ref: '#/components/schemas/TipoIcms'
-          example: OUTRA_UF
-          nullable: false
-        aliquota:
-          type: number
-          example: 12
-          nullable: false
-        reducao:
-          type: number
-          example: 10
-          nullable: true
-        substituicao:
-          type: number
-          example: 12
-          nullable: true
-        calculoPartilha:
-          type: boolean
-          example: false
-          nullable: false
-        aliquotaIntraestadualPartilha:
-          type: number
-          example: 5
-          nullable: true
-        aliquotaInterestadualPartilha:
-          type: number
-          example: 5
-          nullable: true
-        aliquotaPobreza:
-          type: number
-          example: 5
-        naturazaOperacao:
-          type: string
-          example: 'PRESTACAO DE SERVICO DE TRANSPORTE INICIADA EM UNIDADE DA FEDERACAO DIVERSA DAQUELA ONDE INSCRITO O PRESTADOR'
-          nullable: false
-        cfop:
-          type: string
-          example: '6932'
-          nullable: true
-
-    AutorizadoXmlResource:
-      allOf:
-        - $ref: '#/components/schemas/PagedResource'
-      properties:
-        content:
-          type: array
-          items:
-            $ref: '#/components/schemas/AutorizadoXml'
-
     AutorizadoXml:
       properties:
         id:
@@ -3207,27 +2164,6 @@ components:
             - $ref: '#/components/schemas/TipoDocumento'
           example: 'CNPJ'
           nullable: false
-
-    AutorizadoXmlCreate:
-      properties:
-        cpfCnpj:
-          type: string
-          example: '82618398000199'
-          nullable: false
-        tipoDocumento:
-          allOf:
-            - $ref: '#/components/schemas/TipoDocumento'
-          example: 'CNPJ'
-          nullable: false
-
-    SeguroResource:
-      allOf:
-        - $ref: '#/components/schemas/PagedResource'
-      properties:
-        content:
-          type: array
-          items:
-            $ref: '#/components/schemas/Seguro'
 
     Seguro:
       properties:
@@ -3889,17 +2825,6 @@ components:
             type: string
           example: ['77546684509']
 
-    ValoresIniciaisDadosGerais:
-      properties:
-        numero:
-          type: number
-          example: 1
-          nullable: false
-        serie:
-          type: number
-          example: 1
-          nullable: false
-
     #ENUNS
     IcmsUf:
       type: string
@@ -4013,18 +2938,6 @@ components:
         - COMPLEMENTAR
         - ANULACAO
 
-    CteRetOperacaoStatus:
-      type: string
-      enum:
-        - EM_EMDIGITACAO
-        - VALIDADO
-        - ASSINADO
-        - ENVIADO
-        - REJEITADO
-        - DENEGADO
-        - CANCELADO
-        - AUTORIZADO
-        - ENVIADO_POR_EMAIL
     FinalidadeEmissao:
       type: string
       enum:
@@ -4086,172 +2999,6 @@ components:
         - AEREO
         - MULTIMODAL
 
-    OperacaoCalculoIcms:
-      properties:
-        embutir:
-          type: boolean
-        taxaImpostoEmbutido:
-          type: boolean
-        calcularDifal:
-          type: boolean
-        tipoIcms:
-          type: string
-          enum:
-            - NORMAL
-            - ISENTO
-            - NAOTRIBUTADA
-            - SIMPLESNACIONAL
-            - SUBSTITUICAO
-            - REDUCAO
-            - OUTRA_UF
-            - DIFERIDO
-            - OUTROS
-        tarifaList:
-          type: array
-          items:
-            type: object
-            properties:
-              nome:
-                type: string
-              valorOriginal:
-                type: number
-              valor:
-                type: number
-        aliquotaIcms:
-          type: number
-        valorCredito:
-          type: number
-        aliquotaCredito:
-          type: number
-        percentualReducaoBaseCalculo:
-          type: number
-        componentesNaoTributaveis:
-          type: number
-        dataEmissao:
-          type: string
-          example: '2021-08-28T09:30:00-0300'
-        calcularPartilha:
-          type: boolean
-        transporteInterestadual:
-          type: boolean
-        destinatarioConsumidorFinal:
-          type: boolean
-        aliquotaInterestadual:
-          type: number
-        aliquotaInternaDestino:
-          type: number
-        aliquotaPercentualPobreza:
-          type: number
-
-    ResultadoCalculoIcms:
-      properties:
-        valorTotalServico:
-          type: number
-        valorAReceber:
-          type: number
-        valorFrete:
-          type: number
-        tarifaList:
-          type: object
-          properties:
-            nome:
-              type: string
-            valorOriginal:
-              type: number
-            valor:
-              type: number
-        icmsNormal:
-          type: object
-          properties:
-            valorTotalServico:
-              type: number
-            valorAReceber:
-              type: number
-            valorFrete:
-              type: number
-            valorIcms:
-              type: number
-            valorBCIcms:
-              type: number
-        icmsIsento:
-          type: object
-          properties:
-            valorTotalServico:
-              type: number
-            valorAReceber:
-              type: number
-            valorFrete:
-              type: number
-        icmsDiferido:
-          type: object
-          properties:
-            valorTotalServico:
-              type: number
-            valorAReceber:
-              type: number
-            valorFrete:
-              type: number
-        icmsSimplesNacional:
-          type: object
-          properties:
-            valorTotalServico:
-              type: number
-            valorAReceber:
-              type: number
-            valorFrete:
-              type: number
-        icmsNaoTributada:
-          type: object
-          properties:
-            valorTotalServico:
-              type: number
-            valorAReceber:
-              type: number
-            valorFrete:
-              type: number
-        icmsSubstituicao:
-          type: object
-          properties:
-            valorTotalServico:
-              type: number
-            valorAReceber:
-              type: number
-            valorFrete:
-              type: number
-        icmsReducao:
-          type: object
-          properties:
-            valorTotalServico:
-              type: number
-            valorAReceber:
-              type: number
-            valorFrete:
-              type: number
-        icmsOutraUf:
-          type: object
-          properties:
-            valorTotalServico:
-              type: number
-            valorAReceber:
-              type: number
-            valorFrete:
-              type: number
-        icmsUfFim:
-          type: object
-          properties:
-            picmsInterPart:
-              type: number
-            vfcpufFim:
-              type: number
-            vicmsufFim:
-              type: number
-            vicmsufIni:
-              type: number
-            informacaoAdicionalUfFIm:
-              type: string
-            informacaoAdicionalUfIni:
-              type: string
-
     ImprimirCtesReturn:
       properties:
         sucesso:
@@ -4278,21 +3025,6 @@ components:
           type: string
           example: ''
 
-    OperacaoImportacaoResponse:
-      properties:
-        nomeArquivo:
-          type: string
-          example: 'cte.xml'
-          nullable: false
-        motivoErro:
-          type: string
-          example: ''
-          nullable: false
-        sucesso:
-          type: boolean
-          example: true
-          nullable: false
-
     RetornoExportacaoXmlCtes:
       properties:
         sucesso:
@@ -4316,56 +3048,13 @@ components:
         numero:
           type: integer
           example: 652333
-    VincularInformacaoCteMultmodalRequest:
-      type: object
-      properties:
-        xregistro:
-          type: string
-          example: 'teste teste teste teste teste'
-        chaveAcessoMultmodal:
-          type: string
-          example: '35190808956174000215578560006416741000000004'
-
-    CteRetOperacaoElementResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          example: '0bb12dac-0dff-454c-beab-41a673ee2899'
-        serie:
-          type: string
-          example: '856'
-        numero:
-          type: string
-          example: '641668'
-        statusOperacao:
-          allOf:
-            - $ref: '#/components/schemas/CteRetOperacaoStatus'
-          example: 'AUTORIZADO'
-          nullable: false
-        protocolo:
-          type: string
-          example: '85522444465'
-
-    DuplicacaoCteResponse:
-      properties:
-        serie:
-          type: integer
-          example: 123654
-        numero:
-          type: integer
-          example: 652333
-
-    CriacaoTenantResponse:
-      properties:
-        tenantCadastrado:
-          type: boolean
-          example: true
-
     CteIntegracao:
       type: "object"
       example:
         idIntegracao: "a9ee59cd-0e1c-4b2f-b043-17cd9cb2f8ce"
+        empresa:
+          inscricaoFederal: "39702201000176"
+          inscricaoEstadual: "491999630084"
         remetente:
           telefone: "11993580564"
           inscricaoFederal: "39702201000176"
@@ -4435,14 +3124,14 @@ components:
             - "25160208974214000170550010000323421000145023"
             - "35160203665157000124550010000454941000401441"
         tipoTransporte:
-          rodoviario:
-            RNTRC: 44444444
+          tipoTransporte: "RODOVIARIO"
         observacaoGeral: "Cte de testes, emitido durante treinamento"
         observacaoIntegracaoContribuinte:
           - campo: "Lei da Transparência"
             texto: "O valor aproximado de tributos incidentes sobre o preço deste serviço é de R$ 0.0"
       required:
         - idIntegracao
+        - empresa
         - remetente
         - destinatario
         - tomador
@@ -4455,6 +3144,21 @@ components:
           type: "string"
           example: "a9ee59cd-0e1c-4b2f-b043-17cd9cb2f8ce"
           description: "Chave que irá identificar unicamente este CTE"
+        empresa:
+          title: "Empresa"
+          description: "Empresa / Filial que está realizando a emissão"
+          required:
+            - inscricaoFederal
+            - inscricaoEstadual
+          properties:
+            inscricaoFederal:
+              type: "string"
+              maxLength: 14
+            inscricaoEstadual:
+              type: "string"
+          example:
+            inscricaoFederal: "39702201000176"
+            inscricaoEstadual: "491999630084"
         remetente:
           title: "Remetente"
           description: "Pessoa / Endereço de origem da carga"
@@ -4570,18 +3274,19 @@ components:
         tipoTransporte:
           type: "object"
           description: "Informações sobre o tipo de transporte, se será Aéreo ou Rodoviário"
+          required:
+            - tipoTransporte
           example:
-            rodoviario:
-              RNTRC: 44444444
-          oneOf:
-            - type: "object"
-              properties:
-                rodoviario:
-                  $ref: "#/components/schemas/RodoviarioIntegracao"
-            - type: "object"
-              properties:
-                aereo:
-                  $ref: "#/components/schemas/AereoIntegracao"
+            tipoTransporte: "RODOVIARIO"
+          properties:
+            tipoTransporte:
+              type: "string"
+              enum:
+                - "RODOVIARIO"
+                - "AEREO"
+            aereo:
+              $ref: "#/components/schemas/AereoIntegracao"
+
         subcontratacaoRedespacho:
           type: "object"
           description: "Informações em caso do transporte ser uma Subcontratação ou um Redespacho"
@@ -4603,22 +3308,6 @@ components:
           type: "string"
           maxLength: 2000
           description: "Observações gerais do documento"
-        observacaoIntegracaoFisco:
-          type: "array"
-          description: "Observações para uso do Fisco"
-          maxItems: 10
-          items:
-            type: "object"
-            required:
-              - campo
-              - texto
-            properties:
-              campo:
-                type: "string"
-                maxLength: 20
-              texto:
-                type: "string"
-                maxLength: 60
         observacaoIntegracaoContribuinte:
           type: "array"
           description: "Observações para uso do Contribuinte"
@@ -4883,12 +3572,6 @@ components:
                   descricao:
                     type: "string"
 
-    RodoviarioIntegracao:
-      type: "object"
-      properties:
-        RNTRC:
-          type: "string"
-          maxLength: 8
     AereoIntegracao:
       type: "object"
       required:
