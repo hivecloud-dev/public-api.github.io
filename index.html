@@ -71,15 +71,16 @@
     window.onload = function() {
       // Begin Swagger UI call region
       const url = document.URL.split("?")[0];
+
       if( document.URL.indexOf("urls.primaryName") == -1){
-        window.location.href = url+ "?urls.primaryName=CTe";
+        window.location.href = url+ "?urls.primaryName=CTE";
       }
       const ui = SwaggerUIBundle({
         urls: [
-          { url: url +"cte/public-swagger.yaml", name: "CTe" },
-          { url: url+"t3pl/swagger.yaml", name: "3PL - Embarcador" },
+          { url: url +"cte/public-swagger.yaml", name: "CTE" },
+          { url: url +"t3pl/swagger.yaml", name: "3PL - Embarcador" },
         ],
-        "urls.primaryName": "CTe",
+        "urls.primaryName": "CTE",
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [
