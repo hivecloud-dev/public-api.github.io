@@ -70,7 +70,10 @@
     <script>
     window.onload = function() {
       // Begin Swagger UI call region
-      const url = document.URL;
+      const url = document.URL.split("?")[0];
+      if( document.URL.indexOf("urls.primaryName") == -1){
+        window.location.href = url+ "?urls.primaryName=CTe";
+      }
       const ui = SwaggerUIBundle({
         urls: [
           { url: url +"cte/public-swagger.yaml", name: "CTe" },
