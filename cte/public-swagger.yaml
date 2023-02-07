@@ -507,7 +507,7 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
 
-  /v1/integrar:
+  /v1/integracoes/cte:
     post:
       security:
         - tokenAuth: [ ]
@@ -3250,7 +3250,6 @@ components:
         - municipio
         - uf
         - cep
-        - complemento
       properties:
         pais:
           type: "string"
