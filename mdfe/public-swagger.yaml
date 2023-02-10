@@ -1,0 +1,688 @@
+openapi: "3.0.3"
+info:
+  title: "hivelog_mdfe API"
+  description: "hivelog_mdfe API"
+  version: "1.0.0"
+servers:
+  - url: "https://hivelog_mdfe"
+paths:
+  /v1/integracoes/mdfe:
+    post:
+      summary: "POST v1/integracoes/mdfe"
+      operationId: "integrarMdfe"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MdfeIntegracao"
+        required: true
+      responses:
+        '201':
+          $ref: '#/components/responses/CreateResponseId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+components:
+  schemas:
+    EmpresaIntegracao:
+      title: "Empresa"
+      description: "Empresa / Filial que está realizando a emissão"
+      type: "object"
+      required:
+        - inscricaoFederal
+      properties:
+        inscricaoFederal:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+    LocalidadeIntegracao:
+      title: "Localidade"
+      description: "Informações sobre a UF e o municipio"
+      type: "object"
+      properties:
+        uf:
+          type: "string"
+          enum:
+            - "DF"
+            - "GO"
+            - "MT"
+            - "MS"
+            - "RS"
+            - "SC"
+            - "PR"
+            - "SP"
+            - "RJ"
+            - "ES"
+            - "MG"
+            - "MA"
+            - "PI"
+            - "CE"
+            - "RN"
+            - "PB"
+            - "PE"
+            - "AL"
+            - "SE"
+            - "BA"
+            - "TO"
+            - "AP"
+            - "PA"
+            - "RR"
+            - "AM"
+            - "AC"
+            - "RO"
+            - "EX"
+          example: PE
+        municipio:
+          type: "string"
+          example: "Recife"
+    LocalidadeCargaLotacaoIntegracao:
+      title: "LocalidadeCargaLotacao"
+      type: "object"
+      properties:
+        cep:
+          type: "string"
+          maxLength: 8
+          example: "99999999"
+        latitude:
+          type: "string"
+          maxLength: 10
+          example: "1111111111"
+        longitude:
+          type: "string"
+          maxLength: 11
+          example: "11111111111"
+    CargaLotacaoIntegracao:
+      title: "CargaLotacao"
+      description: "Informações da carga lotação. Informar somente quando MDFe for de carga lotação"
+      type: "object"
+      properties:
+        LocalCarregamento:
+          $ref: "#/components/schemas/LocalidadeCargaLotacaoIntegracao"
+        LocalDescarregamento:
+          $ref: "#/components/schemas/LocalidadeCargaLotacaoIntegracao"
+    ProdutoPredominanteIntegracao:
+      title: "ProdutoPredominante"
+      description: "Informações do Produto Predominante"
+      type: "object"
+      properties:
+        codigoEan:
+          type: "string"
+          maxLength: 14
+          example: "12345678901234"
+        codigoNcm:
+          type: "string"
+          maxLength: 8
+          example: "12345678"
+        tipoCarga:
+          type: "string"
+          enum:
+            - "GRANEL_SOLIDO"
+            - "GRANEL_LIQUIDO"
+            - "FRIGORIFICADA"
+            - "CONTEINERIZADA"
+            - "CARGA_GERAL"
+            - "NEOGRANEL"
+            - "PERIGOSA_GRANEL_SOLIDO"
+            - "PERIGOSA_GRANEL_LIQUIDO"
+            - "PERIGOSA_CARGA_FRIGORIFICADA"
+            - "PERIGOSA_CONTEINERIZADA"
+            - "PERIGOSA_CARGA_GERAL"
+          example: "GRANEL_LIQUIDO"
+        descricaoProduto:
+          type: "string"
+          maxLength: 120
+          example: "produto feito a mão"
+        cargaLotacao:
+          $ref: "#/components/schemas/CargaLotacaoIntegracao"
+    DadosGeraisIntegracao:
+      title: "DadosGerais"
+      type: "object"
+      properties:
+        dataEmissao:
+          type: "string"
+          format: "date-time"
+          example: "2023-01-01T15:14:13"
+        serie:
+          type: "string"
+          example: "001"
+        numero:
+          type: "string"
+          example: "9999"
+        valorTotal:
+          type: "number"
+          format: "decimal"
+          example: 1200
+        pesoTotalKg:
+          type: "number"
+          format: "decimal"
+          example: 50
+        produtoPredominante:
+          $ref: "#/components/schemas/ProdutoPredominanteIntegracao"
+    MotoristaIntegracao:
+      title: "Motorista"
+      type: "object"
+      properties:
+        nome:
+          type: "string"
+          example: "João"
+        cpf:
+          type: "string"
+          example: "99999999999"
+    ProprietarioIntegracao:
+      title: "Proprietario"
+      type: "object"
+      properties:
+        inscricaoFederal:
+          type: "string"
+          maxLength: 14
+          example: 39702201000176
+        inscricaoEstadual:
+          type: "string"
+          example: "491999630084"
+          maxLength: 14
+        uf:
+          type: "string"
+          example: "PE"
+        RNTRC:
+          type: "string"
+          maxLength: 8
+          example: "12345678"
+        nome:
+          type: "string"
+          maxLength: 60
+          example: "Maria"
+        tipoProprietario:
+          type: "string"
+          enum:
+            - "TAC_AGREGADO"
+            - "TAC_INDEPENDENTE"
+            - "OUTROS"
+          example: TAC_AGREGADO
+    VeiculoIntegracao:
+      title: "Veiculo"
+      type: "object"
+      properties:
+        placa:
+          type: "string"
+          example: "KKK9999"
+        uf:
+          type: "string"
+          example: "PE"
+        renavam:
+          type: "string"
+          maxLength: 11
+          example: "54353454235"
+        tara:
+          type: "number"
+          format: "decimal"
+          example: 2000
+        capacidadeM3:
+          type: "number"
+          format: "decimal"
+          example: 300
+        capacidadeKg:
+          type: "number"
+          format: "decimal"
+          example: 300
+        proprietario:
+          $ref: "#/components/schemas/ProprietarioIntegracao"
+        tipoVeiculo:
+          type: "string"
+          enum:
+            - "TRACAO"
+            - "REBOQUE"
+          example: "TRACAO"
+        tipoCarroceria:
+          type: "string"
+          enum:
+            - "NAOAPLICAVEL"
+            - "ABERTA"
+            - "FECHADA_BAU"
+            - "GRANELEIRA"
+            - "PORTACONTAINER"
+            - "SIDER"
+          example: "ABERTA"
+        tipoRodado:
+          type: "string"
+          enum:
+            - "NAOAPLICAVEL"
+            - "TRUCK"
+            - "TOCO"
+            - "CAVALOMECANICO"
+            - "VAN"
+            - "UTILITARIO"
+            - "OUTROS"
+          example: "TRUCK"
+        propriedadeVeiculo:
+          type: "string"
+          enum:
+            - "TERCEIRO"
+            - "PROPRIO"
+          example: "PROPRIO"
+    InfoCiotIntegracao:
+      title: "InfoCiot"
+      type: "object"
+      properties:
+        inscricaoFederal:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+        ciot:
+          type: "string"
+          maxLength: 12
+          example: "123456789012"
+    InfoContratanteIntegracao:
+      title: "InfoContratante"
+      type: "object"
+      properties:
+        inscricaoFederal:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+    ComponentePagamentoFreteIntegracao:
+      title: "ComponentePagamentoFrete"
+      type: "object"
+      properties:
+        tipoComponente:
+          type: "string"
+          enum:
+            - "VALE_PEDAGIO"
+            - "IMPOSTOS_TAXAS_CONTRIBUICOES"
+            - "DESPESAS"
+            - "OUTROS"
+          example: "DESPESAS"
+        valor:
+          type: "number"
+          format: "decimal"
+          example: 50
+        descricao:
+          type: "string"
+          example: "Estadia hotel"
+    InfoPrazoPagamentoIntegracao:
+      title: "InfoPrazoPagamento"
+      type: "object"
+      properties:
+        numeroParcela:
+          type: "string"
+          example: 1
+        vencimento:
+          type: "string"
+          format: "date-time"
+          example: "2023-01-01T15:14:13"
+        valor:
+          type: "number"
+          format: "decimal"
+          example: 30
+    InformacaoBancariaIntegracao:
+      title: "InformacaoBancaria"
+      type: "object"
+      properties:
+        codBanco:
+          type: "string"
+          maxLength: 5
+          minLength: 3
+          example: "160"
+        codAgencia:
+          type: "string"
+          maxLength: 10
+          minLength: 1
+          example: "0010"
+        cnpjipef:
+          type: "string"
+          maxLength: 14
+          example: "123456789"
+        pix:
+          type: "string"
+          maxLength: 60
+          minLength: 2
+          example: "123456789"
+    PagamentoFreteIntegracao:
+      title: "PagamentoFrete"
+      type: "object"
+      properties:
+        nome:
+          type: "string"
+          example: "Joaquim"
+        inscricaoFederal:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+        idEstrangeiro:
+          type: "string"
+          example: "5555"
+        ValorTotalContrato:
+          type: "number"
+          format: "decimal"
+          example: 1000
+        indicadorPagamento:
+          type: "string"
+          enum:
+            - "A_VISTA"
+            - "A_PRAZO"
+          example: "A_VISTA"
+        indicadorAltoDesempenho:
+          type: "boolean"
+          example: false
+        componentePagamentoFreteIntegracaos:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ComponentePagamentoFreteIntegracao"
+        prazoPagamento:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/InfoPrazoPagamentoIntegracao"
+        informacaoBancariaIntegracao:
+          $ref: "#/components/schemas/InformacaoBancariaIntegracao"
+    ValePedagioIntegracao:
+      title: "ValePedagio"
+      type: "object"
+      properties:
+        inscricaoFederalFornecedor:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+        inscricaoFederalPagante:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+        numeroComprovante:
+          type: "string"
+          example: "123456"
+        valor:
+          type: "number"
+          format: "decimal"
+          example: 50
+        tipoVale:
+          type: "string"
+          enum:
+            - "TAG"
+            - "CUPOM"
+            - "CARTAO"
+          example: "CUPOM"
+    InfoPedagioIntegracao:
+      title: "InfoPedagio"
+      type: "object"
+      properties:
+        valePedagioList:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ValePedagioIntegracao"
+        categoriaCombinacaoVeicular:
+          type: "string"
+          enum:
+            - "EIXOS_2"
+            - "EIXOS_3"
+            - "EIXOS_4"
+            - "EIXOS_5"
+            - "EIXOS_6"
+            - "EIXOS_7"
+            - "EIXOS_8"
+            - "EIXOS_9"
+            - "EIXOS_10"
+            - "EIXOS_ACIMA_10"
+          example: "EIXOS_2"
+    ModalRodoviarioIntegracao:
+      title: "ModalRodoviario"
+      type: "object"
+      properties:
+        ciot:
+          type: "string"
+          maxLength: 12
+          example: "123456789012"
+        rntrc:
+          type: "string"
+          maxLength: 8
+          example: "12345678"
+        motoristas:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/MotoristaIntegracao"
+        veiculos:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/VeiculoIntegracao"
+        ciotList:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/InfoCiotIntegracao"
+        contratantes:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/InfoContratanteIntegracao"
+        pagamentoFrete:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/PagamentoFreteIntegracao"
+        pedagio:
+          $ref: "#/components/schemas/InfoPedagioIntegracao"
+    ModalIntegracao:
+      title: "Modal"
+      type: "object"
+      properties:
+        rodoviario:
+          $ref: "#/components/schemas/ModalRodoviarioIntegracao"
+    NotaIntegracao:
+      title: Nota
+      type: "object"
+      properties:
+        chave:
+          type: "string"
+          example: "35200501442791000129550010000059172174173681"
+        tipoDocumento:
+          type: "string"
+          enum:
+            - "NFE"
+            - "NF"
+            - "CTE"
+            - "CT"
+          example: "CTE"
+        municipio:
+          $ref: "#/components/schemas/LocalidadeIntegracao"
+        inscricaoFederal:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+        ufDestinatario:
+          type: "string"
+          example: "PE"
+        numero:
+          type: "string"
+          example: "999"
+        serie:
+          type: "string"
+          example: "001"
+        dataEmissao:
+          type: "string"
+          format: "date-time"
+          example: "2023-01-01T15:14:13"
+        valor:
+          type: "number"
+          format: "decimal"
+          example: 500
+    SeguroCargaItemIntegracao:
+      title: "SeguroCargaItem"
+      type: "object"
+      properties:
+        inscricaoFederalResponsavelSeguro:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+        nomeSeguradora:
+          type: "string"
+          example: "Seguros LTDA"
+        inscricaoFederalSeguradora:
+          type: "string"
+          maxLength: 14
+          example: "39702201000176"
+        numeroApolice:
+          type: "string"
+          maxLength: 20
+          example: "555555"
+        inscricaoFederalContranteList:
+          type: "array"
+          items:
+            type: "string"
+            maxLength: 14
+            example: "39702201000176"
+        numeroAverbacaoList:
+          type: "array"
+          items:
+            type: "string"
+            maxLength: 40
+            example: "555555"
+    SeguroCargaIntegracao:
+      title: SeguroCarga
+      type: "object"
+      properties:
+        seguroCargaItemList:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SeguroCargaItemIntegracao"
+    SobrescritasIntegracao:
+      title: "Sobrescritas"
+      type: "object"
+      properties:
+        seguroCarga:
+          $ref: "#/components/schemas/SeguroCargaIntegracao"
+    MdfeIntegracao:
+      type: "object"
+      properties:
+        idIntegracao:
+          type: "string"
+          example: '029341de-df08-4821-9570-061bcc5ba067'
+        empresa:
+          $ref: "#/components/schemas/EmpresaIntegracao"
+        ufsPercurso:
+          type: "array"
+          nullable: false
+          required: true
+          items:
+            type: "string"
+            enum:
+              - "DF"
+              - "GO"
+              - "MT"
+              - "MS"
+              - "RS"
+              - "SC"
+              - "PR"
+              - "SP"
+              - "RJ"
+              - "ES"
+              - "MG"
+              - "MA"
+              - "PI"
+              - "CE"
+              - "RN"
+              - "PB"
+              - "PE"
+              - "AL"
+              - "SE"
+              - "BA"
+              - "TO"
+              - "AP"
+              - "PA"
+              - "RR"
+              - "AM"
+              - "AC"
+              - "RO"
+              - "EX"
+            example: "PE"
+        observacaoContribuinte:
+          type: "string"
+        observacaoFisco:
+          type: "string"
+        canalVerde:
+          type: "boolean"
+          example: false
+        tipoTransportador:
+          required: false
+          type: "string"
+          enum:
+            - "ETC"
+            - "TAC"
+            - "CTC"
+        inicio:
+          $ref: "#/components/schemas/LocalidadeIntegracao"
+        termino:
+          $ref: "#/components/schemas/LocalidadeIntegracao"
+        dadosGerais:
+          $ref: "#/components/schemas/DadosGeraisIntegracao"
+        modal:
+          $ref: "#/components/schemas/ModalIntegracao"
+        notas:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/NotaIntegracao"
+        sobrescritas:
+          $ref: "#/components/schemas/SobrescritasIntegracao"
+    HttpHeaders:
+      type: "object"
+      properties: { }
+    ResponseEntity:
+      type: "object"
+      properties:
+        headers:
+          $ref: "#/components/schemas/HttpHeaders"
+
+    CreateEntityReturn:
+      properties:
+        id:
+          type: string
+          example: '99e39200-3bfb-465f-886f-85ee28e8cfda'
+
+    ErrorItemResponse:
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: '2021-03-08T12:27:12-0300'
+        status:
+          type: number
+          format: int32
+          example: 404
+          description: 'Http status'
+        error:
+          type: string
+          example: 'Não Encontrado'
+          description: 'Descrição resumida do erro'
+        errors:
+          type: array
+          items:
+            type: string
+          example: [ ]
+        validations:
+          type: array
+          items:
+            type: string
+          example: [ ]
+        message:
+          type: string
+          description: 'Descrição mais detalahda do erro'
+          example: 'No handler found for GET /api/v1/recurso/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes'
+        path:
+          type: string
+          example: '/api/v1/recurso/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes'
+
+    ErrorResponse:
+      $ref: '#/components/schemas/ErrorItemResponse'
+
+  responses:
+    CreateResponseId:
+      description: 'Recurso criado'
+      headers:
+        location:
+          description: 'Link para o novo recurso criado'
+          required: true
+          schema:
+            type: string
+            format: uri
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateEntityReturn'
+    BadRequest:
+      description: Problemas na requisição
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
