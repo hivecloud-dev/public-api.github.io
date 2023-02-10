@@ -1,13 +1,371 @@
 openapi: "3.0.3"
 info:
-  title: "hivelog_mdfe API"
-  description: "hivelog_mdfe API"
+  title: MDFE API
+  description: "Mdfe API"
   version: "1.0.0"
-servers:
-  - url: "https://hivelog_mdfe"
+
+
 paths:
+  /v1/mdfes/cancelar:
+    post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "POST v1/mdfes/cancelar"
+      operationId: "cancelarMdfe"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelarMdfe"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/cancelar/{id}/consultar-status:
+    get:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "GET v1/mdfes/cancelar/{id}/consultar-status"
+      operationId: "cancelarMdfeConsutlarStatus"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/cancelar/{id}/obter-resultado:
+    get:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "GET v1/mdfes/cancelar/{id}/obter-resultado"
+      operationId: "cancelarMdfeObterResultado"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/cancelar/list:
+    post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "POST v1/mdfes/cancelar/list"
+      operationId: "list"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/consultar:
+    post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "POST v1/mdfes/consultar"
+      operationId: "consultarMdfe"
+      parameters:
+        - name: "empresaId"
+          in: "header"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/consultar/{id}/consultar-status:
+    get:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "GET v1/mdfes/consultar/{id}/consultar-status"
+      operationId: "consultarMdfeConsutlarStatus"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/consultar/{id}/obter-resultado:
+    get:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "GET v1/mdfes/consultar/{id}/obter-resultado"
+      operationId: "consultarMdfeObterResultado"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/encerrar:
+    post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "POST v1/mdfes/encerrar"
+      operationId: "encerrarMdfe"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EncerrarMdfe"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/encerrar/{id}/consultar-status:
+    get:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "GET v1/mdfes/encerrar/{id}/consultar-status"
+      operationId: "encerrarMdfeConsutlarStatus"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/encerrar/{id}/obter-resultado:
+    get:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "GET v1/mdfes/encerrar/{id}/obter-resultado"
+      operationId: "encerrarMdfeObterResultado"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/encerrar/list:
+    post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "POST v1/mdfes/encerrar/list"
+      operationId: "list"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+
+  /v1/mdfes/emitir:
+    post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "POST v1/mdfes"
+      operationId: "emitirMdfe"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmitirMdfe"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/emitir/list:
+    post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "POST v1/mdfes/emitir/list"
+      operationId: "list"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/emitir/{id}/consultar-status:
+    get:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "GET v1/mdfes/emitir/{id}/consultar-status"
+      operationId: "consultarStatusMdfe"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/emitir/{id}/obter-resultado:
+    get:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "GET v1/mdfes/emitir/{id}/obter-resultado"
+      operationId: "obterResultadoMdfe"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /v1/mdfes/remover:
+    delete:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Mdfe'
+      summary: "DELETE v1/mdfes/remover"
+      operationId: "removerMdfes"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+
   /v1/integracoes/mdfe:
     post:
+      security:
+        - tokenAuth: [ ]
+      tags:
+        - 'Integração'
       summary: "POST v1/integracoes/mdfe"
       operationId: "integrarMdfe"
       requestBody:
@@ -22,7 +380,98 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
 components:
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: token
+    tenantAuth:
+      type: apiKey
+      in: header
+      name: tenantID
+
   schemas:
+    EmitirMdfe:
+      type: "object"
+      properties:
+        idList:
+          type: "array"
+          items:
+            type: "string"
+        mensagemList:
+          type: "array"
+          items:
+            type: "string"
+        enviarEmailParaEmitente:
+          type: "boolean"
+        idEmitente:
+          type: "string"
+        outrosEmail:
+          type: "array"
+          items:
+            type: "string"
+    Municipio:
+      type: "object"
+      properties:
+        uf:
+          type: "string"
+          enum:
+            - "DF"
+            - "GO"
+            - "MT"
+            - "MS"
+            - "RS"
+            - "SC"
+            - "PR"
+            - "SP"
+            - "RJ"
+            - "ES"
+            - "MG"
+            - "MA"
+            - "PI"
+            - "CE"
+            - "RN"
+            - "PB"
+            - "PE"
+            - "AL"
+            - "SE"
+            - "BA"
+            - "TO"
+            - "AP"
+            - "PA"
+            - "RR"
+            - "AM"
+            - "AC"
+            - "RO"
+            - "EX"
+        nomeMunicipio:
+          type: "string"
+    EncerrarMdfe:
+      type: "object"
+      properties:
+        idMdfeList:
+          type: "array"
+          items:
+            type: "string"
+        dataEncerramento:
+          type: "string"
+          format: "date-time"
+        municipio:
+          $ref: "#/components/schemas/Municipio"
+        dataEvento:
+          type: "string"
+    CancelarMdfe:
+      type: "object"
+      properties:
+        idMdfeList:
+          type: "array"
+          items:
+            type: "string"
+        dataCancelamento:
+          type: "string"
+          format: "date-time"
+        motivoCancelamento:
+          type: "string"
     EmpresaIntegracao:
       title: "Empresa"
       description: "Empresa / Filial que está realizando a emissão"
@@ -549,6 +998,7 @@ components:
         idIntegracao:
           type: "string"
           example: '029341de-df08-4821-9570-061bcc5ba067'
+          description: "Chave que irá identificar unicamente este MDFE"
         empresa:
           $ref: "#/components/schemas/EmpresaIntegracao"
         ufsPercurso:
@@ -615,6 +1065,14 @@ components:
             $ref: "#/components/schemas/NotaIntegracao"
         sobrescritas:
           $ref: "#/components/schemas/SobrescritasIntegracao"
+      required:
+        - idIntegracao
+        - empresa
+        - ufsPercurso
+        - inicio
+        - termino
+        - modal
+        - notas
     HttpHeaders:
       type: "object"
       properties: { }
