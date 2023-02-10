@@ -12,7 +12,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "POST v1/mdfes/cancelar"
+      summary: ''
+      description: ''
       operationId: "cancelarMdfe"
       requestBody:
         content:
@@ -33,7 +34,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "GET v1/mdfes/cancelar/{id}/consultar-status"
+      summary: ''
+      description: ''
       operationId: "cancelarMdfeConsutlarStatus"
       parameters:
         - name: "id"
@@ -54,7 +56,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "GET v1/mdfes/cancelar/{id}/obter-resultado"
+      summary: ''
+      description: ''
       operationId: "cancelarMdfeObterResultado"
       parameters:
         - name: "id"
@@ -75,7 +78,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "POST v1/mdfes/cancelar/list"
+      summary: ''
+      description: ''
       operationId: "list"
       requestBody:
         content:
@@ -98,7 +102,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "POST v1/mdfes/consultar"
+      summary: ''
+      description: ''
       operationId: "consultarMdfe"
       parameters:
         - name: "empresaId"
@@ -127,7 +132,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "GET v1/mdfes/consultar/{id}/consultar-status"
+      summary: ''
+      description: ''
       operationId: "consultarMdfeConsutlarStatus"
       parameters:
         - name: "id"
@@ -148,7 +154,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "GET v1/mdfes/consultar/{id}/obter-resultado"
+      summary: ''
+      description: ''
       operationId: "consultarMdfeObterResultado"
       parameters:
         - name: "id"
@@ -169,7 +176,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "POST v1/mdfes/encerrar"
+      summary: ''
+      description: ''
       operationId: "encerrarMdfe"
       requestBody:
         content:
@@ -190,7 +198,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "GET v1/mdfes/encerrar/{id}/consultar-status"
+      summary: ''
+      description: ''
       operationId: "encerrarMdfeConsutlarStatus"
       parameters:
         - name: "id"
@@ -211,7 +220,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "GET v1/mdfes/encerrar/{id}/obter-resultado"
+      summary: ''
+      description: ''
       operationId: "encerrarMdfeObterResultado"
       parameters:
         - name: "id"
@@ -232,7 +242,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "POST v1/mdfes/encerrar/list"
+      summary: ''
+      description: ''
       operationId: "list"
       requestBody:
         content:
@@ -256,7 +267,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "POST v1/mdfes"
+      summary: ''
+      description: ''
       operationId: "emitirMdfe"
       requestBody:
         content:
@@ -277,7 +289,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "POST v1/mdfes/emitir/list"
+      summary: ''
+      description: ''
       operationId: "list"
       requestBody:
         content:
@@ -300,7 +313,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "GET v1/mdfes/emitir/{id}/consultar-status"
+      summary: ''
+      description: ''
       operationId: "consultarStatusMdfe"
       parameters:
         - name: "id"
@@ -321,7 +335,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "GET v1/mdfes/emitir/{id}/obter-resultado"
+      summary: ''
+      description: ''
       operationId: "obterResultadoMdfe"
       parameters:
         - name: "id"
@@ -342,7 +357,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Mdfe'
-      summary: "DELETE v1/mdfes/remover"
+      summary: ''
+      description: ''
       operationId: "removerMdfes"
       requestBody:
         content:
@@ -366,7 +382,8 @@ paths:
         - tokenAuth: [ ]
       tags:
         - 'Integração'
-      summary: "POST v1/integracoes/mdfe"
+      summary: ''
+      description: ''
       operationId: "integrarMdfe"
       requestBody:
         content:
@@ -523,6 +540,9 @@ components:
         municipio:
           type: "string"
           example: "Recife"
+      required:
+        - uf
+        - municipio
     LocalidadeCargaLotacaoIntegracao:
       title: "LocalidadeCargaLotacao"
       type: "object"
@@ -539,6 +559,7 @@ components:
           type: "string"
           maxLength: 11
           example: "11111111111"
+
     CargaLotacaoIntegracao:
       title: "CargaLotacao"
       description: "Informações da carga lotação. Informar somente quando MDFe for de carga lotação"
@@ -548,6 +569,7 @@ components:
           $ref: "#/components/schemas/LocalidadeCargaLotacaoIntegracao"
         LocalDescarregamento:
           $ref: "#/components/schemas/LocalidadeCargaLotacaoIntegracao"
+
     ProdutoPredominanteIntegracao:
       title: "ProdutoPredominante"
       description: "Informações do Produto Predominante"
@@ -582,6 +604,8 @@ components:
           example: "produto feito a mão"
         cargaLotacao:
           $ref: "#/components/schemas/CargaLotacaoIntegracao"
+      required:
+        - tipoCarga
     DadosGeraisIntegracao:
       title: "DadosGerais"
       type: "object"
@@ -978,6 +1002,9 @@ components:
             type: "string"
             maxLength: 40
             example: "555555"
+      required:
+        - inscricaoFederalSeguradora
+        - nomeSeguradora
     SeguroCargaIntegracao:
       title: SeguroCarga
       type: "object"
