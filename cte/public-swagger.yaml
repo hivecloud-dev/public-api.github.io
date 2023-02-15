@@ -110,6 +110,144 @@ paths:
         '409':
           $ref: '#/components/responses/Conflict'
 
+  /v1/envolvidos:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoCreate'
+      responses:
+        '201':
+          $ref: '#/components/responses/CreateResponseId'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      parameters:
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/envolvidoCnpjParam'
+        - $ref: '#/components/parameters/envolvidoIEParam'
+        - $ref: '#/components/parameters/envolvidoNomeParam'
+        - $ref: '#/components/parameters/envolvidoNomeFantasiaParam'
+        - $ref: '#/components/parameters/envolvidoCampoPesquisaParam'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvolvidoResource'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: 'Delete em lote'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteItens'
+      responses:
+        '204':
+          description: Envolvidos deletados
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/envolvidos/{id}:
+    parameters:
+      - $ref: '#/components/parameters/envolvidoIdPathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvolvidoView'
+    put:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoCreate'
+      responses:
+        '204':
+          description: Envolvido atualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoCreate'
+      responses:
+        '204':
+          description: Envolvido atualizado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Envolvidos'
+      summary: ''
+      description: ''
+      responses:
+        '204':
+          description: Envolvido deletado
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /v1/ctes:
     get:
       security:
