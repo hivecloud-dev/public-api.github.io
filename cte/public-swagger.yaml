@@ -366,34 +366,6 @@ paths:
         '404':
           description: 'É necessário informar um id de transação válido'
 
-  /v1/ctes/cancelar:
-    post:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: 'Cancelar CTes'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CancelarCteItens'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResultadoCancelamento'
-        '204':
-          description: Cte(s) cancelados
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
   /v1/ctes/imprimir-relatorio-cte:
     post:
       security:
@@ -492,24 +464,6 @@ paths:
   /v1/ctes/{id}:
     parameters:
       - $ref: '#/components/parameters/idCteRemovePorIdPathParam'
-    delete:
-      security:
-        - tokenAuth: []
-        - tenantAuth: []
-      tags:
-        - 'CTe'
-      summary: ''
-      description: ''
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: boolean
-                example: 1
-        '500':
-          description: 'CT-e (Série: 789, Número: 56965966), não é possível excluir CT-e com status em Processamento, Cancelado ou Autorizado! - OU - "message": "Impossível Remover um CT-e gerado através de Integração!",'
     get:
       security:
         - tokenAuth: []
@@ -662,6 +616,54 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/CreateResponseId'
+
+  /v1/integracoes/cte/{id}:
+    parameters:
+      - $ref: '#/components/parameters/idCteRemovePorIdPathParam'
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integração'
+      summary: "Método que remove um CTe que foi criado via da integração"
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: 1
+
+  /v1/integracoes/cte/cancelar:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Integração'
+      summary: "Método que cancela um CTe que foi criado via da integração"
+      description: 'Cancelar CTes'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelarCteItens'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultadoCancelamento'
+        '204':
+          description: Cte(s) cancelados
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 components:
   securitySchemes:
@@ -1922,6 +1924,7 @@ components:
           description: "data de cancelamento"
           type: "string"
           format: "date-time"
+          example: '2021-08-28T09:30:00-0300'
         idList:
           type: array
           items:
@@ -2346,6 +2349,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/Modal'
           nullable: false
+        empresa:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/EmpresaView'
         envolvidos:
           type: object
           allOf:
