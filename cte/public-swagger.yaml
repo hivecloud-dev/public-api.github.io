@@ -488,11 +488,10 @@ paths:
       summary: ''
       description: ''
       requestBody:
-        required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              $ref: '#/components/schemas/ArquivoNfeCte'
+              $ref: '#/components/schemas/idCteItens'
       responses:
         '200':
           description: ''
@@ -1962,6 +1961,16 @@ components:
           example: true
           nullable: false
 
+    idCteItens:
+      type: array
+      items:
+        type: string
+      example:
+        [
+          '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+          '7d231cf5-5111-456b-93d0-df6401762adb',
+        ]
+
     ImprimirRelatorioCteItens:
       properties:
         idCteList:
@@ -3033,15 +3042,9 @@ components:
 
     RetornoExportacaoXmlCtes:
       properties:
-        sucesso:
-          type: boolean
-          example: true
         idArquivo:
           type: string
           example: '9384aa84-80e0-420f-9ab5-6320ded10283'
-        mensagem:
-          type: string
-          example: 'sucesso'
         url:
           type: string
           example: 'http://teste.hivecloud/9384aa8480e0420f9ab6320ded10283'
