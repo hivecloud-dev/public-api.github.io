@@ -244,7 +244,7 @@ paths:
         - 'Mdfe'
       summary: ''
       description: ''
-      operationId: "list"
+      operationId: "Encerrar List"
       requestBody:
         content:
           application/json:
@@ -291,7 +291,7 @@ paths:
         - 'Mdfe'
       summary: ''
       description: ''
-      operationId: "list"
+      operationId: "Emitir List"
       requestBody:
         content:
           application/json:
@@ -495,15 +495,22 @@ components:
       type: "object"
       required:
         - inscricaoFederal
+        - inscricaoEstadual
       properties:
         inscricaoFederal:
           type: "string"
           maxLength: 14
           example: "39702201000176"
+        inscricaoEstadual:
+          type: "string"
+          example: "373167929110"
     LocalidadeIntegracao:
       title: "Localidade"
       description: "Informações sobre a UF e o municipio"
       type: "object"
+      required:
+        - uf
+        - municipio
       properties:
         uf:
           type: "string"
@@ -540,9 +547,6 @@ components:
         municipio:
           type: "string"
           example: "Recife"
-      required:
-        - uf
-        - municipio
     LocalidadeCargaLotacaoIntegracao:
       title: "LocalidadeCargaLotacao"
       type: "object"
@@ -564,16 +568,22 @@ components:
       title: "CargaLotacao"
       description: "Informações da carga lotação. Informar somente quando MDFe for de carga lotação"
       type: "object"
+      required:
+        - localCarregamento
+        - localDescarregamento
       properties:
-        LocalCarregamento:
+        localCarregamento:
           $ref: "#/components/schemas/LocalidadeCargaLotacaoIntegracao"
-        LocalDescarregamento:
+        localDescarregamento:
           $ref: "#/components/schemas/LocalidadeCargaLotacaoIntegracao"
 
     ProdutoPredominanteIntegracao:
       title: "ProdutoPredominante"
       description: "Informações do Produto Predominante"
       type: "object"
+      required:
+        - tipoCarga
+        - descricaoProduto
       properties:
         codigoEan:
           type: "string"
@@ -604,11 +614,13 @@ components:
           example: "produto feito a mão"
         cargaLotacao:
           $ref: "#/components/schemas/CargaLotacaoIntegracao"
-      required:
-        - tipoCarga
+
     DadosGeraisIntegracao:
       title: "DadosGerais"
       type: "object"
+      required:
+        - valorTotal
+        - pesoTotalKg
       properties:
         dataEmissao:
           type: "string"
@@ -633,6 +645,9 @@ components:
     MotoristaIntegracao:
       title: "Motorista"
       type: "object"
+      required:
+        - nome
+        - cpf
       properties:
         nome:
           type: "string"
@@ -673,6 +688,13 @@ components:
     VeiculoIntegracao:
       title: "Veiculo"
       type: "object"
+      required:
+        - placa
+        - tara
+        - tipoVeiculo
+        - tipoCarroceria
+        - tipoRodado
+        - propriedadeVeiculo
       properties:
         placa:
           type: "string"
@@ -734,6 +756,9 @@ components:
     InfoCiotIntegracao:
       title: "InfoCiot"
       type: "object"
+      required:
+        - inscricaoFederal
+        - ciot
       properties:
         inscricaoFederal:
           type: "string"
@@ -754,6 +779,9 @@ components:
     ComponentePagamentoFreteIntegracao:
       title: "ComponentePagamentoFrete"
       type: "object"
+      required:
+        - tipoComponente
+        - valor
       properties:
         tipoComponente:
           type: "string"
@@ -773,6 +801,10 @@ components:
     InfoPrazoPagamentoIntegracao:
       title: "InfoPrazoPagamento"
       type: "object"
+      required:
+        - numeroParcela
+        - valor
+        - vencimento
       properties:
         numeroParcela:
           type: "string"
@@ -788,6 +820,9 @@ components:
     InformacaoBancariaIntegracao:
       title: "InformacaoBancaria"
       type: "object"
+      required:
+        - codBanco
+        - codAgencia
       properties:
         codBanco:
           type: "string"
@@ -811,6 +846,10 @@ components:
     PagamentoFreteIntegracao:
       title: "PagamentoFrete"
       type: "object"
+      required:
+        - valorTotalContrato
+        - indicadorPagamento
+        - informacaoBancariaIntegracao
       properties:
         nome:
           type: "string"
@@ -822,7 +861,7 @@ components:
         idEstrangeiro:
           type: "string"
           example: "5555"
-        ValorTotalContrato:
+        valorTotalContrato:
           type: "number"
           format: "decimal"
           example: 1000
@@ -896,6 +935,9 @@ components:
     ModalRodoviarioIntegracao:
       title: "ModalRodoviario"
       type: "object"
+      required:
+        - motoristas
+        - veiculos
       properties:
         ciot:
           type: "string"
@@ -936,6 +978,10 @@ components:
     NotaIntegracao:
       title: Nota
       type: "object"
+      required:
+        - chave
+        - tipoDocumento
+        - municipio
       properties:
         chave:
           type: "string"
@@ -944,36 +990,16 @@ components:
           type: "string"
           enum:
             - "NFE"
-            - "NF"
             - "CTE"
-            - "CT"
           example: "CTE"
         municipio:
           $ref: "#/components/schemas/LocalidadeIntegracao"
-        inscricaoFederal:
-          type: "string"
-          maxLength: 14
-          example: "39702201000176"
-        ufDestinatario:
-          type: "string"
-          example: "PE"
-        numero:
-          type: "string"
-          example: "999"
-        serie:
-          type: "string"
-          example: "001"
-        dataEmissao:
-          type: "string"
-          format: "date-time"
-          example: "2023-01-01T15:14:13"
-        valor:
-          type: "number"
-          format: "decimal"
-          example: 500
     SeguroCargaItemIntegracao:
       title: "SeguroCargaItem"
       type: "object"
+      required:
+        - inscricaoFederalSeguradora
+        - nomeSeguradora
       properties:
         inscricaoFederalResponsavelSeguro:
           type: "string"
@@ -1002,9 +1028,6 @@ components:
             type: "string"
             maxLength: 40
             example: "555555"
-      required:
-        - inscricaoFederalSeguradora
-        - nomeSeguradora
     SeguroCargaIntegracao:
       title: SeguroCarga
       type: "object"
@@ -1021,6 +1044,15 @@ components:
           $ref: "#/components/schemas/SeguroCargaIntegracao"
     MdfeIntegracao:
       type: "object"
+      required:
+        - idIntegracao
+        - empresa
+        - ufsPercurso
+        - inicio
+        - termino
+        - dadosGerais
+        - modal
+        - notas
       properties:
         idIntegracao:
           type: "string"
@@ -1031,7 +1063,6 @@ components:
         ufsPercurso:
           type: "array"
           nullable: false
-          required: true
           items:
             type: "string"
             enum:
@@ -1072,7 +1103,6 @@ components:
           type: "boolean"
           example: false
         tipoTransportador:
-          required: false
           type: "string"
           enum:
             - "ETC"
@@ -1092,14 +1122,6 @@ components:
             $ref: "#/components/schemas/NotaIntegracao"
         sobrescritas:
           $ref: "#/components/schemas/SobrescritasIntegracao"
-      required:
-        - idIntegracao
-        - empresa
-        - ufsPercurso
-        - inicio
-        - termino
-        - modal
-        - notas
     HttpHeaders:
       type: "object"
       properties: { }
