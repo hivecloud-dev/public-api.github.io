@@ -3086,7 +3086,7 @@ components:
           nome: "Renata e Rebeca Contábil ME"
           email: "manutencao@renataerebecacontabilme.com.br"
           endereco:
-            uf: "SP"
+            uf: "RJ"
             logradouro: "Rua Joaquim Pereira de Matos"
             numero: "283"
             bairro: "Inoã"
@@ -3101,7 +3101,7 @@ components:
           nome: "Renata e Rebeca Contábil ME"
           email: "manutencao@renataerebecacontabilme.com.br"
           endereco:
-            uf: "SP"
+            uf: "RJ"
             logradouro: "Rua Joaquim Pereira de Matos"
             numero: "283"
             bairro: "Inoã"
@@ -3239,7 +3239,7 @@ components:
             nome: "Renata e Rebeca Contábil ME"
             email: "manutencao@renataerebecacontabilme.com.br"
             endereco:
-              uf: "SP"
+              uf: "RJ"
               logradouro: "Rua Joaquim Pereira de Matos"
               numero: "283"
               bairro: "Inoã"
@@ -3259,7 +3259,7 @@ components:
             nome: "Renata e Rebeca Contábil ME"
             email: "manutencao@renataerebecacontabilme.com.br"
             endereco:
-              uf: "SP"
+              uf: "RJ"
               logradouro: "Rua Joaquim Pereira de Matos"
               numero: "283"
               bairro: "Inoã"
