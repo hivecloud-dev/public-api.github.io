@@ -506,10 +506,7 @@ paths:
 
 
   /v1/ctes/imprimir-documento-cte:
-    parameters:
-      - $ref: '#/components/parameters/idsCteImprimirDocumentoCteQueryParam'
-      - $ref: '#/components/parameters/ordenarPorIntegracaoImprimirDocumentoCteQueryParam'
-    get:
+    post:
       security:
         - tokenAuth: []
         - tenantAuth: []
@@ -517,6 +514,11 @@ paths:
         - 'CTe'
       summary: ''
       description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImprimirDocumentoCteItens'
       responses:
         '200':
           description: ''
@@ -1306,26 +1308,6 @@ components:
         type: string
         example: 'exemplo@gmail.com'
 
-    idsCteImprimirDocumentoCteQueryParam:
-      in: query
-      name: idCteList
-      description: ids dos ctes
-      required: true
-      schema:
-        type: array
-        items:
-          type: string
-        example: ['029341de-df08-4821-9570-061bcc5ba067']
-
-    ordenarPorIntegracaoImprimirDocumentoCteQueryParam:
-      in: query
-      name: ordenarPorIntegracao
-      description: valor para efetuar a ordem de documentos por integração
-      required: false
-      schema:
-        type: boolean
-        example: false
-
     idCteRemovePorIdPathParam:
       in: path
       name: id
@@ -1983,6 +1965,22 @@ components:
               '7d231cf5-5111-456b-93d0-df6401762adb',
             ]
         excel:
+          type: boolean
+          example: true
+          nullable: false
+
+    ImprimirDocumentoCteItens:
+      properties:
+        idCteList:
+          type: array
+          items:
+            type: string
+          example:
+            [
+              '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+              '7d231cf5-5111-456b-93d0-df6401762adb',
+            ]
+        ordenarPorIntegracao:
           type: boolean
           example: true
           nullable: false
@@ -3016,17 +3014,9 @@ components:
 
     ImprimirCtesReturn:
       properties:
-        sucesso:
-          type: boolean
-          example: true
-          nullable: false
         idArquivo:
           type: string
           example: '029341de-df08-4821-9570-061bcc5ba067'
-          nullable: false
-        mensagem:
-          type: string
-          example: 'Sucesso'
           nullable: false
         bytesDacteCte:
           type: array
