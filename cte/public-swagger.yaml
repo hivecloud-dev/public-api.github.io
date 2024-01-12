@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 paths:
-  /v1/empresas:
+  /v1/integracoes/empresas:
     get:
       security:
         - tokenAuth: []
@@ -32,7 +32,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmpresaResource'
 
-  /v1/empresas/{id}:
+  /v1/integracoes/empresas/{id}:
     parameters:
       - $ref: '#/components/parameters/empresaIdPathParam'
     get:
@@ -110,7 +110,7 @@ paths:
         '409':
           $ref: '#/components/responses/Conflict'
 
-  /v1/envolvidos:
+  /v1/integracoes/envolvidos:
     post:
       security:
         - tokenAuth: []
@@ -172,7 +172,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/envolvidos/{id}:
+  /v1/integracoes/envolvidos/{id}:
     parameters:
       - $ref: '#/components/parameters/envolvidoIdPathParam'
     get:
@@ -248,7 +248,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/ctes:
+  /v1/integracoes/ctes:
     get:
       security:
         - tokenAuth: []
@@ -294,7 +294,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CteResource'
 
-  /v1/ctes/emitir:
+  /v1/integracoes/ctes/emitir:
     post:
       security:
         - tokenAuth: []
@@ -322,7 +322,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/ctes/emitir/{id}/consultar-status:
+  /v1/integracoes/ctes/emitir/{id}/consultar-status:
     parameters:
       - $ref: '#/components/parameters/idTransacaoAssincrona'
     get:
@@ -343,7 +343,7 @@ paths:
         '404':
           description: 'É necessário informar um id de transação válido'
 
-  /v1/ctes/emitir/{id}/obter-resultado:
+  /v1/integracoes/ctes/emitir/{id}/obter-resultado:
     parameters:
       - $ref: '#/components/parameters/idTransacaoAssincrona'
     get:
@@ -366,7 +366,7 @@ paths:
         '404':
           description: 'É necessário informar um id de transação válido'
 
-  /v1/ctes/imprimir-relatorio-cte:
+  /v1/integracoes/ctes/imprimir-relatorio-cte:
     post:
       security:
         - tokenAuth: []
@@ -394,7 +394,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /v1/ctes/imprimir-relatorio-cte/{id}/consultar-status:
+  /v1/integracoes/ctes/imprimir-relatorio-cte/{id}/consultar-status:
     parameters:
       - $ref: '#/components/parameters/idTransacaoAssincrona'
     get:
@@ -415,7 +415,7 @@ paths:
         '404':
           description: 'É necessário informar um id de transação válido'
 
-  /v1/ctes/imprimir-relatorio-cte/{id}/obter-resultado:
+  /v1/integracoes/ctes/imprimir-relatorio-cte/{id}/obter-resultado:
     parameters:
       - $ref: '#/components/parameters/idTransacaoAssincrona'
     get:
@@ -438,7 +438,7 @@ paths:
         '404':
           description: 'É necessário informar um id de transação válido'
 
-  /v1/ctes/enviar-email:
+  /v1/integracoes/ctes/enviar-email:
     parameters:
       - $ref: '#/components/parameters/idsCteEnviarEmail'
       - $ref: '#/components/parameters/destinatarioEnviarEmail'
@@ -461,7 +461,7 @@ paths:
         '500':
           $ref: '#/components/responses/BadRequest'
 
-  /v1/ctes/{id}:
+  /v1/integracoes/ctes/{id}:
     parameters:
       - $ref: '#/components/parameters/idCteRemovePorIdPathParam'
     get:
@@ -478,7 +478,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CteView'
 
-  /v1/ctes/exportar-cte:
+  /v1/integracoes/ctes/exportar-cte:
     post:
       security:
         - tokenAuth: []
@@ -505,7 +505,7 @@ paths:
           $ref: '#/components/responses/MultiStatus'
 
 
-  /v1/ctes/imprimir-documento-cte:
+  /v1/integracoes/ctes/imprimir-documento-cte:
     post:
       security:
         - tokenAuth: []
@@ -529,7 +529,7 @@ paths:
         '500':
           $ref: '#/components/responses/MultiStatus'
 
-  /v1/ctes/substituir-cte/{id}:
+  /v1/integracoes/ctes/substituir-cte/{id}:
     parameters:
       - $ref: '#/components/parameters/idCteSubstituirCtePathParam'
     post:
@@ -550,7 +550,7 @@ paths:
         '500':
           $ref: '#/components/responses/MultiStatus'
 
-  /v1/ctes/consultar-situacao:
+  /v1/integracoes/ctes/consultar-situacao:
     parameters:
       - $ref: '#/components/parameters/idsCteConsultarSituacaoQueryParam'
     get:
@@ -575,7 +575,7 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
 
-  /v1/ctes/consultar-situacao-por-chave-acesso/{chaveAcesso}:
+  /v1/integracoes/ctes/consultar-situacao-por-chave-acesso/{chaveAcesso}:
     parameters:
       - $ref: '#/components/parameters/chaveAcessoConsultarSituacaoCtePathParam'
     get:
