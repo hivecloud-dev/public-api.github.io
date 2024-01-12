@@ -6,7 +6,7 @@ info:
 
 
 paths:
-  /v1/mdfes/cancelar:
+  /v1/integracoes/mdfes/cancelar:
     post:
       security:
         - tokenAuth: [ ]
@@ -28,7 +28,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/cancelar/{id}/consultar-status:
+  /v1/integracoes/mdfes/cancelar/{id}/consultar-status:
     get:
       security:
         - tokenAuth: [ ]
@@ -50,7 +50,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/cancelar/{id}/obter-resultado:
+  /v1/integracoes/mdfes/cancelar/{id}/obter-resultado:
     get:
       security:
         - tokenAuth: [ ]
@@ -72,7 +72,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/cancelar/list:
+  /v1/integracoes/mdfes/cancelar/list:
     post:
       security:
         - tokenAuth: [ ]
@@ -96,7 +96,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/consultar:
+  /v1/integracoes/mdfes/consultar:
     post:
       security:
         - tokenAuth: [ ]
@@ -126,7 +126,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/consultar/{id}/consultar-status:
+  /v1/integracoes/mdfes/consultar/{id}/consultar-status:
     get:
       security:
         - tokenAuth: [ ]
@@ -148,7 +148,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/consultar/{id}/obter-resultado:
+  /v1/integracoes/mdfes/consultar/{id}/obter-resultado:
     get:
       security:
         - tokenAuth: [ ]
@@ -170,7 +170,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/encerrar:
+  /v1/integracoes/mdfes/encerrar:
     post:
       security:
         - tokenAuth: [ ]
@@ -192,7 +192,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/encerrar/{id}/consultar-status:
+  /v1/integracoes/mdfes/encerrar/{id}/consultar-status:
     get:
       security:
         - tokenAuth: [ ]
@@ -214,7 +214,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/encerrar/{id}/obter-resultado:
+  /v1/integracoes/mdfes/encerrar/{id}/obter-resultado:
     get:
       security:
         - tokenAuth: [ ]
@@ -236,7 +236,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/encerrar/list:
+  /v1/integracoes/mdfes/encerrar/list:
     post:
       security:
         - tokenAuth: [ ]
@@ -261,7 +261,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
 
-  /v1/mdfes/emitir:
+  /v1/integracoes/mdfes/emitir:
     post:
       security:
         - tokenAuth: [ ]
@@ -283,7 +283,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/emitir/list:
+  /v1/integracoes/mdfes/emitir/list:
     post:
       security:
         - tokenAuth: [ ]
@@ -307,7 +307,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/emitir/{id}/consultar-status:
+  /v1/integracoes/mdfes/emitir/{id}/consultar-status:
     get:
       security:
         - tokenAuth: [ ]
@@ -329,7 +329,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/emitir/{id}/obter-resultado:
+  /v1/integracoes/mdfes/emitir/{id}/obter-resultado:
     get:
       security:
         - tokenAuth: [ ]
@@ -351,7 +351,7 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
-  /v1/mdfes/remover:
+  /v1/integracoes/mdfes/remover:
     delete:
       security:
         - tokenAuth: [ ]
