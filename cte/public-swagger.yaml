@@ -666,6 +666,66 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /v1/integracoes/ctes/importar-xml-cte:
+    post:
+      security:
+        - tokenAuth: [ ]
+        - tenantAuth: [ ]
+      tags:
+        - 'Importação'
+      summary: 'Método que importar um arquivo '
+      description: 'O arquivo deve ser um XML do CTE ou um ZIP contendo XML do CTE'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArquivoXmlCte'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperacaoImportacaoResponse'
+        '404':
+          description: 'É permitido importar apenas documento Cte'
+        '409':
+          description: 'Não é permitido o envio de documentos Cte e Nfe juntos'
+
+  /v1/integracoes/ctes/importar-xml-cte-list:
+    post:
+      security:
+        - tokenAuth: [ ]
+        - tenantAuth: [ ]
+      tags:
+        - 'Importação'
+      summary: 'Método que importar uma lista de arquivos arquivo '
+      description: 'O arquivo deve ser um XML do CTE ou um ZIP contendo XML do CTE'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArquivoXmlCte'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperacaoImportacaoResponse'
+        '404':
+          description: 'É permitido importar apenas documento Cte'
+        '409':
+          description: 'Não é permitido o envio de documentos Cte e Nfe juntos'
+
 components:
   securitySchemes:
     tokenAuth:
@@ -3712,3 +3772,25 @@ components:
               properties:
                 outraUF:
                   $ref: "#/components/schemas/ICMSOutraUFIntegracao"
+
+    ArquivoXmlCte:
+      type: object
+      properties:
+        arquivo:
+          type: string
+          format: binary
+
+    OperacaoImportacaoResponse:
+      properties:
+        nomeArquivo:
+          type: string
+          example: 'cte.xml'
+          nullable: false
+        motivoErro:
+          type: string
+          example: ''
+          nullable: false
+        sucesso:
+          type: boolean
+          example: true
+          nullable: false
