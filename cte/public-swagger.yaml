@@ -725,6 +725,27 @@ paths:
           description: 'É permitido importar apenas documento Cte'
         '409':
           description: 'Não é permitido o envio de documentos Cte e Nfe juntos'
+  /v1/integracoes/ctes/cte-complementar:
+    post:
+      security:
+        - tokenAuth: [ ]
+        - tenantAuth: [ ]
+      tags:
+        - 'Integração'
+      summary: 'Operação de complementaçao de um CTe pré existente'
+      description: 'Nesta operação, é criado um novo CTe, com as mesmas informações de um outro previamente cadastrado, porém com o valor do complementar'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CteComplementar'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplementarCteResponse'
 
 components:
   securitySchemes:
@@ -3794,3 +3815,29 @@ components:
           type: boolean
           example: true
           nullable: false
+
+    CteComplementar:
+      properties:
+        cteId:
+          type: string
+          nullable: false
+          example: '9c015cc6-8471-4838-8391-e17fbc5a0a75'
+        valorComplementar:
+          type: number
+          nullable: false
+          example: 150.30
+
+    ComplementarCteResponse:
+      properties:
+        cteId:
+          type: string
+          nullable: false
+          example: '9c015cc6-8471-4838-8391-e17fbc5a0a75'
+        serie:
+          type: number
+          nullable: false
+          example: 1
+        numero:
+          type: number
+          nullable: false
+          example: 100
