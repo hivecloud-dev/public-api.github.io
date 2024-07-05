@@ -4,6 +4,9 @@ info:
   description: CTE frontend integration
   version: 1.0.0
 
+servers:
+  - url: https://cte-api.hivecloud.com.br/api
+
 paths:
   /v1/integracoes/empresas:
     get:
@@ -750,9 +753,10 @@ paths:
 components:
   securitySchemes:
     tokenAuth:
-      type: apiKey
-      in: header
-      name: token
+      type: http
+      scheme: bearer
+      description: >-
+        Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"
     tenantAuth:
       type: apiKey
       in: header
