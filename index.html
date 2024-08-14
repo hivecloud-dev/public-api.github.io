@@ -2,14 +2,23 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Swagger UI</title>
     <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
-    <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="./favicon-32x32.png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="./favicon-16x16.png"
+      sizes="16x16"
+    />
     <style>
-      html
-      {
+      html {
         box-sizing: border-box;
         overflow: -moz-scrollbars-vertical;
         overflow-y: scroll;
@@ -17,86 +26,80 @@
 
       *,
       *:before,
-      *:after
-      {
+      *:after {
         box-sizing: inherit;
       }
 
-      body
-      {
-        margin:0;
-        background: #E5F0EF;
+      body {
+        margin: 0;
+        background: #e5f0ef;
       }
 
-      .swagger-ui .topbar .download-url-wrapper input[type=text] {  
-        border: 2px solid #77889a;  
-      }  
-  
-      .swagger-ui .topbar .download-url-wrapper .download-url-button {  
-        background: #77889a;  
-      }  
-  
-      .swagger-ui img {  
-        display: none;  
-      }  
+      .swagger-ui .topbar .download-url-wrapper input[type="text"] {
+        border: 2px solid #77889a;
+      }
+
+      .swagger-ui .topbar .download-url-wrapper .download-url-button {
+        background: #77889a;
+      }
+
+      .swagger-ui img {
+        display: none;
+      }
 
       .swagger-ui .scheme-container {
-        background-color: #E5F0EF;
+        background-color: #e5f0ef;
       }
-  
-      .swagger-ui .topbar {  
-        background-color: #FFFFFF;  
-        border-bottom: 2px solid #C1C1C1;  
-      }  
-  
-      .swagger-ui .topbar .download-url-wrapper .select-label {  
-        color: #3B4151;  
-      }  
-  
-      .swagger-ui .topbar .topbar-wrapper {  
-        background-repeat: no-repeat;  
-        padding:10px;  
-        background-size: contain;  
-        background-image: url("./logohive_swagger.png");  
-      }  
+
+      .swagger-ui .topbar {
+        background-color: #ffffff;
+        border-bottom: 2px solid #c1c1c1;
+      }
+
+      .swagger-ui .topbar .download-url-wrapper .select-label {
+        color: #3b4151;
+      }
+
+      .swagger-ui .topbar .topbar-wrapper {
+        background-repeat: no-repeat;
+        padding: 10px;
+        background-size: contain;
+        background-image: url("./logohive_swagger.png");
+      }
     </style>
   </head>
 
   <body>
     <div id="swagger-ui"></div>
 
-    <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
-    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+    <script src="./swagger-ui-bundle.js" charset="UTF-8"></script>
+    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"></script>
     <script>
-    window.onload = function() {
-      // Begin Swagger UI call region
-      const url = document.URL.split("?")[0];
+      window.onload = function () {
+        // Begin Swagger UI call region
+        const url = document.URL.split("?")[0];
 
-      if( document.URL.indexOf("urls.primaryName") == -1){
-        window.location.href = url+ "?urls.primaryName=CTE";
-      }
-      const ui = SwaggerUIBundle({
-        urls: [
-          { url: url +"cte/public-swagger.yaml", name: "CTE" },
-          { url: url +"mdfe/public-swagger.yaml", name: "MDFE" },
-          { url: url +"t3pl/swagger.yaml", name: "3PL - Embarcador" },
-        ],
-        "urls.primaryName": "CTE",
-        dom_id: '#swagger-ui',
-        deepLinking: true,
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIStandalonePreset
-        ],
-        plugins: [
-          SwaggerUIBundle.plugins.DownloadUrl
-        ],
-        layout: "StandaloneLayout"
-      });
-      // End Swagger UI call region
+        if (document.URL.indexOf("urls.primaryName") == -1) {
+          window.location.href = url + "?urls.primaryName=CTE";
+        }
+        const ui = SwaggerUIBundle({
+          urls: [
+            { url: url + "cte/public-swagger.yaml", name: "CTE" },
+            { url: url + "mdfe/public-swagger.yaml", name: "MDFE" },
+            { url: url + "t3pl/swagger.yaml", name: "3PL - Embarcador" },
+            { url: url + "services/swagger.yaml", name: "Services" },
+          ],
+          "urls.primaryName": "CTE",
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+          layout: "StandaloneLayout",
+        });
+        // End Swagger UI call region
 
-      window.ui = ui;
-    };
-  </script>
+        window.ui = ui;
+      };
+    </script>
   </body>
 </html>
