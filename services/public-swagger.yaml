@@ -1,0 +1,305 @@
+openapi: 3.0.0
+info:
+  title: Hivecloud Services API
+  description: Hivecloud Services API
+  version: 1.0.0
+
+servers:
+  - url: https://services.hivecloud.com.br/api
+
+paths:
+  /v1/certificado/configurar/a1:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCertificadoA1Request'
+        required: true
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreateCertificadoResponse'
+  /v1/certificado/configurar/informacoes-certificado:
+    post:
+      parameters:
+        - name: 'token'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'cnpj'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FindCertificadoInfo'
+  /v1/certificado/configurar/informacoes-certificado/{id}:
+    get:
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FindCertificadoInfoResult'
+  /v1/certificado/assinar:
+    post:
+      parameters:
+        - name: 'idCertificado'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'cnpj'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'chaveAcesso'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'string'
+        required: true
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SignMessageReturnDto'
+  /v1/certificado/assinar/{id}:
+    get:
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                type: 'object'
+  /v1/certificado/assinar-texto:
+    post:
+      parameters:
+        - name: 'idCertificado'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'cnpj'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'string'
+        required: true
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SignStringMessageReturnDto'
+  /v1/certificado/assinar-texto/{id}:
+    get:
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RetSignStringMessageReturnDto'
+  /v1/certificado/enviar:
+    post:
+      parameters:
+        - name: 'idCertificado'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'cnpj'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'url'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'soapAction'
+          in: 'header'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: 'string'
+        required: true
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SendSoapMessageReturnDto'
+  /v1/certificado/enviar/{id}:
+    get:
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            '*/*':
+              schema:
+                type: 'object'
+components:
+  schemas:
+    CreateCertificadoA1Request:
+      type: 'object'
+      properties:
+        certificate:
+          type: 'array'
+          items:
+            type: 'string'
+            format: 'byte'
+        password:
+          type: 'string'
+        cnpj:
+          type: 'string'
+    CreateCertificadoResponse:
+      type: 'object'
+      properties:
+        dataExpiracao:
+          type: 'string'
+          format: 'date-time'
+        senha:
+          type: 'string'
+        tipoCertificado:
+          type: 'string'
+          enum:
+            - 'A1'
+            - 'A3'
+            - 'CS'
+        aliasName:
+          type: 'string'
+        token:
+          type: 'string'
+    FindCertificadoInfo:
+      type: 'object'
+      properties:
+        sucesso:
+          type: 'boolean'
+        mensagem:
+          type: 'string'
+        transactionId:
+          type: 'string'
+    CertificateInfoDto:
+      type: 'object'
+      properties:
+        token:
+          type: 'string'
+        tipoCertificado:
+          type: 'string'
+          enum:
+            - 'A1'
+            - 'A3'
+        cnpj:
+          type: 'string'
+        dataValidade:
+          type: 'string'
+          format: 'date-time'
+    FindCertificadoInfoResult:
+      type: 'object'
+      properties:
+        completo:
+          type: 'boolean'
+        sucesso:
+          type: 'boolean'
+        mensagem:
+          type: 'string'
+        certificateInfo:
+          $ref: '#/components/schemas/CertificateInfoDto'
+    SignMessageReturnDto:
+      type: 'object'
+      properties:
+        success:
+          type: 'boolean'
+        message:
+          type: 'string'
+        transactionId:
+          type: 'string'
+    SignStringMessageReturnDto:
+      type: 'object'
+      properties:
+        success:
+          type: 'boolean'
+        message:
+          type: 'string'
+        transactionId:
+          type: 'string'
+    RetSignStringMessageReturnDto:
+      type: 'object'
+      properties:
+        complete:
+          type: 'boolean'
+        success:
+          type: 'boolean'
+        message:
+          type: 'string'
+        signed:
+          type: 'string'
+        codigoRetorno:
+          type: 'string'
+    SendSoapMessageReturnDto:
+      type: 'object'
+      properties:
+        success:
+          type: 'boolean'
+        message:
+          type: 'string'
+        transactionId:
+          type: 'string'
