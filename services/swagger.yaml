@@ -1,8 +1,9 @@
-openapi: "3.1.0"
+openapi: 3.0.0
 info:
   title: "Hivecloud Services API"
   description: "Hivecloud Services API"
-  version: "1.0.0"
+  version: 1.0.0
+  
 servers:
   - url: "https://services.hivecloud.com.br/api/"
 paths:
