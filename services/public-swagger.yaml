@@ -20,62 +20,71 @@ paths:
         '200':
           description: 'OK'
           content:
-            '*/*':
+            'application/json':
               schema:
                 $ref: '#/components/schemas/CreateCertificadoResponse'
   /v1/certificado/configurar/informacoes-certificado:
     post:
       parameters:
-        - name: 'token'
+        - name: 'idCertificado'
+          description: 'Id do certificado'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
         - name: 'cnpj'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'XX.XXX.XXX/0001-XX'
       responses:
         '200':
           description: 'OK'
           content:
-            '*/*':
+            'application/json':
               schema:
                 $ref: '#/components/schemas/FindCertificadoInfo'
   /v1/certificado/configurar/informacoes-certificado/{id}:
     get:
       parameters:
         - name: 'id'
+          description: 'Id da transação retornada no /informacoes-certificado'
           in: 'path'
           required: true
           schema:
             type: 'string'
+          example: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
       responses:
         '200':
           description: 'OK'
           content:
-            '*/*':
+            'application/json':
               schema:
                 $ref: '#/components/schemas/FindCertificadoInfoResult'
   /v1/certificado/assinar:
     post:
       parameters:
         - name: 'idCertificado'
+          description: 'Id do certificado'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
         - name: 'cnpj'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'XX.XXX.XXX/0001-XX'
         - name: 'chaveAcesso'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'MDFe99999999999999999999999999999999999999999999'
       requestBody:
         content:
           application/json:
@@ -86,17 +95,19 @@ paths:
         '200':
           description: 'OK'
           content:
-            '*/*':
+            'application/json':
               schema:
                 $ref: '#/components/schemas/SignMessageReturnDto'
   /v1/certificado/assinar/{id}:
     get:
       parameters:
         - name: 'id'
+          description: 'Id da transação retornada no /assinar'
           in: 'path'
           required: true
           schema:
             type: 'string'
+          example: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
       responses:
         '200':
           description: 'OK'
@@ -108,11 +119,14 @@ paths:
     post:
       parameters:
         - name: 'idCertificado'
+          description: 'Id do certificado'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
         - name: 'cnpj'
+          example: 'XX.XXX.XXX/0001-XX'
           in: 'header'
           required: true
           schema:
@@ -134,68 +148,84 @@ paths:
     get:
       parameters:
         - name: 'id'
+          description: 'Id da transação retornada no /assinar-texto'
           in: 'path'
           required: true
           schema:
             type: 'string'
+          example: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
       responses:
         '200':
           description: 'OK'
           content:
-            '*/*':
+            'application/json':
               schema:
                 $ref: '#/components/schemas/RetSignStringMessageReturnDto'
   /v1/certificado/enviar:
     post:
       parameters:
         - name: 'idCertificado'
+          description: 'Id do certificado'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
         - name: 'cnpj'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'XX.XXX.XXX/0001-XX'
         - name: 'url'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'https://mdfe-homologacao.svrs.rs.gov.br/ws/mdfeconsulta/MDFeConsulta.asmx'
         - name: 'soapAction'
           in: 'header'
           required: true
           schema:
             type: 'string'
+          example: 'http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta/mdfeConsultaMDF'
       requestBody:
         content:
-          application/json:
+          application/xml:
             schema:
-              type: 'string'
-        required: true
+              type: 'object'
+              format: 'xml'
+              xml:
+                name: 'env:Envelope'
+            example: '<?xml version="1.0" encoding="utf-8" ?><env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"><env:Header><mdfeCabecMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><cUF>26</cUF><versaoDados>3.00</versaoDados></mdfeCabecMsg></env:Header><env:Body><mdfeDadosMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><consSitMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00"><tpAmb>2</tpAmb><xServ>CONSULTAR</xServ><chMDFe>99999999999999999999999999999999999999999999</chMDFe></consSitMDFe></mdfeDadosMsg></env:Body></env:Envelope>'
       responses:
         '200':
           description: 'OK'
           content:
-            '*/*':
+            'application/json':
               schema:
                 $ref: '#/components/schemas/SendSoapMessageReturnDto'
   /v1/certificado/enviar/{id}:
     get:
       parameters:
         - name: 'id'
+          description: 'Id da transação retornada no /informacoes-certificado'
           in: 'path'
           required: true
           schema:
             type: 'string'
+          example: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
       responses:
         '200':
           description: 'OK'
           content:
-            '*/*':
+            application/xml:
               schema:
                 type: 'object'
+                format: 'xml'
+                xml:
+                  name: 'soap:Envelope'
+              example: '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><mdfeCabecMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><cUF>26</cUF><versaoDados>3.00</versaoDados></mdfeCabecMsg></soap:Header><soap:Body><mdfeConsultaMDFResult xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><retConsSitMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00"><tpAmb>2</tpAmb><verAplic>RS20240709143518</verAplic><cStat>217</cStat><xMotivo>Rejeicao: MDF-e nao consta na base de dados da SEFAZ</xMotivo><cUF>26</cUF></retConsSitMDFe></mdfeConsultaMDFResult></soap:Body></soap:Envelope>'
 components:
   schemas:
     CreateCertificadoA1Request:
@@ -303,3 +333,7 @@ components:
           type: 'string'
         transactionId:
           type: 'string'
+
+#    xmlEnviar:
+#      application/xml: '<SampleXml><!-- example XML --></SampleXml>'
+##      example: '<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"><env:Header><mdfeCabecMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><cUF>26</cUF><versaoDados>3.00</versaoDados></mdfeCabecMsg></env:Header><env:Body><mdfeDadosMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><consSitMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00"><tpAmb>2</tpAmb><xServ>CONSULTAR</xServ><chMDFe>26240813975934000190580010000103981000000002</chMDFe></consSitMDFe></mdfeDadosMsg></env:Body></env:Envelope>'
