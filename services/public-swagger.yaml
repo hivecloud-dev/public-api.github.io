@@ -87,9 +87,13 @@ paths:
           example: 'MDFe99999999999999999999999999999999999999999999'
       requestBody:
         content:
-          application/json:
+          application/xml:
             schema:
-              type: 'string'
+              type: 'object'
+              format: 'xml'
+              xml:
+                name: 'MDFe'
+            example: '<?xml version="1.0" encoding="UTF-8"?><MDFe xmlns="http://www.portalfiscal.inf.br/mdfe"><infMDFe Id="MDFe99999999999999999999999999999999999999999999" versao="3.00"><ide><cUF>26</cUF><tpAmb>2</tpAmb><tpEmit>1</tpEmit><mod>58</mod><serie>1</serie><nMDF>10396</nMDF><cMDF>00000000</cMDF><cDV>8</cDV><modal>1</modal><dhEmi>2024-08-05T15:05:04-03:00</dhEmi><tpEmis>1</tpEmis><procEmi>0</procEmi><verProc>hivelog-mdfe-0.1.0</verProc><UFIni>RJ</UFIni><UFFim>RJ</UFFim><infMunCarrega><cMunCarrega>3300951</cMunCarrega><xMunCarrega>TESTE  HIVE</xMunCarrega></infMunCarrega><dhIniViagem>2024-08-05T12:05:00-03:00</dhIniViagem><indCanalVerde>1</indCanalVerde></ide><emit><CNPJ>99999999999999</CNPJ><IE>000000000</IE><xNome>TESTE  HIVE</xNome><xFant>TESTE  HIVE</xFant><enderEmit><xLgr>Lograouro</xLgr><nro>Sem número</nro><xCpl>Industrial</xCpl><xBairro>INTERIOR</xBairro><cMun>2602902</cMun><xMun>Recife</xMun><CEP>11111111</CEP><UF>PE</UF><fone>55555555555</fone><email>usuario@hivecloud.com.br</email></enderEmit></emit><infModal versaoModal="3.00"><rodo><infANTT><RNTRC>11111111</RNTRC><infContratante><CNPJ>99999999999999</CNPJ></infContratante></infANTT></rodo></infModal><infDoc><infMunDescarga><cMunDescarga>3302403</cMunDescarga><xMunDescarga>MACAÉ</xMunDescarga><infCTe><chCTe>99999999999999999999999999999999999999999999</chCTe></infCTe><infCTe><chCTe>99999999999999999999999999999999999999999999</chCTe></infCTe></infMunDescarga></infDoc><seg><infResp><respSeg>1</respSeg><CNPJ>99999999999999</CNPJ></infResp><infSeg><xSeg>HOMOLOGACAO WS</xSeg><CNPJ>99999999999999</CNPJ></infSeg><nApol>TESTE</nApol><nAver>6666</nAver></seg><prodPred><tpCarga>05</tpCarga><xProd>diversos</xProd></prodPred><tot><qCTe>2</qCTe><vCarga>13680.00</vCarga><cUnid>01</cUnid><qCarga>255.6000</qCarga></tot><autXML><CNPJ>99999999999999</CNPJ></autXML><autXML><CPF>11111111111</CPF></autXML><autXML><CPF>11111111111</CPF></autXML><autXML><CPF>11111111111</CPF></autXML><autXML><CPF>11111111111</CPF></autXML><autXML><CPF>11111111111</CPF></autXML><autXML><CPF>11111111111</CPF></autXML><infAdic/><infRespTec><CNPJ>99999999999999</CNPJ><xContato>Hivelog Soluções em Tecnologia da Informação.</xContato><email>desenvolvimento@hivecloud.com.br</email><fone>55555555555</fone></infRespTec></infMDFe><infMDFeSupl><qrCodMDFe>https://dfe-portal.svrs.rs.gov.br/mdfe/QRCode?chMDFe=99999999999999999999999999999999999999999999&amp;tpAmb=2</qrCodMDFe></infMDFeSupl></MDFe>'
         required: true
       responses:
         '200':
@@ -136,6 +140,7 @@ paths:
           application/json:
             schema:
               type: 'string'
+            example: 'texto que deseja assinar'
         required: true
       responses:
         '200':
@@ -198,6 +203,7 @@ paths:
               xml:
                 name: 'env:Envelope'
             example: '<?xml version="1.0" encoding="utf-8" ?><env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"><env:Header><mdfeCabecMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><cUF>26</cUF><versaoDados>3.00</versaoDados></mdfeCabecMsg></env:Header><env:Body><mdfeDadosMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><consSitMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00"><tpAmb>2</tpAmb><xServ>CONSULTAR</xServ><chMDFe>99999999999999999999999999999999999999999999</chMDFe></consSitMDFe></mdfeDadosMsg></env:Body></env:Envelope>'
+        required: true
       responses:
         '200':
           description: 'OK'
@@ -333,7 +339,3 @@ components:
           type: 'string'
         transactionId:
           type: 'string'
-
-#    xmlEnviar:
-#      application/xml: '<SampleXml><!-- example XML --></SampleXml>'
-##      example: '<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"><env:Header><mdfeCabecMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><cUF>26</cUF><versaoDados>3.00</versaoDados></mdfeCabecMsg></env:Header><env:Body><mdfeDadosMsg xmlns="http://www.portalfiscal.inf.br/mdfe/wsdl/MDFeConsulta"><consSitMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00"><tpAmb>2</tpAmb><xServ>CONSULTAR</xServ><chMDFe>26240813975934000190580010000103981000000002</chMDFe></consSitMDFe></mdfeDadosMsg></env:Body></env:Envelope>'
