@@ -259,6 +259,7 @@ paths:
       tags:
         - 'CTe'
       parameters:
+        - $ref: '#/components/parameters/idIntegracaoParam'
         - $ref: '#/components/parameters/pageNumberParam'
         - $ref: '#/components/parameters/pageSizeParam'
         - $ref: '#/components/parameters/dataEmissaoInicialParam'
@@ -763,6 +764,16 @@ components:
       name: tenantID
 
   parameters:
+
+    idIntegracaoParam:
+      in: query
+      name: idIntegracao
+      description: Id de integração
+      required: false
+      schema:
+        type: string
+        example: '9c015cc6-8471-4838-8391-e17fbc5a0a75'
+
     pageNumberParam:
       in: query
       name: pageNumber
@@ -1212,7 +1223,7 @@ components:
 
     tipoEmissaoParam:
       in: query
-      name: sipoEmissao
+      name: tipoEmissao
       description: Status CTe
       required: false
       schema:
@@ -1223,7 +1234,7 @@ components:
     dacteImpressoParam:
       in: query
       name: dacteImpresso
-      description: Tacte impresso
+      description: Dacte impresso
       required: false
       schema:
         type: boolean
@@ -1232,7 +1243,7 @@ components:
     xmlExportadoParam:
       in: query
       name: xmlExportado
-      description: Xml esportado
+      description: Xml exportado
       required: false
       schema:
         type: boolean
@@ -1241,7 +1252,7 @@ components:
     ufInicialParam:
       in: query
       name: ufInicial
-      description: Uf inical
+      description: Uf inicial
       required: false
       schema:
         type: string
@@ -1359,7 +1370,7 @@ components:
     numeroInicialParam:
       in: query
       name: numeroInicial
-      description: Numero do cte inical
+      description: Numero do cte inicial
       required: false
       schema:
         type: number
@@ -1541,7 +1552,7 @@ components:
           example: []
         message:
           type: string
-          description: 'Descrição mais detalahda do erro'
+          description: 'Descrição mais detalhada do erro'
           example: 'No handler found for GET /hivelog-ar/api/v1/romaneios/4c06c5dd-bc75-4fe8-a233-94531a58cee2/operacoes/preview2'
         path:
           type: string
