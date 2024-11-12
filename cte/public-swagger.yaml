@@ -2025,6 +2025,9 @@ components:
 
     EmitirCteItens:
       properties:
+        averbarCte:
+          type: boolean
+          example: true
         idList:
           type: array
           items:
