@@ -607,7 +607,8 @@ paths:
   /v1/integracoes/cte:
     post:
       security:
-        - tokenAuth: [ ]
+        - tokenAuth: []
+        - tenantAuth: []
       tags:
         - 'Integração'
       summary: "Método que cria um CTe via da integração, autocompletando os dados a partir das configurações"
