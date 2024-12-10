@@ -4,6 +4,9 @@ info:
   description: "Mdfe API"
   version: "1.0.0"
 
+servers:
+  - url: https://mdfe-api.hivecloud.com.br/api
+
 
 paths:
   /v1/integracoes/mdfes/cancelar:
