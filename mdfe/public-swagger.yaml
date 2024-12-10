@@ -419,9 +419,10 @@ paths:
 components:
   securitySchemes:
     tokenAuth:
-      type: apiKey
-      in: header
-      name: token
+      type: http
+      scheme: bearer
+      description: >-
+        Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"
     tenantAuth:
       type: apiKey
       in: header
