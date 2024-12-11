@@ -690,7 +690,7 @@ components:
         uf:
           type: "string"
           example: "PE"
-        RNTRC:
+        rntrc:
           type: "string"
           maxLength: 8
           example: "12345678"
