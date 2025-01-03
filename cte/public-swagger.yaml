@@ -3209,7 +3209,7 @@ components:
           outrosFretes:
             - nomeFrete: taxa descarga
               valorFrete: 15.00
-            - nomeFrete: taxa dificil acesso
+            - nomeFrete: tx dif acesso
               valorFrete: 30.00
         carga:
           valorTotal: 1490.00

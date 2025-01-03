@@ -828,7 +828,7 @@ components:
       properties:
         numeroParcela:
           type: "string"
-          example: 1
+          example: "001"
         vencimento:
           type: "string"
           format: "date-time"
