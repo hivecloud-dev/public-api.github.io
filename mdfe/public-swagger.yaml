@@ -648,7 +648,7 @@ components:
           example: "2023-01-01T15:14:13"
         serie:
           type: "string"
-          example: "001"
+          example: "1"
         numero:
           type: "string"
           example: "9999"
