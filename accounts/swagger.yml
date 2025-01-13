@@ -1,0 +1,12 @@
+---
+openapi: 3.0.3
+info:
+  title: Documentação da integração publica do Accounts
+  description: Esta é a documentação das interfaces REST do Accounts
+  contact:
+    name: Equipe de desenvolvimento
+    email: desenvolvimento@hivecloud.com.br
+  version: 1.0
+servers:
+  - url: /api
+    description: Servidor Local
