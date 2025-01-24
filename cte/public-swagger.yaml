@@ -707,7 +707,7 @@ paths:
         - tenantAuth: [ ]
       tags:
         - 'Importação'
-      summary: 'Método que importar uma lista de arquivos arquivo '
+      summary: 'Método para importar uma lista de arquivos '
       description: 'O arquivo deve ser um XML do CTE ou um ZIP contendo XML do CTE'
       requestBody:
         required: true
@@ -751,6 +751,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ComplementarCteResponse'
+
+  /v1/integracoes/consultas/nfe/{chaveAcesso}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/consultarNfeChaveAcessoPathParam'
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'Consultas'
+      summary: 'Método para consulta de dados de NFe via Consulta Garantida'
+      description: 'Consulta de dados de NFe via Consulta Garantida'
+      responses:
+        '200':
+          description: 'Dados da NFe'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DadosNfe'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 components:
   securitySchemes:
@@ -1029,6 +1050,15 @@ components:
       in: path
       name: id
       description: Id da NFe (Chave de acesso)
+      required: true
+      schema:
+        type: string
+        example: '35160747508411005700551000008815051094160710'
+
+    consultarNfeChaveAcessoPathParam:
+      in: path
+      name: chaveAcesso
+      description: Chave de acesso da NFe
       required: true
       schema:
         type: string
@@ -3861,5 +3891,89 @@ components:
           example: 1
         numero:
           type: number
-          nullable: false
           example: 100
+
+    DadosNfe:
+      properties:
+        remetente:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/EnvolvidoSummary'
+        destinatario:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/EnvolvidoSummary'
+        valorTotalCarga:
+          type: number
+          example: 1000000.00
+        cargaAvancado:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/CargaAvancado'
+        documento:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Documento'
+        volumeTotal:
+          type: number
+          example: 2333.89
+        pesoBrutoTotal:
+          type: number
+          example: 2124.44
+        pesoLiquido:
+          type: number
+          example: 11545.65
+        quantidadeVolumes:
+          type: number
+          example: 10
+        produtoPredominante:
+          type: string
+          example: 'Eletrônicos'
+        qtProdutoPredominante:
+          type: number
+          example: 500
+        limiteExcedidoNfe:
+          type: boolean
+          example: false
+        msgConsultaNfe:
+          type: string
+          example: 'Consulta realizada com sucesso'
+
+    CargaAvancado:
+      type: object
+      properties:
+        informacoesCargaList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InformacoesCarga'
+        outrasCaracteristicasProduto:
+          type: string
+          example: 'Produtos perecíveis com alta rotatividade'
+        valorCargaEfeitoAverbacao:
+          type: number
+          example: 150000.00
+
+    InformacoesCarga:
+      type: object
+      properties:
+        unidadeMedida:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/TipoUnidadeMedida'
+        tipoMedida:
+          type: string
+          example: 'Volume'
+        quantidade:
+          type: number
+          example: 120.50
+
+    TipoUnidadeMedida:
+      type: string
+      enum:
+        - M3
+        - KG
+        - TON
+        - UNIDADE
+        - LITROS
+        - MMBTU
+      example: KG
