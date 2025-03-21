@@ -555,8 +555,55 @@ paths:
           $ref: '#/components/responses/MultiStatus'
 
   /v1/integracoes/ctes/consultar-situacao:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'CTe'
+      summary: ''
+      description: 'Consultar situação do CT-e'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/idCteItens'
+      responses:
+        '200':
+          description: 'Id da Transação'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionId'
+        '500':
+          $ref: '#/components/responses/MultiStatus'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/integracoes/ctes/consultar-situacao/{id}/consultar-status:
     parameters:
-      - $ref: '#/components/parameters/idsCteConsultarSituacaoQueryParam'
+      - $ref: '#/components/parameters/idTransacaoAssincrona'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'CTe'
+      summary: ''
+      description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        '404':
+          description: 'É necessário informar um id de transação válido'
+
+  /v1/integracoes/ctes/consultar-situacao/{id}/obter-resultado:
+    parameters:
+      - $ref: '#/components/parameters/idTransacaoAssincrona'
     get:
       security:
         - tokenAuth: []
@@ -573,11 +620,9 @@ paths:
               schema:
                 type: array
                 items:
-                  example: ['Autorizado o uso do CT-e']
-        '500':
-          $ref: '#/components/responses/MultiStatus'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                  $ref: '#/components/schemas/ConsultaStatusCteObterResultado'
+        '404':
+          description: 'É necessário informar um id de transação válido'
 
   /v1/integracoes/ctes/consultar-situacao-por-chave-acesso/{chaveAcesso}:
     parameters:
@@ -2247,6 +2292,36 @@ components:
             type: string
           example: ''
           nullable: true
+
+    ConsultaStatusCteItem:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+          example: "CTe35250330957238000170570130000000071000000005"
+        numero:
+          type: integer
+          example: 7
+        serie:
+          type: integer
+          example: 13
+        situacao:
+          type: string
+          example: "O CTe ainda não foi processado na fazenda. Consulte novamente em alguns instantes!"
+    ConsultaStatusCteObterResultado:
+      type: object
+      properties:
+        consultaStatusCte:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsultaStatusCteItem'
+        sucesso:
+          type: boolean
+          example: true
+        message:
+          type: string
+          nullable: true
+          example: null
 
     ArquivoNfeCte:
       type: object
