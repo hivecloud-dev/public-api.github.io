@@ -415,6 +415,31 @@ paths:
           $ref: '#/components/responses/CreateResponseId'
         '400':
           $ref: '#/components/responses/BadRequest'
+
+  /v1/integracoes/mdfes/{id}:
+    get:
+      tags:
+        - 'Mdfe'
+      operationId: IntegraMdfeV1ControllerImp.getMdfe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MdfeView"
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: get
+
 components:
   securitySchemes:
     tokenAuth:
@@ -1198,6 +1223,563 @@ components:
     ErrorResponse:
       $ref: '#/components/schemas/ErrorItemResponse'
 
+    MdfeView:
+      type: "object"
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único do MDF-e.
+          example: "069f1240-59cd-4fbe-bdf7-c348e5276b99"
+        versaoMdfe:
+          type: "object"
+          description: Informações de versão do MDF-e.
+          properties:
+            versao:
+              type: string
+              description: "Versão do MDF-e (Ex: V3.00)."
+              example: "V3.00"
+            versaoDocumento:
+              type: string
+              description: Versão do documento.
+              example: "3.00"
+        emitente:
+          type: object
+          description: Informações do emitente do MDF-e.
+          properties:
+            id:
+              type: string
+              description: Identificador do emitente.
+              example: "1"
+            nome:
+              type: string
+              description: Nome completo do emitente.
+              example: "MDFe Verify"
+            nomeFantasia:
+              type: string
+              description: Nome fantasia do emitente.
+              example: "MDFe Verify Fantasia"
+            email:
+              type: string
+              format: email
+              description: Endereço de e-mail do emitente.
+              example: "teste@teste.com.br"
+            telefone:
+              type: string
+              description: Telefone do emitente.
+              example: "99999999999"
+            ie:
+              type: string
+              description: Inscrição Estadual do emitente.
+              example: "046058532"
+            rntrc:
+              type: string
+              description: Registro Nacional de Transportadores Rodoviários de Carga.
+              example: "12345678"
+            tipoEmitente:
+              type: string
+              enum: [SERVICO, OUTRO_TIPO]
+              description: Tipo de emitente.
+              example: "SERVICO"
+            endereco:
+              type: object
+              description: Endereço do emitente.
+              properties:
+                logradouro:
+                  type: string
+                  description: Logradouro.
+                  example: "RUA FILIPE DE OLIVEIRA"
+                bairro:
+                  type: string
+                  description: Bairro.
+                  example: "Recife"
+                cep:
+                  type: string
+                  description: CEP.
+                  example: "01001010"
+                numero:
+                  type: string
+                  description: Número.
+                  example: "123"
+                codigoMunicipio:
+                  type: string
+                  description: Código do município (IBGE).
+                  example: "2611606"
+                nomeMunicipio:
+                  type: string
+                  description: Nome do município.
+                  example: "RECIFE"
+                codigoUf:
+                  type: string
+                  description: Código da Unidade da Federação (IBGE).
+                  example: "26"
+                uf:
+                  type: string
+                  description: Sigla da Unidade da Federação.
+                  example: "PE"
+                pais:
+                  type: string
+                  description: País.
+                  example: "BRASIL"
+                complemento:
+                  type: string
+                  description: Complemento do endereço.
+                  example: ""
+            emailsAlternativos:
+              type: array
+              items:
+                type: string
+              description: Lista de e-mails alternativos do emitente.
+              example: []
+            cnpj:
+              type: string
+              description: CNPJ do emitente.
+              example: "13975934000190"
+            certificado:
+              type: object
+              description: Informações do certificado digital do emitente.
+              properties:
+                validade:
+                  type: string
+                  format: date-time
+                  description: Data e hora de validade do certificado.
+                  example: "2025-08-29T08:37:39-0300"
+                tipoCertificado:
+                  type: string
+                  description: Tipo do certificado.
+                  example: "CS - A1"
+                token:
+                  type: string
+                  format: uuid
+                  description: Token do certificado.
+                  example: "77280a4a-7e90-4983-9419-e479be50c476"
+                exibido30Dias:
+                  type: string
+                  nullable: true
+                  description: Data de exibição (30 dias).
+                  example: null
+                exibido15Dias:
+                  type: string
+                  nullable: true
+                  description: Data de exibição (15 dias).
+                  example: null
+                exibidoNoDia:
+                  type: string
+                  nullable: true
+                  description: Data de exibição (no dia).
+                  example: null
+                periodoValidadeCertificado:
+                  type: string
+                  nullable: true
+                  description: Período de validade do certificado.
+                  example: null
+            logomarca:
+              type: string
+              nullable: true
+              description: URL ou base64 da logomarca do emitente.
+              example: null
+            dataCadastramento:
+              type: integer
+              format: int64
+              description: Data de cadastramento do emitente (timestamp).
+              example: 1392343200000
+            observacao:
+              type: string
+              description: Observações sobre o emitente.
+              example: "Obs:324!!!"
+            empresa:
+              type: string
+              nullable: true
+              description: Informações da empresa (se aplicável).
+              example: null
+            situacao:
+              type: string
+              enum: [ATIVADA, INATIVADA]
+              description: Situação do emitente.
+              example: "ATIVADA"
+            cpfCnpjContabilidade:
+              type: string
+              nullable: true
+              description: CPF ou CNPJ da contabilidade.
+              example: null
+            emailContabilidade:
+              type: string
+              format: email
+              nullable: true
+              description: E-mail da contabilidade.
+              example: null
+            telefoneContabilidade:
+              type: string
+              nullable: true
+              description: Telefone da contabilidade.
+              example: null
+            empresaPrincipal:
+              type: boolean
+              description: Indica se é a empresa principal.
+              example: false
+        tipoEmitente:
+          type: string
+          enum: [SERVICO, OUTRO_TIPO]
+          description: Tipo de emitente do MDF-e.
+          example: "SERVICO"
+        serie:
+          type: integer
+          description: Número de série do MDF-e.
+          example: 1
+        numero:
+          type: integer
+          description: Número do MDF-e.
+          example: 1049
+        chaveAcesso:
+          type: string
+          description: Chave de acesso do MDF-e.
+          example: "26250213975934000190580010000010491000000002"
+        ufCarregamento:
+          type: string
+          description: UF de carregamento.
+          example: "SC"
+        ufDescarregamento:
+          type: string
+          description: UF de descarregamento.
+          example: "RS"
+        ufPercursoList:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: Lista de UFs de percurso.
+          example: null
+        statusMdfe:
+          type: string
+          enum: [VALIDADO, CANCELADO, ENCERRADO, REJEITADO]
+          description: Status atual do MDF-e.
+          example: "VALIDADO"
+        tipoEmissao:
+          type: string
+          enum: [NORMAL, CONTINGENCIA]
+          description: Tipo de emissão do MDF-e.
+          example: "NORMAL"
+        xmlExportado:
+          type: boolean
+          description: Indica se o XML foi exportado.
+          example: false
+        protocoloRecebimento:
+          type: string
+          nullable: true
+          description: Protocolo de recebimento.
+          example: null
+        numeroProtocoloAutorizacao:
+          type: string
+          nullable: true
+          description: Número do protocolo de autorização.
+          example: null
+        protocoloCancelamento:
+          type: string
+          nullable: true
+          description: Protocolo de cancelamento.
+          example: null
+        numeroProtocoloEncerramento:
+          type: string
+          nullable: true
+          description: Número do protocolo de encerramento.
+          example: null
+        versaoDados:
+          type: string
+          nullable: true
+          description: Versão dos dados.
+          example: null
+        motivoCancelamentoMdfe:
+          type: string
+          nullable: true
+          description: Motivo do cancelamento do MDF-e.
+          example: null
+        motivoRejeicao:
+          type: string
+          nullable: true
+          description: Motivo da rejeição do MDF-e.
+          example: null
+        valorCarga:
+          type: number
+          format: float
+          description: Valor total da carga.
+          example: 35000.0
+        pesoCarga:
+          type: number
+          format: float
+          description: Peso total da carga.
+          example: 700.0
+        numeroRecebimento:
+          type: string
+          nullable: true
+          description: Número de recebimento.
+          example: null
+        rntrc:
+          type: string
+          description: RNTRC do transportador.
+          example: "12345678"
+        ciot:
+          type: array
+          items:
+            type: object
+            properties:
+              ciot:
+                type: string
+                description: Código Identificador da Operação de Transporte.
+                example: "123456789012"
+              cpf:
+                type: string
+                description: CPF do responsável pelo CIOT.
+                example: "00648627047"
+              cnpj:
+                type: string
+                nullable: true
+                description: CNPJ do responsável pelo CIOT.
+                example: null
+          description: Lista de CIOTs associados ao MDF-e.
+        modal:
+          type: string
+          enum: [RODOVIARIO, FERROVIARIO, AQUAVIARIO, AEREO, DUTOVIARIO]
+          description: Modal de transporte.
+          example: "RODOVIARIO"
+        documentos:
+          type: array
+          items:
+            type: object
+            properties:
+              tipoDocumento:
+                type: string
+                enum: [CTE, NF_E]
+                description: Tipo de documento (CT-e, NF-e, etc.).
+                example: "CTE"
+              numero:
+                type: integer
+                nullable: true
+                description: Número do documento.
+                example: null
+              serie:
+                type: integer
+                nullable: true
+                description: Série do documento.
+                example: null
+              chaveAcesso:
+                type: string
+                description: Chave de acesso do documento.
+                example: "42241230714990000190550010000000521000000058"
+              valor:
+                type: number
+                format: float
+                nullable: true
+                description: Valor do documento.
+                example: null
+              peso:
+                type: number
+                format: float
+                nullable: true
+                description: Peso do documento.
+                example: null
+              codigoMunicipioDescarregamento:
+                type: string
+                description: Código do município de descarregamento (IBGE).
+                example: "4203204"
+              nomeMunicipioDescarregamento:
+                type: string
+                description: Nome do município de descarregamento.
+                example: "CAMBORIÚ"
+          description: Lista de documentos fiscais relacionados (CT-e, NF-e, etc.).
+        indCarregamentoPosterior:
+          type: boolean
+          description: Indica carregamento posterior.
+          example: false
+        usuarioCancelamento:
+          type: string
+          nullable: true
+          description: Usuário que realizou o cancelamento.
+          example: null
+        usuarioEncerramento:
+          type: string
+          nullable: true
+          description: Usuário que realizou o encerramento.
+          example: null
+        usuarioEmissao:
+          type: string
+          nullable: true
+          description: Usuário que realizou a emissão.
+          example: null
+        usuarioCadastramento:
+          type: string
+          description: Usuário que realizou o cadastramento.
+          example: "root"
+        damdfeImpresso:
+          type: boolean
+          description: Indica se o DAMDF-e foi impresso.
+          example: false
+        integrationId:
+          type: string
+          format: uuid
+          description: ID de integração.
+          example: "029341de-df08-4821-9570-061bcc5ba067"
+        condutorList:
+          type: array
+          items:
+            type: object
+            properties:
+              xNome:
+                type: string
+                description: Nome do condutor.
+                example: "DEIVERSON SOUZA DE OLIVEIRA"
+              cpf:
+                type: string
+                description: CPF do condutor.
+                example: "00648627047"
+          description: Lista de condutores envolvidos no transporte.
+        dadosVeiculo:
+          type: object
+          description: Dados do veículo de transporte.
+          properties:
+            cInt:
+              type: string
+              nullable: true
+              description: Código interno do veículo.
+              example: null
+            placa:
+              type: string
+              description: Placa do veículo.
+              example: "KKK9999"
+            tara:
+              type: number
+              format: float
+              description: Tara do veículo (em kg).
+              example: 2000.0
+            capKG:
+              type: number
+              format: float
+              description: Capacidade de carga em KG.
+              example: 700.0
+            capM3:
+              type: number
+              format: float
+              description: Capacidade de carga em M3.
+              example: 300.0
+            prop:
+              type: object
+              description: Informações do proprietário do veículo.
+              properties:
+                cnpj:
+                  type: string
+                  nullable: true
+                  description: CNPJ do proprietário.
+                  example: null
+                cpf:
+                  type: string
+                  description: CPF do proprietário.
+                  example: "00648627047"
+                rntrc:
+                  type: string
+                  description: RNTRC do proprietário.
+                  example: "12345678"
+                xNome:
+                  type: string
+                  description: Nome do proprietário.
+                  example: "DEIVERSON SOUZA DE OLIVEIRA"
+                ie:
+                  type: string
+                  description: Inscrição Estadual do proprietário.
+                  example: "491999630084"
+                uf:
+                  type: string
+                  description: UF do proprietário.
+                  example: "RS"
+                tpProp:
+                  type: string
+                  enum: [TAC_AGREGADO, TAC_INDEPENDENTE, OUTROS]
+                  description: Tipo de proprietário.
+                  example: "TAC_AGREGADO"
+            tpPropriedade:
+              type: string
+              enum: [PROPRIO, TERCEIRO, ARRENDADO]
+              description: Tipo de propriedade do veículo.
+              example: "TERCEIRO"
+            uf:
+              type: string
+              description: UF de emplacamento do veículo.
+              example: "PE"
+            tpCar:
+              type: string
+              enum: [ABERTA, FECHADA, GRANELEIRA, PORTA_CONTAINER, SIDER, OUTROS]
+              description: Tipo de carroceria do veículo.
+              example: "ABERTA"
+            renavam:
+              type: string
+              description: RENAVAM do veículo.
+              example: "54353454235"
+        tipoRodado:
+          type: string
+          enum: [TRUCK, TOCO, CAVALO_MECANICO, OUTROS]
+          description: Tipo de rodado do veículo.
+          example: "TRUCK"
+        autorizadoXmlList:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                nullable: true
+                description: Identificador do autorizado (se aplicável).
+                example: null
+              cpfCnpj:
+                type: string
+                description: CPF ou CNPJ do autorizado.
+                example: "04898488000177"
+              tipoDocumento:
+                type: string
+                enum: [CPF, CNPJ]
+                description: Tipo de documento (CPF ou CNPJ).
+                example: "CNPJ"
+          description: Lista de CPFs/CNPJs autorizados a acessar o XML do MDF-e.
+        informacoesInteresseFisco:
+          type: string
+          description: Informações de interesse do fisco.
+          example: "observacao do fisco"
+        informacoesInteresseContribuinte:
+          type: string
+          description: Informações de interesse do contribuinte.
+          example: "Observacao do contribuinte"
+        statusAverbacao:
+          type: string
+          enum: [COM_AVERBACAO, SEM_AVERBACAO]
+          description: Status de averbação.
+          example: "SEM_AVERBACAO"
+        dataEmissao:
+          type: string
+          format: date-time
+          description: Data e hora de emissão do MDF-e.
+          example: "2025-02-28T13:09:58-0300"
+        dataEnvio:
+          type: string
+          format: date-time
+          nullable: true
+          description: Data e hora de envio do MDF-e.
+          example: null
+        dataAutorizacao:
+          type: string
+          format: date-time
+          nullable: true
+          description: Data e hora de autorização do MDF-e.
+          example: null
+        dataCancelamento:
+          type: string
+          format: date-time
+          nullable: true
+          description: Data e hora de cancelamento do MDF-e.
+          example: null
+        dataEncerramento:
+          type: string
+          format: date-time
+          nullable: true
+          description: Data e hora de encerramento do MDF-e.
+          example: null
+
   responses:
     CreateResponseId:
       description: 'Recurso criado'
@@ -1218,3 +1800,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      description: Unauthorized
+    Forbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      description: Forbidden
