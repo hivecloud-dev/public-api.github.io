@@ -368,6 +368,28 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ResponseEntity"
+  /v1/integracoes/mdfes/imprimir-documento-mdfe:
+    post:
+      tags:
+        - Integrar Imprimir Documento Mdfe
+      operationId: IntegrarImprimirDocumentoMdfeControllerImp.imprimirDocumentoMdfe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParametrosImprimirMdfes'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImprimirMdfesReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: imprimirDocumentoCte
   /v1/integracoes/mdfes/remover:
     delete:
       security:
@@ -622,6 +644,18 @@ components:
         localDescarregamento:
           $ref: "#/components/schemas/LocalidadeCargaLotacaoIntegracao"
 
+    ParametrosImprimirMdfes:
+      required:
+        - idMdfeList
+      type: object
+      properties:
+        idCteList:
+          type: array
+          items:
+            type: string
+        ordenarPorIntegracao:
+          type: boolean
+
     ProdutoPredominanteIntegracao:
       title: "ProdutoPredominante"
       description: "Informações do Produto Predominante"
@@ -813,6 +847,25 @@ components:
           type: "string"
           maxLength: 12
           example: "123456789012"
+    byte:
+      type: object
+    ImprimirMdfesReturn:
+      type: object
+      properties:
+        idArquivo:
+          type: string
+        bytesDacteMdfe:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        bytesXmlMdfe:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        url:
+          type: string
+        alertaAverbacao:
+          type: boolean
     InfoContratanteIntegracao:
       title: "InfoContratante"
       type: "object"
