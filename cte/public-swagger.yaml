@@ -2976,6 +2976,11 @@ components:
           items:
             type: string
           example: ['8456978453845697845384569784538456978453']
+        dceList:
+          type: array
+          items:
+            type: string
+          example: ['8456978453845697845384569784538456978453']
         valorTotalFrete:
           type: number
           example: 895.56
@@ -3737,15 +3742,24 @@ components:
                   - "MMBTU"
 
     DocumentosIntegracao:
-      description: "Informações sobre os documentos transportados, podendo ser um conjunto de NFes ou um conjunto de 'Outros' documentos"
+      description: "Informações sobre os documentos transportados, podendo ser um conjunto de NFes, um conjunto de DCEs ou um conjunto de 'Outros' documentos"
       example:
         chaveAcessoNFe:
           - "25160208974214000170550010000323421000145023"
           - "35160203665157000124550010000454941000401441"
+        chaveAcessoDCe:
+          - "45160212345678000123550010000987651000111222"
       oneOf:
         - type: object
           properties:
             chaveAcessoNFe:
+              type: array
+              items:
+                type: "string"
+                maxLength: 36
+        - type: object
+          properties:
+            chaveAcessoDCe:
               type: array
               items:
                 type: "string"
