@@ -3312,6 +3312,7 @@ components:
             pais: "BRASIL"
             cep: "24943700"
         embutirImposto: true
+        classificacaoTributariaIbsCbs: "000001"
         frete:
           freteValor: 150.00
           fretePeso: 50.00
@@ -3477,6 +3478,12 @@ components:
         embutirImposto:
           description: "Indicativo de que o ICMS deve ser diluído nas tarifas de frete"
           type: "boolean"
+        classificacaoTributariaIbsCbs:
+          description: "Código da Classificação Tributária para IBS e CBS"
+          type: "string"
+          minLength: 6
+          maxLength: 6
+          example: "000001"
         frete:
           $ref: "#/components/schemas/FreteIntegracao"
         carga:
