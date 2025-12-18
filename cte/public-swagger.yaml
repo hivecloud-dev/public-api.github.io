@@ -2971,6 +2971,10 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/Icms'
+        ibsCbs:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/IbsCbs'
         nfeList:
           type: array
           items:
@@ -3027,6 +3031,83 @@ components:
           type: number
           example: 2457.4
           nullable: true
+
+    IbsCbs:
+      type: object
+      nullable: true
+      properties:
+        cst:
+          type: string
+          example: '200'
+          nullable: false
+          description: 'Código de Situação Tributária'
+        classificacaoTributaria:
+          type: string
+          example: '200001'
+          nullable: false
+          description: 'Classificação Tributária'
+        valorBaseCalculo:
+          type: number
+          format: double
+          example: 215.91
+          nullable: false
+          description: 'Valor da Base de Cálculo'
+        cbs:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ImpostoDetalhe'
+          nullable: false
+          description: 'Contribuição sobre Bens e Serviços'
+        ibsEstadual:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ImpostoDetalhe'
+          nullable: false
+          description: 'IBS Estadual'
+        ibsMunicipal:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ImpostoDetalhe'
+          nullable: false
+          description: 'IBS Municipal'
+
+    ImpostoDetalhe:
+      type: object
+      properties:
+        aliquota:
+          type: number
+          format: double
+          example: 0.90
+          nullable: false
+          description: 'Alíquota do imposto'
+        valor:
+          type: number
+          format: double
+          example: 0.00
+          nullable: false
+          description: 'Valor do imposto'
+        reducao:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ReducaoImposto'
+          nullable: false
+          description: 'Informações de redução'
+
+    ReducaoImposto:
+      type: object
+      properties:
+        percReducaoAliquota:
+          type: number
+          format: double
+          example: 100.00
+          nullable: false
+          description: 'Percentual de redução da alíquota'
+        aliquotaEfetiva:
+          type: number
+          format: double
+          example: 0.00
+          nullable: false
+          description: 'Alíquota efetiva após redução'
 
     Observacoes:
       properties:
