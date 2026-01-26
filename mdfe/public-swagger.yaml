@@ -625,11 +625,11 @@ components:
         latitude:
           type: "string"
           maxLength: 10
-          example: "1111111111"
+          example: "-150.123456"
         longitude:
           type: "string"
           maxLength: 11
-          example: "11111111111"
+          example: "-15.123456"
 
     CargaLotacaoIntegracao:
       title: "CargaLotacao"
