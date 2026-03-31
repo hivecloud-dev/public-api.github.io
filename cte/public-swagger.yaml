@@ -826,7 +826,7 @@ paths:
       tags:
         - 'DC-e'
       summary: 'Integrar DC-e'
-      description: 'Cria uma DC-e via integração'
+      description: 'Cria um DC-e via integração'
       parameters:
         - $ref: '#/components/parameters/dceEmpresaIdQueryParam'
       requestBody:
@@ -855,7 +855,7 @@ paths:
       tags:
         - 'DC-e'
       summary: 'Obter DC-e'
-      description: 'Retorna os dados de uma DC-e pelo ID'
+      description: 'Retorna os dados de um DC-e pelo ID'
       responses:
         '200':
           description: 'Ok'
@@ -937,7 +937,7 @@ paths:
       tags:
         - 'DC-e'
       summary: 'Cancelar DC-es'
-      description: 'Cancela uma ou mais DC-es'
+      description: 'Cancela um ou mais DC-es'
       requestBody:
         required: true
         content:
@@ -1027,7 +1027,7 @@ paths:
       tags:
         - 'DC-e'
       summary: 'Consultar situação por chave de acesso'
-      description: 'Consulta a situação de uma DC-e pela chave de acesso'
+      description: 'Consulta a situação de um DC-e pela chave de acesso'
       parameters:
         - $ref: '#/components/parameters/empresaIdHeaderParam'
       responses:
@@ -1046,7 +1046,7 @@ paths:
       tags:
         - 'DC-e'
       summary: 'Exportar XML de DC-es'
-      description: 'Exporta o XML de uma ou mais DC-es'
+      description: 'Exporta o XML de um ou mais DC-es'
       requestBody:
         required: true
         content:
@@ -1071,7 +1071,7 @@ paths:
       tags:
         - 'DC-e'
       summary: 'Remover DC-es'
-      description: 'Remove uma ou mais DC-es'
+      description: 'Remove um ou mais DC-es'
       requestBody:
         required: true
         content:
