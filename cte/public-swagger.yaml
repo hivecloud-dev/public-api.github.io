@@ -818,6 +818,274 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /v1/integracoes/dces:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Integrar DC-e'
+      description: 'Cria um DC-e via integração'
+      parameters:
+        - $ref: '#/components/parameters/dceEmpresaIdQueryParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DceIntegracao'
+      responses:
+        '201':
+          description: 'DC-e criada'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DceEntityReturn'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/integracoes/dces/{id}:
+    parameters:
+      - $ref: '#/components/parameters/dceIdPathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Obter DC-e'
+      description: 'Retorna os dados de um DC-e pelo ID'
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DceDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/integracoes/dces/emitir:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Emitir DC-es'
+      description: 'Inicia a emissão assíncrona de DC-es'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DceEmitir'
+      responses:
+        '200':
+          description: 'Transação iniciada'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionId'
+
+  /v1/integracoes/dces/emitir/{id}/consultar-status:
+    parameters:
+      - $ref: '#/components/parameters/idTransacaoAssincrona'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Consultar status da emissão de DC-e'
+      description: 'Retorna o status da transação assíncrona de emissão de DC-e'
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/integracoes/dces/emitir/{id}/obter-resultado:
+    parameters:
+      - $ref: '#/components/parameters/idTransacaoAssincrona'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Obter resultado da emissão de DC-e'
+      description: 'Retorna o resultado da transação assíncrona de emissão de DC-e'
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DceEmissaoResponse'
+
+  /v1/integracoes/dces/cancelar:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Cancelar DC-es'
+      description: 'Cancela um ou mais DC-es'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DceCancelarRequest'
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DceCancelarResponse'
+
+  /v1/integracoes/dces/consultar-situacao:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Consultar situação de DC-es'
+      description: 'Inicia consulta assíncrona da situação de DC-es na SEFAZ'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: 'Transação iniciada'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionId'
+
+  /v1/integracoes/dces/consultar-situacao/{id}/consultar-status:
+    parameters:
+      - $ref: '#/components/parameters/idTransacaoAssincrona'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Consultar status da consulta de situação de DC-e'
+      description: 'Retorna o status da transação assíncrona de consulta de situação de DC-e'
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/integracoes/dces/consultar-situacao/{id}/obter-resultado:
+    parameters:
+      - $ref: '#/components/parameters/idTransacaoAssincrona'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Obter resultado da consulta de situação de DC-e'
+      description: 'Retorna o resultado da transação assíncrona de consulta de situação de DC-e'
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultarStatusDceReturnWrapper'
+
+  /v1/integracoes/dces/consultar-situacao-por-chave-acesso/{chaveAcesso}:
+    parameters:
+      - $ref: '#/components/parameters/chaveAcessoDcePathParam'
+    get:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Consultar situação por chave de acesso'
+      description: 'Consulta a situação de um DC-e pela chave de acesso'
+      parameters:
+        - $ref: '#/components/parameters/empresaIdHeaderParam'
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaSimples'
+
+  /v1/integracoes/dces/exportar-dce:
+    post:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Exportar XML de DC-es'
+      description: 'Exporta o XML de um ou mais DC-es'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: 'Ok'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoExportacaoXmlDcesDto'
+
+  /v1/integracoes/dces/remover:
+    delete:
+      security:
+        - tokenAuth: []
+        - tenantAuth: []
+      tags:
+        - 'DC-e'
+      summary: 'Remover DC-es'
+      description: 'Remove um ou mais DC-es'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '204':
+          description: 'DC-es removidas'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
 components:
   securitySchemes:
     tokenAuth:
@@ -1546,6 +1814,33 @@ components:
       schema:
         type: string
         example: 'a2045897-d9c4-482a-8e01-3ef76624cbdd'
+
+    dceIdPathParam:
+      in: path
+      name: id
+      description: id da DC-e
+      required: true
+      schema:
+        type: string
+        example: '5918b5c0-8b59-48c0-8905-9684dd0edceb'
+
+    dceEmpresaIdQueryParam:
+      in: query
+      name: empresaId
+      description: id da empresa
+      required: true
+      schema:
+        type: string
+        example: '5918b5c0-8b59-48c0-8905-9684dd0edceb'
+
+    chaveAcessoDcePathParam:
+      in: path
+      name: chaveAcesso
+      description: chave de acesso da DC-e
+      required: true
+      schema:
+        type: string
+        example: '35210908956174000215579990000000021000000000'
 
   responses:
     CreateResponse:
@@ -4154,3 +4449,304 @@ components:
         - LITROS
         - MMBTU
       example: KG
+
+    # ==================== DC-e Schemas ====================
+
+    StatusDce:
+      type: string
+      enum:
+        - EM_DIGITACAO
+        - VALIDADO
+        - ASSINADO
+        - EM_PROCESSAMENTO
+        - REJEITADO
+        - CANCELADO
+        - AUTORIZADO
+      example: AUTORIZADO
+
+    DceEnderecoIntegracao:
+      type: object
+      required:
+        - logradouro
+        - numero
+        - bairro
+        - municipio
+        - uf
+        - cep
+      properties:
+        pais:
+          type: string
+          example: 'Brasil'
+        logradouro:
+          type: string
+          example: 'Rua das Flores'
+        numero:
+          type: string
+          example: '123'
+        bairro:
+          type: string
+          example: 'Centro'
+        codMunicipio:
+          type: string
+          example: '3550308'
+        municipio:
+          type: string
+          example: 'São Paulo'
+        uf:
+          type: string
+          example: 'SP'
+        cep:
+          type: string
+          example: '01001000'
+        complemento:
+          type: string
+          example: 'Sala 10'
+
+    DceEnvolvidoIntegracao:
+      type: object
+      required:
+        - inscricaoFederal
+        - nome
+        - telefone
+        - endereco
+      properties:
+        inscricaoFederal:
+          type: string
+          description: 'CPF ou CNPJ'
+          example: '08956174000215'
+        nome:
+          type: string
+          example: 'Empresa Teste LTDA'
+        nomeFantasia:
+          type: string
+          example: 'Empresa Teste'
+        telefone:
+          type: string
+          example: '11999999999'
+        email:
+          type: string
+          example: 'contato@empresa.com'
+        inscricaoEstadual:
+          type: string
+          example: '123456789'
+        endereco:
+          $ref: '#/components/schemas/DceEnderecoIntegracao'
+
+    DceIntegracaoProduto:
+      type: object
+      required:
+        - descricao
+        - quantidade
+        - valorUnitario
+      properties:
+        descricao:
+          type: string
+          example: 'Produto Teste'
+        quantidade:
+          type: number
+          example: 10
+        valorUnitario:
+          type: number
+          example: 25.50
+
+    DceIntegracao:
+      type: object
+      required:
+        - idIntegracao
+        - remetente
+        - destinatario
+        - produtos
+      properties:
+        idIntegracao:
+          type: string
+          description: 'Identificador único externo para integração'
+          example: '67cdc830-3155-4b5d-aa0f-2b1aa23a5fd9'
+        remetente:
+          $ref: '#/components/schemas/DceEnvolvidoIntegracao'
+        destinatario:
+          $ref: '#/components/schemas/DceEnvolvidoIntegracao'
+        produtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/DceIntegracaoProduto'
+        dataEmissao:
+          type: string
+          format: date
+          example: '2026-03-28T12:33:50-0300'
+
+    DceEntityReturn:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '5918b5c0-8b59-48c0-8905-9684dd0edceb'
+        numero:
+          type: integer
+          example: 1
+        serie:
+          type: integer
+          example: 1
+
+    DceDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '5918b5c0-8b59-48c0-8905-9684dd0edceb'
+        numero:
+          type: integer
+          example: 1
+        serie:
+          type: integer
+          example: 1
+        valorTotal:
+          type: number
+          example: 255.00
+        nomeRemetente:
+          type: string
+          example: 'Empresa Remetente LTDA'
+        nomeDestinatario:
+          type: string
+          example: 'Empresa Destinatário LTDA'
+        statusDce:
+          $ref: '#/components/schemas/StatusDce'
+        dataAutorizacao:
+          type: string
+          format: date-time
+          example: '2026-03-31T10:00:00Z'
+        dataEmissao:
+          type: string
+          format: date-time
+          example: '2026-03-31T10:00:00Z'
+
+    DceEmitir:
+      type: object
+      required:
+        - idList
+      properties:
+        idList:
+          type: array
+          items:
+            type: string
+          example: ['5918b5c0-8b59-48c0-8905-9684dd0edceb']
+        enviarEmail:
+          type: boolean
+          example: false
+
+    DceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '5918b5c0-8b59-48c0-8905-9684dd0edceb'
+        serie:
+          type: string
+          example: '1'
+        numero:
+          type: string
+          example: '1'
+        sucesso:
+          type: boolean
+          example: true
+        motivo:
+          type: string
+          example: 'Autorizado o uso da DC-e'
+        statusOperacao:
+          $ref: '#/components/schemas/StatusDce'
+        erroConfigurarCertificado:
+          type: boolean
+          example: false
+
+    DceEmissaoResponse:
+      type: object
+      properties:
+        dceResponses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DceResponse'
+        erroEmProcessamento:
+          type: boolean
+          example: false
+
+    DceCancelarRequest:
+      type: object
+      required:
+        - motivoCancelamento
+        - dataAtual
+        - idList
+      properties:
+        motivoCancelamento:
+          type: string
+          minLength: 15
+          maxLength: 255
+          example: 'Cancelamento solicitado pelo cliente devido a erro nos dados'
+        dataAtual:
+          type: string
+          format: date-time
+          example: '2026-03-28T12:33:50-0300'
+        idList:
+          type: array
+          items:
+            type: string
+          example: ['5918b5c0-8b59-48c0-8905-9684dd0edceb']
+
+    DceCancelarResponse:
+      type: object
+      properties:
+        operacoesList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DceResponse'
+        realizadosSucesso:
+          type: integer
+          example: 1
+        naoRealizados:
+          type: integer
+          example: 0
+
+    ConsultarStatusDceWrapper:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+          example: '35210908956174000215579990000000021000000000'
+        numero:
+          type: integer
+          example: 1
+        serie:
+          type: integer
+          example: 1
+        situacao:
+          type: string
+          example: 'Autorizado'
+
+    ConsultarStatusDceReturnWrapper:
+      type: object
+      properties:
+        consultarStatusDceWrapperList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsultarStatusDceWrapper'
+        sucesso:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: 'Consulta realizada com sucesso'
+
+    RespostaSimples:
+      type: object
+      properties:
+        texto:
+          type: string
+          example: 'Autorizado'
+
+    RetornoExportacaoXmlDcesDto:
+      type: object
+      properties:
+        idArquivo:
+          type: string
+          example: '5918b5c0-8b59-48c0-8905-9684dd0edceb'
+        url:
+          type: string
+          example: 'https://storage.hivecloud.com.br/exports/dce-export.zip'
