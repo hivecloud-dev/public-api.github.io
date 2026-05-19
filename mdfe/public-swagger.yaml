@@ -8,6 +8,140 @@ servers:
   - url: https://mdfe-api.hivecloud.com.br/api
 
 paths:
+  /v1/integracoes/mdfes:
+    get:
+      tags:
+        - Mdfe
+      operationId: IntegraMdfeV1ControllerImp.list
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: empresa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dataEmissaoInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataEmissaoFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: numeroInicial
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: numeroFinal
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: serie
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: situacao
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/StatusMdfe'
+        - name: placa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: placaTracao
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: motorista
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ufInicio
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ufTermino
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: chaveAcesso
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: buscaChaveDocumento
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: numeroDoc
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tipoEmitente
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoEmitente'
+        - name: carregamentoPosterior
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: statusAberbacao
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResources'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
   /v1/integracoes/mdfes/cancelar:
     post:
       security:
@@ -461,6 +595,28 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: get
+
+  /v1/integracoes/mdfes/exportar-mdfe:
+    post:
+      tags:
+        - Mdfe
+      operationId: IntegraExportacaoMdfeControllerImp.exportarMdfe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/idMdfeItens'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoExportacaoXmlMdfes'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
 
 components:
   securitySchemes:
@@ -1092,6 +1248,13 @@ components:
           example: "CTE"
         municipio:
           $ref: "#/components/schemas/LocalidadeIntegracao"
+    RetornoExportacaoXmlMdfes:
+      type: object
+      properties:
+        idArquivo:
+          type: string
+        url:
+          type: string
     SeguroCargaItemIntegracao:
       title: "SeguroCargaItem"
       type: "object"
@@ -1832,6 +1995,73 @@ components:
           nullable: true
           description: Data e hora de encerramento do MDF-e.
           example: null
+    StatusMdfe:
+      type: string
+      enum:
+        - VALIDADO
+        - EMDIGITACAO
+        - REJEITADO
+        - DENEGADO
+        - EMPROCESSAMENTO
+        - CANCELADO
+        - ENCERRADO
+        - AUTORIZADO
+        - ASSINADO
+        - CONTINGENCIA
+    TipoEmitente:
+      type: string
+      enum:
+        - SERVICO
+        - PROPRIO
+        - GLOBALIZADO
+    PagedResources:
+      type: object
+      properties:
+        pageMetadata:
+          $ref: '#/components/schemas/PageMetadata'
+        nextLink:
+          type: string
+        previousLink:
+          type: string
+        content:
+          type: array
+          items: {}
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+    RequestParam:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        campoPesquisa:
+          type: string
+    idMdfeItens:
+      type: array
+      items:
+        type: string
+      example:
+        [
+          '9c015cc6-8471-4838-8391-e17fbc5a0a75',
+          '7d231cf5-5111-456b-93d0-df6401762adb',
+        ]
+
 
   responses:
     CreateResponseId:
