@@ -1,0 +1,6263 @@
+---
+openapi: 3.0.3
+info:
+  title: Documentação da integração interna do CTE
+  description: Esta é a documentação das interfaces REST do CTE
+  contact:
+    name: Equipe de desenvolvimento
+    email: desenvolvimento@hivecloud.com.br
+  version: 1.0
+servers:
+  - url: /cte/api
+    description: Servidor Local com /cte
+  - url: /api
+    description: Servidor Local sem /cte
+tags:
+  - name: Central Emissao
+  - name: Dominio Sistemas
+  - name: Consulta Situacao Cte
+    description: Controlador para consultas de situação de CT-e via integração.
+  - name: Consultas
+  - name: Cte
+  - name: Cte
+    description: Controlador de integraï¿½ï¿½o para consulta e manutenï¿½ï¿½o de CT-es.
+  - name: Dce
+    description: Controlador para emissÃ£o de DC-e via integraÃ§Ã£o.
+  - name: Emitir Cte
+    description: Controlador para emissão de CT-e via integração.
+  - name: Empresas
+    description: Controlador de integraï¿½ï¿½o para CRUD de Empresas.
+  - name: Cte
+    description: Controlador para envio de e-mails de CT-e via integração.
+  - name: Envolvidos
+    description: Controlador de integraï¿½ï¿½o para CRUD de Envolvidos.
+  - name: Cte
+    description: Controlador para exportação de XML de CT-e via integração.
+  - name: Importação
+    description: Controlador para importação de CT-e via arquivos XML.
+  - name: Imprimir
+  - name: Imprimir
+paths:
+  /v1/central-emissao/cte:
+    post:
+      tags:
+        - Central Emissao
+      operationId: CentralEmissaoControllerImp.criarCte
+      description: Cria CT-e via integraï¿½ï¿½o facilitada a partir de arquivo.
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: body
+          in: query
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: object
+              properties:
+                arquivo:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CteView'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarCte
+  /v1/central-emissao/cte/emitir-sincrono:
+    post:
+      tags:
+        - Central Emissao
+      operationId: CentralEmissaoControllerImp.emitirCteSincrono
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CteEmitir'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmitirCtesReturnWrapper'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitirCteSincrono
+  /v1/central-emissao/cte/exportar:
+    post:
+      tags:
+        - Central Emissao
+      operationId: CentralEmissaoControllerImp.exportarCte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExportacaoCteResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: exportarCte
+  /v1/central-emissao/cte/{id}/exportar:
+    get:
+      tags:
+        - Central Emissao
+      operationId: CentralEmissaoControllerImp.exportarCte
+      parameters:
+        - name: arg0
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportacaoCteResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: exportarCte
+  /v1/integracoes/ctes/consultar-situacao:
+    post:
+      tags:
+        - Consulta Situacao Cte
+      operationId: IntegrarConsultaSituacaoCteControllerImp.consultarSituacao
+      description: Inicia consulta de situação de CT-e e retorna o ID da transação.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: ResponseEntity contendo o TransactionID gerado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacao
+  /v1/integracoes/ctes/consultar-situacao-por-chave-acesso/{chaveAcesso}:
+    get:
+      tags:
+        - Consulta Situacao Cte
+      operationId: IntegrarConsultaSituacaoCteControllerImp.consultarSituacaoPorChaveAcesso
+      description: Consulta a situação do CT-e diretamente pela chave de acesso.
+      parameters:
+        - name: arg0
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: arg1
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ResponseEntity com a situação em texto simples.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaSimples'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacaoPorChaveAcesso
+  /v1/integracoes/ctes/consultar-situacao/{id}/consultar-status:
+    get:
+      tags:
+        - Consulta Situacao Cte
+      operationId: IntegrarConsultaSituacaoCteControllerImp.consultarSituacaoTransactionInfo
+      description: Obtém o status da transação assíncrona de consulta de CT-e.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ResponseEntity com informações de status da transação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacaoTransactionInfo
+  /v1/integracoes/ctes/consultar-situacao/{id}/obter-resultado:
+    get:
+      tags:
+        - Consulta Situacao Cte
+      operationId: IntegrarConsultaSituacaoCteControllerImp.consultarSituacaoReturnValue
+      description: Retorna o resultado final da consulta de situação de CT-e.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ResponseEntity com o wrapper do resultado obtido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultarStatusCteObterResultadoWrapper'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacaoReturnValue
+  /v1/integracoes/consultas/nfe/{chaveAcesso}:
+    get:
+      tags:
+        - Consultas
+      operationId: IntegrarConsultasControllerImp.consultaNfe
+      description: Consulta NFE pela chave de acesso.
+      parameters:
+        - name: chaveAcesso
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '03516074750841100570055100000881505109416071'
+      responses:
+        200:
+          description: dados da NFE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DadosNfe'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultaNfe
+  /v1/integracoes/cte:
+    post:
+      tags:
+        - Cte
+      operationId: IntegrarCteControllerImp.integrarCte
+      description: Integra um CT-e a partir dos dados enviados.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CteIntegracao'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEntityReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: integrarCte
+  /v1/integracoes/cte/cancelar:
+    post:
+      tags:
+        - Cte
+      operationId: IntegrarCteControllerImp.cancelarCte
+      description: Cancela CT-es informados e retorna o resultado.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CteCancelarRequest'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CteCancelarResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: cancelarCte
+  /v1/integracoes/cte/{id}:
+    delete:
+      tags:
+        - Cte
+      operationId: IntegrarCteControllerImp.removerPorId
+      description: Remove CT-e integrado pelo ID informado.
+      parameters:
+        - name: arg0
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: removerPorId
+  /v1/integracoes/ctes:
+    get:
+      tags:
+        - Cte
+      operationId: IntegrarCtesControllerImp.list
+      description: Lista CT-es com paginaï¿½ï¿½o e filtros.
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dataEmissaoInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataEmissaoFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataAutorizacaoInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataAutorizacaoFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: numeroInicial
+          description: Número inicial para filtro.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: numeroFinal
+          description: Número final para filtro.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: numerosList
+          description: Lista de números específicos para filtro.
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+        - name: serie
+          description: Série do documento.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: tipoServico
+          description: Tipo de serviço do CT-e.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoServico'
+        - name: tipoCte
+          description: "Tipo do CT-e (normal, complementar, etc.)."
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoCTe'
+        - name: statusCte
+          description: Status atual do CT-e.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/StatusCte'
+        - name: tipoEmissao
+          description: "Tipo de emissão (normal, contingência)."
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoEmissao'
+        - name: dacteImpresso
+          description: "Se true, DACTE já foi impresso."
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: xmlExportado
+          description: "Se true, XML já foi exportado."
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: ufInicial
+          description: UF de origem.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ufFinal
+          description: UF de destino.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: modal
+          description: Modal de transporte.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/Modal'
+        - name: nomeTomador
+          description: Nome do tomador.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjTomador
+          description: CPF/CNPJ do tomador.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeRemetente
+          description: Nome do remetente.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjRemetente
+          description: CPF/CNPJ do remetente.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeDestinatario
+          description: Nome do destinatário.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjDestinatario
+          description: CPF/CNPJ do destinatário.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeExpedidor
+          description: Nome do expedidor.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjExpedidor
+          description: CPF/CNPJ do expedidor.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeRecebedor
+          description: Nome do recebedor.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjRecebedor
+          description: CPF/CNPJ do recebedor.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: usuarioCadastro
+          description: Usuário responsável pelo cadastro.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: usuarioCancelamento
+          description: Usuário que cancelou o CT-e.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: usuarioEmissor
+          description: Usuário emissor do CT-e.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: empresaId
+          description: Empresa à qual o CT-e pertence.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: chaveAcesso
+          description: Chave de acesso do CT-e.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: idIntegracao
+          description: Identificador de integração externo.
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: pï¿½gina com CT-es.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cte'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+              example:
+                pageMetadata:
+                  size: 15
+                  number: 1
+                  totalElements: 101
+                  totalPages: 7
+                nextLink: https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10
+                previousLink: https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=2&pageSize=10
+                content:
+                  - id: 7d231cf5-5111-456b-93d0-df6401762adb
+                    numero: 2
+                    serie: 3
+                    ufInicial: SP
+                    ufFinal: RJ
+                    valorTotalFrete: 4000
+                    nomeRemetente: Joaquim e Kauê Comercio de Bebidas ME
+                    nomeTombador: Joaquim e Kauê Comercio de Bebidas ME
+                    nomeDestinatario: Joaquim e Kauê Comercio de Bebidas ME
+                    statusCte: AUTORIZADO
+                    tipoEmissao: NORMAL
+                    xmlExportado: true
+                    dacteImpresso: true
+                    dataAutorizacao: 2021-08-28T09:30:00-0300
+                    dataEmissao: 2021-08-28T09:30:00-0300
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
+  /v1/integracoes/ctes/cte-complementar:
+    post:
+      tags:
+        - Cte
+      operationId: IntegrarCtesControllerImp.criarCteComplementar
+      description: Gera um CT-e complementar a partir de um CT-e autorizado.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CteComplementar'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplementarCteResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: criarCteComplementar
+  /v1/integracoes/ctes/substituir-cte/{id}:
+    post:
+      tags:
+        - Cte
+      operationId: IntegrarCtesControllerImp.substituirCte
+      description: Cria CT-e de substituiï¿½ï¿½o para o ID informado.
+      parameters:
+        - name: arg0
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubstituicaoCteResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: substituirCte
+  /v1/integracoes/ctes/{id}:
+    get:
+      tags:
+        - Cte
+      operationId: IntegrarCtesControllerImp.get
+      description: Busca detalhes de um CT-e pelo ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CteView'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: get
+    put:
+      tags:
+        - Cte
+      operationId: IntegrarCtesControllerImp.update
+      description: Atualiza um CT-e existente.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CteCreate'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: update
+  /v1/integracoes/ctes/enviar-email:
+    post:
+      tags:
+        - Cte
+      operationId: IntegrarEnvioEmailCteControllerImp.enviarEmail
+      description: Envia e-mails de CT-e para destinatários informados ou padrão.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParametroEnvioEmailCte'
+      responses:
+        200:
+          description: successful operation
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: enviarEmail
+  /v1/integracoes/ctes/exportar-cte:
+    post:
+      tags:
+        - Cte
+      operationId: IntegrarExportacaoCteControllerImp.exportarCte
+      description: Exporta XMLs de CT-e para os IDs informados.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: resposta com o resumo da exportação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoExportacaoXmlCtes'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: exportarCte
+  /v1/integracoes/dces:
+    post:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.integrarDce
+      parameters:
+        - name: empresaId
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DceIntegracao'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DceEntityReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: integrarDce
+  /v1/integracoes/dces/cancelar:
+    post:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.cancelar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DceCancelarRequest'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DceCancelarResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: cancelar
+  /v1/integracoes/dces/consultar-situacao:
+    post:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.consultarSituacao
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacao
+  /v1/integracoes/dces/consultar-situacao-por-chave-acesso/{chaveAcesso}:
+    get:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.consultarSituacaoPorChaveAcesso
+      parameters:
+        - name: arg0
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: arg1
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespostaSimples'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacaoPorChaveAcesso
+  /v1/integracoes/dces/consultar-situacao/{id}/consultar-status:
+    get:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.consultarSituacaoTransactionInfo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacaoTransactionInfo
+  /v1/integracoes/dces/consultar-situacao/{id}/obter-resultado:
+    get:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.consultarSituacaoReturnValue
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultarStatusDceReturnWrapper'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacaoReturnValue
+  /v1/integracoes/dces/emitir:
+    post:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.emitir
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DceEmitir'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitir
+  /v1/integracoes/dces/emitir/{id}/consultar-status:
+    get:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.emitirDceTransactionInfo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitirDceTransactionInfo
+  /v1/integracoes/dces/emitir/{id}/obter-resultado:
+    get:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.emitirDceReturnValue
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DceEmissaoResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitirDceReturnValue
+  /v1/integracoes/dces/exportar-dce:
+    post:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.exportarDce
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoExportacaoXmlDcesDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: exportarDce
+  /v1/integracoes/dces/remover:
+    delete:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.removerDces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: removerDces
+  /v1/integracoes/dces/{id}:
+    get:
+      tags:
+        - Dce
+      operationId: IntegrarDceControllerImp.obterDce
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DceDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: obterDce
+  /v1/ctes/dominio-sistemas/consultar-situacao/{id}/consultar-status:
+    get:
+      tags:
+        - Dominio Sistemas
+      operationId: DominioSistemasControllerImp.consultarSituacaoTransactionInfo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacaoTransactionInfo
+  /v1/ctes/dominio-sistemas/consultar-situacao/{id}/obter-resultado:
+    get:
+      tags:
+        - Dominio Sistemas
+      operationId: DominioSistemasControllerImp.consultarSituacaoReturnValue
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DominioSistemasEnvioXmlReturnWrapper'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarSituacaoReturnValue
+  /v1/ctes/dominio-sistemas/enviar-xml:
+    post:
+      tags:
+        - Dominio Sistemas
+      operationId: DominioSistemasControllerImp.enviarXml
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: enviarXml
+  /v1/integracoes/ctes/emitir:
+    post:
+      tags:
+        - Emitir Cte
+      operationId: IntegrarEmitirCteControllerImp.emitirCte
+      description: Inicia a emissão de CT-e e retorna o ID da transação.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CteEmitir'
+      responses:
+        200:
+          description: TransactionID gerado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitirCte
+  /v1/integracoes/ctes/emitir/{id}/consultar-status:
+    get:
+      tags:
+        - Emitir Cte
+      operationId: IntegrarEmitirCteControllerImp.emitirCteTransactionInfo
+      description: Consulta o status da emissão.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 00a34581-03d8-4ef4-aa54-d45cd5353743
+      responses:
+        200:
+          description: status da transação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitirCteTransactionInfo
+  /v1/integracoes/ctes/emitir/{id}/obter-resultado:
+    get:
+      tags:
+        - Emitir Cte
+      operationId: IntegrarEmitirCteControllerImp.emitirCteReturnValue
+      description: Obtém o resultado da emissão quando concluída com sucesso.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 00a34581-03d8-4ef4-aa54-d45cd5353743
+      responses:
+        200:
+          description: lista de respostas de CT-e.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CteResponse'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitirCteReturnValue
+  /v1/integracoes/empresas:
+    get:
+      tags:
+        - Empresas
+      operationId: IntegrarEmpresasControllerImp.list
+      description: Lista Empresas com paginaï¿½ï¿½o e filtros.
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nome
+          description: Nome ou razão social para filtro.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cnpj
+          description: CNPJ para filtro exato.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ie
+          description: Inscrição estadual para filtro.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: idList
+          description: Lista de IDs para filtro direto.
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: cnpjList
+          description: Lista de CNPJs para filtro.
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: filtrarEmpresaAtivada
+          description: "Se true, retorna apenas empresas ativas."
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmpresaSummary'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+              example:
+                pageMetadata:
+                  size: 15
+                  number: 1
+                  totalElements: 101
+                  totalPages: 7
+                nextLink: https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10
+                previousLink: https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=2&pageSize=10
+                content:
+                  - id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+                    nome: Transporta Tudo
+                    nomeFantasia: Transporta Tudo
+                    cnpj: 12345678901234
+                    ie: 123456
+                    emailsAlternativos: "teste@teste.com,teste@teste.com"
+                    telefone: 81999999999
+                    email: teste@teste.com
+                    endereco:
+                      logradouro: R. AlfÃ¢ndega
+                      bairro: Recife
+                      cep: 50030030
+                      numero: 35
+                      complemento: ""
+                      nomeMunicipio: Recife
+                      uf: PE
+                      pais: Brasil
+                    observacao: Texto da observação. Escrito aqui.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
+    post:
+      tags:
+        - Empresas
+      operationId: IntegrarEmpresasControllerImp.post
+      description: Cria uma nova Empresa.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        200:
+          description: localizaï¿½ï¿½o e ID criado.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: post
+  /v1/integracoes/empresas/{id}:
+    get:
+      tags:
+        - Empresas
+      operationId: IntegrarEmpresasControllerImp.get
+      description: Busca uma Empresa pelo ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpresaView'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: get
+    put:
+      tags:
+        - Empresas
+      operationId: IntegrarEmpresasControllerImp.put
+      description: Substitui dados de uma Empresa.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        200:
+          description: sem conteï¿½do.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: put
+    patch:
+      tags:
+        - Empresas
+      operationId: IntegrarEmpresasControllerImp.patch
+      description: Atualiza parcialmente uma Empresa.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        200:
+          description: sem conteï¿½do.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: patch
+    delete:
+      tags:
+        - Empresas
+      operationId: IntegrarEmpresasControllerImp.delete
+      description: Exclui uma Empresa pelo ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: sem conteï¿½do.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: delete
+  /v1/integracoes/envolvidos:
+    get:
+      tags:
+        - Envolvidos
+      operationId: IntegrarEnvolvidosControllerImp.list
+      description: Lista Envolvidos com paginaï¿½ï¿½o e filtros.
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nome
+          description: Nome ou razão social para filtro.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeFantasia
+          description: Nome fantasia para filtro.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cnpj
+          description: CNPJ para filtro exato.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ie
+          description: Inscrição estadual para filtro.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: emailsAlternativos
+          description: E-mails alternativos para busca.
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: pï¿½gina com os resultados.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Envolvido'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+              example:
+                pageMetadata:
+                  size: 15
+                  number: 1
+                  totalElements: 101
+                  totalPages: 7
+                nextLink: https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=0&pageSize=10
+                previousLink: https://virtserver.swaggerhub.com/hivecloud-dev/ar-api/1.0.0-oas3/v1/entregadores/monitoramento?pageNumber=2&pageSize=10
+                content:
+                  - id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+                    nome: Transporta Tudo
+                    nomeFantasia: Transporta Tudo
+                    cnpj: 12345678901234
+                    ie: 123456
+                    emailsAlternativos: "teste@teste.com,teste@teste.com"
+                    telefone: 81999999999
+                    email: teste@teste.com
+                    endereco:
+                      logradouro: R. AlfÃ¢ndega
+                      bairro: Recife
+                      cep: 50030030
+                      numero: 35
+                      complemento: ""
+                      nomeMunicipio: Recife
+                      uf: PE
+                      pais: Brasil
+                    observacao: Texto da observação. Escrito aqui.
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
+    post:
+      tags:
+        - Envolvidos
+      operationId: IntegrarEnvolvidosControllerImp.create
+      description: Cria um novo Envolvido.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoCreate'
+      responses:
+        200:
+          description: localizaï¿½ï¿½o e ID criado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEntityReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: create
+    delete:
+      tags:
+        - Envolvidos
+      operationId: IntegrarEnvolvidosControllerImp.deleteLote
+      description: Exclui Envolvidos em lote.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: status multi-status.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: deleteLote
+  /v1/integracoes/envolvidos/{id}:
+    get:
+      tags:
+        - Envolvidos
+      operationId: IntegrarEnvolvidosControllerImp.get
+      description: Busca um Envolvido pelo ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: EnvolvidoView encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvolvidoView'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: get
+    put:
+      tags:
+        - Envolvidos
+      operationId: IntegrarEnvolvidosControllerImp.put
+      description: Substitui dados de um Envolvido.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvolvidoCreate'
+      responses:
+        200:
+          description: resposta sem conteï¿½do.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: put
+    patch:
+      tags:
+        - Envolvidos
+      operationId: IntegrarEnvolvidosControllerImp.patch
+      description: Atualiza parcialmente um Envolvido.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+      responses:
+        200:
+          description: resposta sem conteï¿½do.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: patch
+    delete:
+      tags:
+        - Envolvidos
+      operationId: IntegrarEnvolvidosControllerImp.delete
+      description: Exclui um Envolvido pelo ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: resposta sem conteï¿½do.
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: delete
+  /v1/integracoes/ctes/importar-xml-cte:
+    post:
+      tags:
+        - Importação
+      operationId: IntegrarImportacaoCteNfeV1ControllerImp.importarXmlCte
+      description: Importa um arquivo XML de CT-e e retorna o resultado da operação.
+      parameters:
+        - name: arg1
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              required:
+                - arg0
+              type: object
+              properties:
+                arg0:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: ResponseEntity com a lista de respostas da importação.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperacaoImportacaoResponse'
+              example:
+                nomeArquivo: cte.xml
+                motivoErro: ""
+                sucesso: true
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: importarXmlCte
+  /v1/integracoes/ctes/importar-xml-cte-list:
+    post:
+      tags:
+        - Importação
+      operationId: IntegrarImportacaoCteNfeV1ControllerImp.importarXmlCteList
+      description: Importa uma lista de arquivos XML de CT-e e retorna os resultados.
+      parameters:
+        - name: arg1
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - arg0
+              type: object
+              properties:
+                arg0:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: ResponseEntity com a lista de respostas da importação.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OperacaoImportacaoResponse'
+              example:
+                nomeArquivo: cte.xml
+                motivoErro: ""
+                sucesso: true
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: importarXmlCteList
+  /v1/integracoes/ctes/imprimir-documento-cte:
+    post:
+      tags:
+        - Imprimir
+      operationId: IntegrarImprimirDocumentoCteControllerImp.imprimirDocumentoCte
+      description: Inicia a impressão do documento do CT-e e retorna a resposta final.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParametrosImprimirCtes'
+      responses:
+        200:
+          description: ResponseEntity contendo o resultado da impressão.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImprimirCtesReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: imprimirDocumentoCte
+  /v1/integracoes/ctes/imprimir-relatorio-cte:
+    post:
+      tags:
+        - Imprimir
+      operationId: IntegrarImprimirRelatoriosCteControllerImp.imprimirRelatorioCte
+      description: Inicia a impressão de relatório de CT-e e retorna o ID da transação.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParametrosImprimirRelatorio'
+      responses:
+        200:
+          description: ResponseEntity com o TransactionID da impressão.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: imprimirRelatorioCte
+  /v1/integracoes/ctes/imprimir-relatorio-cte/{id}/consultar-status:
+    get:
+      tags:
+        - Imprimir
+      operationId: IntegrarImprimirRelatoriosCteControllerImp.imprimirRelatorioCteTransactionInfo
+      description: Consulta o status da transação de impressão de relatório.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ResponseEntity com informações do status da transação.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: imprimirRelatorioCteTransactionInfo
+  /v1/integracoes/ctes/imprimir-relatorio-cte/{id}/obter-resultado:
+    get:
+      tags:
+        - Imprimir
+      operationId: IntegrarImprimirRelatoriosCteControllerImp.emitirCteReturnValue
+      description: Obtém o arquivo do relatório gerado para a transação informada.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ResponseEntity com o arquivo em bytes (octet-stream).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/byte'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitirCteReturnValue
+components:
+  schemas:
+    AereoIntegracao:
+      required:
+        - dataPrevista
+        - classe
+        - valorTarifa
+      type: object
+      properties:
+        dataPrevista:
+          type: string
+          format: date-time
+        codigoCargaEspecial:
+          description: "Código de carga especial, se houver."
+          type: string
+        classe:
+          $ref: '#/components/schemas/ClasseTarifaria'
+        dimensao:
+          description: "Dimensão da carga, se aplicável."
+          type: string
+        valorTarifa:
+          type: number
+          format: double
+    Anulacao:
+      type: object
+      properties:
+        chaveAcessoCteAnulacao:
+          type: string
+        data:
+          type: string
+          format: date-time
+    AtividadeTomador:
+      type: string
+      enum:
+        - NAO_CONTRIBUINTE
+        - INDUSTRIA
+        - COMERCIO
+        - AUTONOMO
+        - SERVICO
+        - PRODUTORRURAL
+        - COMUNICACAO
+        - ENERGIA
+        - OUTROS
+        - TRANSPORTE
+    Avancado:
+      type: object
+      properties:
+        dadosCte:
+          description: Ajustes avançados do CT-e.
+          $ref: '#/components/schemas/DadosCte'
+        dadosCarga:
+          description: Ajustes avançados da carga.
+          $ref: '#/components/schemas/DadosCarga'
+        notas:
+          description: Observações diversas.
+          $ref: '#/components/schemas/Observacoes'
+        cpfCnpjAutorizadoXmlList:
+          description: Pessoas autorizadas a acessar o XML.
+          type: array
+          items:
+            type: string
+    CamposDiferimento:
+      type: object
+      properties:
+        percentualDiferimento:
+          type: number
+          format: double
+        valorDiferimento:
+          type: number
+          format: double
+    Carga:
+      type: object
+      properties:
+        tipoDocumentoCarga:
+          description: "Tipo de documento da carga (NF-e, NF, outros)."
+          $ref: '#/components/schemas/TipoDocumentoCarga'
+        produtoPredominante:
+          description: Produto predominante na carga.
+          type: string
+        valorTotalCarga:
+          description: Valor total da carga.
+          type: number
+          format: double
+        valorTotalVolume:
+          description: Valor total dos volumes.
+          type: number
+          format: double
+        pesoBrutoTotal:
+          description: Peso bruto total.
+          type: number
+          format: double
+        pesoLiquido:
+          description: Peso lï¿½quido total.
+          type: number
+          format: double
+        quantidadeVolumes:
+          description: Quantidade total de volumes.
+          type: number
+          format: double
+        nfeCreateList:
+          description: Lista de NF-e vinculadas.
+          type: array
+          items:
+            $ref: '#/components/schemas/NfeCreate'
+        nfCreateList:
+          description: Lista de Notas modelo 1/1A.
+          type: array
+          items:
+            $ref: '#/components/schemas/NfCreate'
+        outroDocumentoCreateList:
+          description: Outros documentos vinculados.
+          type: array
+          items:
+            $ref: '#/components/schemas/OutroDocumentoCreate'
+        dceCreateList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DceCreate'
+        detalhamentoDocumentosList:
+          description: Detalhamento por documento.
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentoDetalhamento'
+        detalhamentoEntregasList:
+          description: Detalhamento de entregas (multi-origem/destino).
+          type: array
+          items:
+            $ref: '#/components/schemas/DetalhamentoEntregas'
+        qtProdutoPredominante:
+          type: number
+          format: double
+    CargaAvancado:
+      type: object
+      properties:
+        informacoesCargaList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InformacoesCarga'
+        outrasCaracteristicasProduto:
+          type: string
+        valorCargaEfeitoAverbacao:
+          type: number
+          format: double
+    CargaIntegracao:
+      description: Dados da carga transportada e suas medidas.
+      required:
+        - valorTotal
+        - produtoPredominante
+        - medidas
+      type: object
+      properties:
+        valorTotal:
+          type: number
+          format: double
+        produtoPredominante:
+          type: string
+        medidas:
+          $ref: '#/components/schemas/MedidasIntegracao'
+    Carga_1:
+      type: object
+      properties:
+        codigoUnidadeMedida:
+          type: string
+        tipoMedida:
+          type: string
+        quantidadeCarga:
+          type: string
+    Cbs:
+      type: object
+      properties:
+        aliquota:
+          type: number
+          format: double
+        valor:
+          type: number
+          format: double
+        reducao:
+          $ref: '#/components/schemas/Reducao'
+    Certificado:
+      type: object
+      properties:
+        validade:
+          type: string
+          format: date-time
+        tipoCertificado:
+          $ref: '#/components/schemas/TipoCertificado'
+        aliasTipoCertificado:
+          type: string
+        token:
+          type: string
+        exibido30Dias:
+          type: boolean
+        exibido15Dias:
+          type: boolean
+        exibidoNoDia:
+          type: boolean
+        periodoValidadeCertificado:
+          $ref: '#/components/schemas/PeriodoValidadeCertificado'
+    Cfop:
+      type: object
+      properties:
+        codigo:
+          type: string
+        nome:
+          type: string
+    Charset:
+      type: object
+      properties:
+        name:
+          type: string
+        aliases:
+          type: array
+          items:
+            type: string
+        aliasSet:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+    ClasseTarifaria:
+      type: string
+      enum:
+        - TARIFA_MINIMA
+        - TARIFA_GERAL
+        - TARIFA_ESPECIFICA
+    ClassificacaoDuto:
+      type: string
+      enum:
+        - GASODUTO
+        - MINERODUTO
+        - OLEODUTO
+    Cobranca:
+      type: object
+      properties:
+        numeroFatura:
+          type: string
+        valorOriginal:
+          type: number
+          format: double
+        valorDescontado:
+          type: number
+          format: double
+        valorLiquido:
+          type: number
+          format: double
+        duplicataList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Duplicata'
+    Complementar:
+      type: object
+      properties:
+        chavesAcesso:
+          type: array
+          items:
+            type: string
+    ComplementarCreate:
+      type: object
+      properties:
+        chavesAcessoComplementar:
+          type: array
+          items:
+            type: string
+    ComplementarCteResponse:
+      type: object
+      properties:
+        cteId:
+          type: string
+        serie:
+          type: integer
+          format: int32
+        numero:
+          type: integer
+          format: int32
+      example:
+        cteId: 9c015cc6-8471-4838-8391-e17fbc5a0a75
+        serie: 1
+        numero: 100
+    ComponenteFrete:
+      type: object
+      properties:
+        nome:
+          type: string
+        valor:
+          type: number
+          format: double
+    ComponenteFrete_1:
+      type: object
+      properties:
+        nome:
+          type: string
+        valor:
+          type: number
+          format: double
+    CompositePathComponentBuilder:
+      type: object
+      properties:
+        builders:
+          type: array
+          items:
+            $ref: '#/components/schemas/PathComponentBuilder'
+    ConsultaStatusTransacao:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusTransacaoAssincrona'
+        successIndicator:
+          $ref: '#/components/schemas/IndicadorSucessoTransacaoAssincrona'
+        completionPercentage:
+          type: integer
+          format: int32
+        messageList:
+          type: array
+          items:
+            type: string
+      example:
+        status: COMPLETE
+        successIndicator: SUCEESS
+        completionPercentage: 0
+        messageList: ""
+    ConsultarStatusCteObterResultadoWrapper:
+      type: object
+      properties:
+        consultaStatusCte:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsultarStatusCteWrapper'
+        sucesso:
+          type: boolean
+        message:
+          type: string
+    ConsultarStatusCteWrapper:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        situacao:
+          type: string
+    ConsultarStatusDceReturnWrapper:
+      type: object
+      properties:
+        consultarStatusDceWrapperList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsultarStatusDceWrapper'
+        sucesso:
+          type: boolean
+        message:
+          type: string
+    ConsultarStatusDceWrapper:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        situacao:
+          type: string
+    CreateEntityReturn:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+      example:
+        id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+    Cte:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        ufInicial:
+          type: string
+        ufFinal:
+          type: string
+        valorTotalFrete:
+          type: number
+          format: double
+        nomeRemetente:
+          type: string
+        nomeTombador:
+          type: string
+        nomeDestinatario:
+          type: string
+        statusCte:
+          $ref: '#/components/schemas/StatusCte_1'
+        tipoEmissao:
+          $ref: '#/components/schemas/TipoEmissao_1'
+        xmlExportado:
+          type: boolean
+        dacteImpresso:
+          type: boolean
+        dataAutorizacao:
+          type: string
+          format: date-time
+        dataEmissao:
+          type: string
+          format: date-time
+        integrado:
+          type: boolean
+        statusAverbacao:
+          $ref: '#/components/schemas/StatusAverbacao'
+        protocoloAverbacao:
+          type: string
+    CteCancelarRequest:
+      required:
+        - motivoCancelamento
+        - dataAtual
+        - idList
+      type: object
+      properties:
+        motivoCancelamento:
+          type: string
+        dataAtual:
+          type: string
+          format: date-time
+        idList:
+          type: array
+          items:
+            type: string
+    CteCancelarResponse:
+      type: object
+      properties:
+        operacoesList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CteResponse'
+        realizadosSucesso:
+          type: integer
+          format: int32
+        naoRealizados:
+          type: integer
+          format: int32
+      example:
+        naoRealizados: 0
+        realizadosSucesso: 0
+        operacoesList:
+          - id: 8adaa926-8aa0-4e9a-8e83-d9763e268130
+            serie: 10
+            numero: 123456
+            sucesso: true
+            motivo: Impossível Cancelar um CT-e gerado através de integração
+            statusOperacao: EMPROCESSAMENTO
+    CteComplementar:
+      description: Dados para criação de CT-e complementar.
+      required:
+        - valorComplementar
+      type: object
+      properties:
+        cteId:
+          description: ID do CT-e original autorizado.
+          type: string
+        chaveAcessoComplementar:
+          description: Chave de acesso do CT-e original (sem o prefixo CTe).
+          type: string
+        valorComplementar:
+          description: Valor a complementar no documento.
+          type: number
+          format: double
+        observacao:
+          description: Observação opcional da complementação.
+          type: string
+      example:
+        cteId: 9c015cc6-8471-4838-8391-e17fbc5a0a75
+        valorComplementar: 150.3
+    CteCreate:
+      required:
+        - dadosGerais
+      type: object
+      properties:
+        dadosGerais:
+          $ref: '#/components/schemas/DadosGerais'
+        carga:
+          description: Dados da carga e documentos vinculados.
+          $ref: '#/components/schemas/Carga'
+        modal:
+          description: Modal de transporte e dados específicos.
+          $ref: '#/components/schemas/Modal_1'
+        valoresImpostos:
+          description: "Valores, CFOP e impostos do serviço."
+          $ref: '#/components/schemas/ValoresImpostos'
+        impostoUfTermino:
+          description: Dados do ICMS devido na UF de término.
+          $ref: '#/components/schemas/ImpostoUfTermino'
+        avancado:
+          description: Campos opcionais/avançados para o CT-e.
+          $ref: '#/components/schemas/Avancado'
+        dadosEmitente:
+          description: Identificação do emitente para a operação.
+          $ref: '#/components/schemas/DadosEmitente'
+        cteObservacoesCustomizadas:
+          $ref: '#/components/schemas/CteObservacoesCustomizadas'
+    CteEmitir:
+      description: Parâmetros para emissão de CT-e via integração.
+      required:
+        - idList
+      type: object
+      properties:
+        enviarEmail:
+          description: "Se true, envia e-mail após a emissão."
+          type: boolean
+        averbarCte:
+          description: "Se true, realiza a averbação do CT-e emitido."
+          type: boolean
+        idList:
+          type: array
+          items:
+            type: string
+      example:
+        averbarCte: true
+        idList:
+          - 9c015cc6-8471-4838-8391-e17fbc5a0a75
+          - 7d231cf5-5111-456b-93d0-df6401762adb
+        enviarEmail: true
+    CteInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        serie:
+          type: string
+        numero:
+          type: string
+        sucesso:
+          type: boolean
+        motivo:
+          type: string
+        statusOperacao:
+          $ref: '#/components/schemas/CteStatus'
+        erroConfigurarCertificado:
+          type: boolean
+    CteIntegracao:
+      required:
+        - idIntegracao
+        - empresa
+        - remetente
+        - destinatario
+        - tomador
+        - frete
+        - carga
+        - documentos
+        - tipoTransporte
+      type: object
+      properties:
+        serie:
+          description: Série do Ct-e.
+          type: integer
+          format: int32
+        idIntegracao:
+          type: string
+        empresa:
+          $ref: '#/components/schemas/EmpresaIntegracao'
+        remetente:
+          $ref: '#/components/schemas/EnvolvidoIntegracao'
+        expedidor:
+          $ref: '#/components/schemas/EnvolvidoIntegracao'
+        recebedor:
+          $ref: '#/components/schemas/EnvolvidoIntegracao'
+        destinatario:
+          $ref: '#/components/schemas/DestinatarioIntegracao'
+        tomador:
+          $ref: '#/components/schemas/TomadorIntegracao'
+        dataOperacao:
+          description: Data/Hora da operação logística.
+          type: string
+          format: date-time
+        embutirImposto:
+          description: "Se true, considera imposto embutido no frete."
+          type: boolean
+        classificacaoTributariaIbsCbs:
+          description: Código da classificação tributária para cálculo dos impostos
+            IBS e CBS.
+          type: string
+        frete:
+          $ref: '#/components/schemas/FreteIntegracao'
+        carga:
+          $ref: '#/components/schemas/CargaIntegracao'
+        documentos:
+          $ref: '#/components/schemas/DocumentosIntegracao'
+        tipoTransporte:
+          $ref: '#/components/schemas/TipoTransporteIntegracao'
+        subcontratacaoRedespacho:
+          $ref: '#/components/schemas/SubcontratacaoRedespacho'
+        observacaoGeral:
+          description: Observação geral do CT-e.
+          type: string
+        observacaoIntegracaoContribuinte:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObservacaoIntegracao'
+        autorizadosXML:
+          description: Pessoas autorizadas a acessar o XML.
+          type: array
+          items:
+            type: string
+        sobrescritas:
+          $ref: '#/components/schemas/SobrescritasIntegracao'
+      example:
+        idIntegracao: a9ee59cd-0e1c-4b2f-b043-17cd9cb2f8ce
+        empresa:
+          inscricaoFederal: 39702201000176
+          inscricaoEstadual: 491999630084
+        remetente:
+          telefone: 11993580564
+          inscricaoFederal: 39702201000176
+          inscricaoEstadual: 491999630084
+          nome: Daniela e Daniel Pães e Doces Ltda
+          email: almoxarifado@danielaedanielpaesedocesltda.com.br
+          endereco:
+            uf: SP
+            logradouro: Rua Doutor Afonso Pena Júnior
+            numero: 178
+            bairro: Vila Sônia
+            codMunicipio: 3550308
+            municipio: São Paulo
+            pais: BRASIL
+            cep: '05622040'
+        destinatario:
+          consumidorFinal: false
+          telefone: 21981997671
+          inscricaoFederal: 75585793000157
+          inscricaoEstadual: 33509383
+          nome: Renata e Rebeca Contábil ME
+          email: manutencao@renataerebecacontabilme.com.br
+          endereco:
+            uf: RJ
+            logradouro: Rua Joaquim Pereira de Matos
+            numero: 283
+            bairro: Inoã
+            codMunicipio: 3302700
+            municipio: Maricá
+            pais: BRASIL
+            cep: 24943700
+        tomador:
+          atividade: SERVICO
+          telefone: 21981997671
+          inscricaoFederal: 75585793000157
+          inscricaoEstadual: 33509383
+          nome: Renata e Rebeca Contábil ME
+          email: manutencao@renataerebecacontabilme.com.br
+          endereco:
+            uf: RJ
+            logradouro: Rua Joaquim Pereira de Matos
+            numero: 283
+            bairro: Inoã
+            codMunicipio: 3302700
+            municipio: Maricá
+            pais: BRASIL
+            cep: 24943700
+        embutirImposto: true
+        frete:
+          freteValor: 150
+          fretePeso: 50
+          adValorem: 30
+          outrosFretes:
+            - nomeFrete: taxa descarga
+              valorFrete: 15
+            - nomeFrete: tx dif acesso
+              valorFrete: 30
+        carga:
+          valorTotal: 1490
+          produtoPredominante: Borrecha
+          medidas:
+            unidades: 50000
+            pesoBrutoKG: 1000
+            outrasMedidas:
+              - nomeMedida: peso drenado
+                valorMedida: 999
+                tipoMedida: KG
+        documentos:
+          chaveAcessoNFe:
+            - 25160208974214000170550010000323421000145023
+            - 35160203665157000124550010000454941000401441
+        tipoTransporte:
+          tipoTransporte: RODOVIARIO
+        observacaoGeral: "Cte de testes, emitido durante treinamento"
+        observacaoIntegracaoContribuinte:
+          - campo: Lei da Transparência
+            texto: O valor aproximado de tributos incidentes sobre o preço deste serviço
+              é de R$ 0.0
+    CteObservacoesCustomizadas:
+      type: object
+      properties:
+        dadosRetirada:
+          type: string
+        informacoesCteGlobalizado:
+          type: string
+        observacaoGeral:
+          type: string
+        observacaoFiscal:
+          type: string
+    CteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        serie:
+          type: string
+        numero:
+          type: string
+        sucesso:
+          type: boolean
+        motivo:
+          type: string
+        statusOperacao:
+          $ref: '#/components/schemas/StatusCte_1'
+        erroConfigurarCertificado:
+          type: boolean
+      example:
+        id: 8adaa926-8aa0-4e9a-8e83-d9763e268130
+        serie: 10
+        numero: 123456
+        sucesso: true
+        motivo: Impossível Cancelar um CT-e gerado através de integração
+        statusOperacao: EMPROCESSAMENTO
+    CteStatus:
+      type: string
+      enum:
+        - EM_EMDIGITACAO
+        - VALIDADO
+        - ASSINADO
+        - ENVIADO
+        - REJEITADO
+        - DENEGADO
+        - CANCELADO
+        - EM_PROCESSAMENTO
+        - AUTORIZADO
+        - ENVIADO_POR_EMAIL
+    CteView:
+      type: object
+      properties:
+        statusCte:
+          $ref: '#/components/schemas/StatusCte_1'
+        dataAutorizacao:
+          type: string
+          format: date-time
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        chaveAcesso:
+          type: string
+        dataEmissao:
+          type: string
+          format: date-time
+        id:
+          type: string
+        cfop:
+          type: string
+        naturezaOperacao:
+          type: string
+        versaoXml:
+          type: string
+        tipoServico:
+          $ref: '#/components/schemas/TipoServico_1'
+        finalidadeEmissao:
+          $ref: '#/components/schemas/FinalidadeEmissao'
+        tipoEmissao:
+          $ref: '#/components/schemas/TipoEmissao_1'
+        statusPagamento:
+          type: string
+        localEmissao:
+          type: string
+        localInicioPrestaco:
+          type: string
+        localFimPrestaco:
+          type: string
+        nomeUsuarioCriacao:
+          type: string
+        nomeUsuarioEmissao:
+          type: string
+        nomeUsuarioCancelamento:
+          type: string
+        integrado:
+          type: boolean
+        cartaCorrecao:
+          type: boolean
+        dadosGerais:
+          $ref: '#/components/schemas/DadosGerais_2'
+        modal:
+          $ref: '#/components/schemas/Modal_2'
+        empresa:
+          $ref: '#/components/schemas/Empresa'
+        envolvidos:
+          $ref: '#/components/schemas/Envolvidos'
+        dadosCarga:
+          $ref: '#/components/schemas/DadosCarga_1'
+        complementar:
+          $ref: '#/components/schemas/Complementar'
+        valores:
+          $ref: '#/components/schemas/Valores'
+        observacoes:
+          $ref: '#/components/schemas/Observacoes_1'
+        statusAverbacao:
+          $ref: '#/components/schemas/StatusAverbacao'
+        protocoloAverbacao:
+          type: string
+        seguroCargaList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeguroCarga'
+        mdfeId:
+          type: string
+      example:
+        statusCte: AUTORIZADO
+        dataAutorizacao: 2021-08-28T09:30:00-0300
+        numero: 2
+        serie: 1
+        chaveAcesso: CTe35210844369062000140570010000000051000000003
+        dataEmissao: 2021-08-28T09:30:00-0300
+        cfop: 5360
+        naturezaOperacao: PRESTACAO DE SERVICO DE TRANSPORTE A CONTRIBUINTE SUBSTITUTO
+        versaoXml: 3.00
+        tipoModal: RODO
+        tipoServico: NORMAL
+        finalidadeEmissao: NORMAL
+        tipoEmissao: NORMAL
+        statusPagamento: Pago
+        localEmissao: SÃO JOSÉ DO RIO PRETO
+        localInicioPrestaco: TERESÓPOLIS
+        localFimPrestaco: TERESÓPOLIS
+        nomeUsuarioCriacao: root
+        nomeUsuarioEmissao: root
+        nomeUsuarioCancelamento: root
+        dadosGerais:
+          dadosComplementares:
+            caracteristicaAdicionalTransporte: ADICIONAL Trans
+            caracteristicaAdicionalServico: ADICIONAL Serv
+            nomeFuncionarioEmissorCte: FUNCIONÁRIO EMISSOR
+            municipioOrigem: MUNICÍPIO DE ORIGEM
+            municipioDestino: MUNICÍPIO DE DESTINO
+            codigoRodaEntrega: Filial
+          previsaoFluxoCarga:
+            origem: Porto
+            destino: Aeroporto
+          passagemList:
+            - 5454545
+          dadosRetirada:
+            retiradoNoDestino: true
+            detalhes: Retirado aeroporto
+          dadosRejeicao:
+            data: 2021-08-28T09:30:00-0300
+            motivoRejeicao: Rejeicao
+        modal:
+          modalRodo:
+            previsaoEntrega: 2021-08-28T09:30:00-0300
+          modalDuto:
+            dataInicio: 2021-08-28T09:30:00-0300
+            dataFim: 2021-08-28T09:30:00-0300
+            valor: 4545.4
+          modalAero:
+            previsaoEntrega: 2021-08-28T09:30:00-0300
+            dimensao: 50x78x9
+            cargaEspecial: Material Laboratorial
+            classeTarifaria: TARIFA_MINIMA
+            valorTarifa: 789.4
+          modalAquav:
+            valorPrestacao: 45.87
+            freteMarinha: 45.87
+            irin: ASAS878
+            identificacaoNavio: a4sa5
+            numeroViagem: 80
+            portoEmbarque: Recife
+            portoDestino: Bahia
+            direcao: NORTE
+            tipoNavegacao: CABOTAGEM
+            numeroBooking: 45645
+            numeroControle: 87454
+            portoTransbordo: Porto Seguro
+        empresa:
+          id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+          nome: Transporta Tudo
+          nomeFantasia: Transporta Tudo
+          cnpj: 12345678901234
+          ie: 123456
+          emailsAlternativos: "teste@teste.com,teste@teste.com"
+          telefone: 81999999999
+          email: teste@teste.com
+          endereco:
+            logradouro: R. AlfÃ¢ndega
+            bairro: Recife
+            cep: 50030030
+            numero: 35
+            complemento: ""
+            nomeMunicipio: Recife
+            uf: PE
+            pais: Brasil
+          observacao: Texto da observação. Escrito aqui.
+          logoUrl: https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg
+        envolvidos:
+          remetente:
+            id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+            nome: Transporta Tudo
+            nomeFantasia: Transporta Tudo
+            cpfCnpj: 12345678901234
+            ie: 123456
+            emailsAlternativos: "teste@teste.com,teste@teste.com"
+            telefone: 81999999999
+            email: teste@teste.com
+            endereco:
+              logradouro: R. AlfÃ¢ndega
+              bairro: Recife
+              cep: 50030030
+              numero: 35
+              complemento: ""
+              nomeMunicipio: Recife
+              uf: PE
+              pais: Brasil
+            observacao: Texto da observação. Escrito aqui.
+            logoUrl: https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg
+          destinatario:
+            id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+            nome: Transporta Tudo
+            nomeFantasia: Transporta Tudo
+            cpfCnpj: 12345678901234
+            ie: 123456
+            emailsAlternativos: "teste@teste.com,teste@teste.com"
+            telefone: 81999999999
+            email: teste@teste.com
+            endereco:
+              logradouro: R. AlfÃ¢ndega
+              bairro: Recife
+              cep: 50030030
+              numero: 35
+              complemento: ""
+              nomeMunicipio: Recife
+              uf: PE
+              pais: Brasil
+            observacao: Texto da observação. Escrito aqui.
+            logoUrl: https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg
+          tomador:
+            id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+            nome: Transporta Tudo
+            nomeFantasia: Transporta Tudo
+            cpfCnpj: 12345678901234
+            ie: 123456
+            emailsAlternativos: "teste@teste.com,teste@teste.com"
+            telefone: 81999999999
+            email: teste@teste.com
+            endereco:
+              logradouro: R. AlfÃ¢ndega
+              bairro: Recife
+              cep: 50030030
+              numero: 35
+              complemento: ""
+              nomeMunicipio: Recife
+              uf: PE
+              pais: Brasil
+            observacao: Texto da observação. Escrito aqui.
+            logoUrl: https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg
+          expedidor:
+            id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+            nome: Transporta Tudo
+            nomeFantasia: Transporta Tudo
+            cpfCnpj: 12345678901234
+            ie: 123456
+            emailsAlternativos: "teste@teste.com,teste@teste.com"
+            telefone: 81999999999
+            email: teste@teste.com
+            endereco:
+              logradouro: R. AlfÃ¢ndega
+              bairro: Recife
+              cep: 50030030
+              numero: 35
+              complemento: ""
+              nomeMunicipio: Recife
+              uf: PE
+              pais: Brasil
+            observacao: Texto da observação. Escrito aqui.
+            logoUrl: https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg
+          recebedor:
+            id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+            nome: Transporta Tudo
+            nomeFantasia: Transporta Tudo
+            cpfCnpj: 12345678901234
+            ie: 123456
+            emailsAlternativos: "teste@teste.com,teste@teste.com"
+            telefone: 81999999999
+            email: teste@teste.com
+            endereco:
+              logradouro: R. AlfÃ¢ndega
+              bairro: Recife
+              cep: 50030030
+              numero: 35
+              complemento: ""
+              nomeMunicipio: Recife
+              uf: PE
+              pais: Brasil
+            observacao: Texto da observação. Escrito aqui.
+            logoUrl: https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg
+        dadosCarga:
+          cargaList:
+            - codigoUnidadeMedida: '01'
+              tipoMedida: PESO LIQUIDO
+              quandidadeCarga: 70
+          documentoTransporteAnteriorList:
+            - cpfCnpj: 56611539000131
+              uf: RJ
+              quandidadeCarga: 70
+              inscricaoEstual: 465546554
+          produtoPerigosoList:
+            - numeroOnu: 5657
+              classeRisco: Inflamável
+              grupoEmbalagem: Grupo1
+          veiculoList:
+            - chassi: 21XHSJSHV8BTL2243
+              cor: Azul
+              valorFrete: 457.9
+        fatura:
+          numeroFatura: 45
+          valorOriginal: 5478.96
+          valorDesconto: 457.9
+          valorLiquido: 457.9
+        duplicata:
+          - numero: 798
+            dataVencimento: 2021-08-28T09:30:00-0300
+            valor: 457.9
+        complementar:
+          chaveAcesso: 4a56s4a65s4d6a5s4da65s4da56s4da
+        valores:
+          componenteFreteList:
+            - nome: Carga
+              valor: 485.9
+          icms:
+            tipoIcms: OUTRA_UF
+            valorBase: 878.8
+            procentagemIcms: 30
+            valorIcms: 4545.5
+            porcentagemReducao: 20
+            valorCredito: 79844.4
+            valorIcmsRetido: 2457.4
+          nfeList:
+            - 8456978453845697845384569784538456978453
+          valorTotalFrete: 895.56
+        observacoes:
+          obs: Observação
+          obsGerais: Observação Geral
+          obsFisco: Observação Fisco
+          autXmlCteList:
+            - 77546684509
+    DadosCarga:
+      type: object
+      properties:
+        cargaAvancado:
+          $ref: '#/components/schemas/CargaAvancado'
+        veiculoNovoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/VeiculoNovo'
+        informacoesAnteriores:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfomacaoDocAnterior'
+        servicoMultiModalAvancado:
+          $ref: '#/components/schemas/ServicoMultiModalAvancado'
+        cobranca:
+          $ref: '#/components/schemas/Cobranca'
+        sustituicao:
+          $ref: '#/components/schemas/Substituicao'
+    DadosCarga_1:
+      type: object
+      properties:
+        cargaList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Carga_1'
+        documentoTransporteAnteriorList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentoTransporteAnterior'
+        produtoPerigosoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProdutoPerigoso_1'
+        veiculoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Veiculo'
+        fatura:
+          $ref: '#/components/schemas/Fatura'
+        duplicataList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Duplicata'
+        valorTotalMercadoria:
+          type: string
+        produtoPredominante:
+          type: string
+    DadosComplementares:
+      type: object
+      properties:
+        caracteristicaAdicionalTransporte:
+          type: string
+        caracteristicaAdicionalServico:
+          type: string
+        funcionarioEmissorCte:
+          type: string
+        municipioOrigemCalculo:
+          type: string
+        municipioDestinoCalculo:
+          type: string
+        codigoRotaEntrega:
+          type: string
+        origem:
+          type: string
+        destino:
+          type: string
+    DadosComplementares_1:
+      type: object
+      properties:
+        caracteristicaAdicionalTransporte:
+          type: string
+        caracteristicaAdicionalServico:
+          type: string
+        nomeFuncionarioEmissorCte:
+          type: string
+        municipioOrigem:
+          type: string
+        municipioDestino:
+          type: string
+        codigoRodaEntrega:
+          type: string
+    DadosCte:
+      type: object
+      properties:
+        dadosGerais:
+          $ref: '#/components/schemas/DadosGerais_1'
+        dadosComplementares:
+          $ref: '#/components/schemas/DadosComplementares'
+        passagemList:
+          type: array
+          items:
+            type: string
+        dadosRetirada:
+          $ref: '#/components/schemas/DadosRetirada'
+        complementar:
+          $ref: '#/components/schemas/ComplementarCreate'
+        entrega:
+          $ref: '#/components/schemas/Entrega'
+        anulacao:
+          $ref: '#/components/schemas/Anulacao'
+    DadosEmitente:
+      type: object
+      properties:
+        emitenteId:
+          description: Identificador interno da empresa emitente.
+          type: string
+        ufEmitente:
+          description: UF do emitente utilizada no CT-e.
+          type: string
+    DadosGerais:
+      required:
+        - serie
+        - remetente
+        - destinatario
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        tipoServico:
+          $ref: '#/components/schemas/TipoServico_1'
+        finalidadeEmissao:
+          $ref: '#/components/schemas/FinalidadeEmissao'
+        serie:
+          type: integer
+          format: int32
+        dataEmissao:
+          type: string
+          format: date-time
+        globalizado:
+          type: boolean
+        responsavelFrete:
+          $ref: '#/components/schemas/ResponsavelFrete'
+        remetente:
+          $ref: '#/components/schemas/EnvolvidoSummary'
+        destinatario:
+          $ref: '#/components/schemas/EnvolvidoSummary'
+        expedidor:
+          $ref: '#/components/schemas/EnvolvidoSummary'
+        recebedor:
+          $ref: '#/components/schemas/EnvolvidoSummary'
+        localInicioPrestacao:
+          $ref: '#/components/schemas/Municipio'
+        localTerminoPrestacao:
+          $ref: '#/components/schemas/Municipio'
+        indicadorIETomador:
+          $ref: '#/components/schemas/IndicadorIETomador'
+        tomador:
+          $ref: '#/components/schemas/EnvolvidoSummary'
+        rateio:
+          $ref: '#/components/schemas/RateioDto'
+    DadosGerais_1:
+      type: object
+      properties:
+        tipoEmissao:
+          $ref: '#/components/schemas/TipoEmissao_1'
+        localEmissao:
+          $ref: '#/components/schemas/Municipio'
+        inscricaoEstadualSubstituto:
+          type: string
+        informacoesCteGlobalizado:
+          type: string
+    DadosGerais_2:
+      type: object
+      properties:
+        dadosComplementares:
+          $ref: '#/components/schemas/DadosComplementares_1'
+        previsaoFluxoCarga:
+          $ref: '#/components/schemas/PrevisaoFluxoCarga'
+        passagemList:
+          type: array
+          items:
+            type: string
+        dadosRetirada:
+          $ref: '#/components/schemas/DadosRetirada'
+        dadosRejeicao:
+          $ref: '#/components/schemas/DadosRejeicao'
+    DadosNfe:
+      type: object
+      properties:
+        remetente:
+          $ref: '#/components/schemas/EnvolvidoSummary'
+        destinatario:
+          $ref: '#/components/schemas/EnvolvidoSummary'
+        valorTotalCarga:
+          type: number
+          format: double
+        cargaAvancado:
+          $ref: '#/components/schemas/CargaAvancado'
+        documento:
+          $ref: '#/components/schemas/Documento'
+        volumeTotal:
+          type: number
+          format: double
+        pesoBrutoTotal:
+          type: number
+          format: double
+        pesoLiquido:
+          type: number
+          format: double
+        quantidadeVolumes:
+          type: number
+          format: double
+        produtoPredominante:
+          type: string
+        qtProdutoPredominante:
+          type: number
+          format: double
+        limiteExcedidoNfe:
+          type: boolean
+        msgConsultaNfe:
+          type: string
+      example:
+        remetente:
+          id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+          nome: Nova Geração Transporte
+          cpfCnpj: 34194425000109
+          inscricaoEstadual: 123456852
+          endereco: 81999221555
+        destinatario:
+          id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+          nome: Nova Geração Transporte
+          cpfCnpj: 34194425000109
+          inscricaoEstadual: 123456852
+          endereco: 81999221555
+        valorTotalCarga: 1000000
+        cargaAvancado:
+          informacoesCargaList:
+            - unidadeMedida: KG
+              tipoMedida: Volume
+              quantidade: 120.5
+          outrasCaracteristicasProduto: Produtos perecíveis com alta rotatividade
+          valorCargaEfeitoAverbacao: 150000
+        documento:
+          nfeList:
+            - 35160747508411005700551000008815091094160751
+          nfList:
+            - 35160747508411005700551000008815091094160751
+          outrosDocList: []
+        volumeTotal: 2333.89
+        pesoBrutoTotal: 2124.44
+        pesoLiquido: 11545.65
+        quantidadeVolumes: 10
+        produtoPredominante: Eletrônicos
+        qtProdutoPredominante: 500
+        limiteExcedidoNfe: false
+        msgConsultaNfe: Consulta realizada com sucesso
+    DadosRejeicao:
+      type: object
+      properties:
+        data:
+          type: string
+          format: date-time
+        motivoRejeicao:
+          type: string
+    DadosRetirada:
+      type: object
+      properties:
+        retiradoNoDestino:
+          type: boolean
+        detalhes:
+          type: string
+    DceCancelarRequest:
+      required:
+        - motivoCancelamento
+        - dataAtual
+        - idList
+      type: object
+      properties:
+        motivoCancelamento:
+          type: string
+        dataAtual:
+          type: string
+          format: date-time
+        idList:
+          type: array
+          items:
+            type: string
+    DceCancelarResponse:
+      type: object
+      properties:
+        operacoesList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DceResponse'
+        realizadosSucesso:
+          type: integer
+          format: int32
+        naoRealizados:
+          type: integer
+          format: int32
+    DceCreate:
+      type: object
+      properties:
+        chave:
+          type: string
+    DceDoc:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+        pesoLiquido:
+          type: number
+          format: double
+        pesoBruto:
+          type: number
+          format: double
+        pesoCubado:
+          type: number
+          format: double
+        qtdVolumes:
+          type: integer
+          format: int32
+        volume:
+          type: number
+          format: double
+        valorMercadoria:
+          type: number
+          format: double
+        produtoPredominante:
+          type: string
+        qtProdutoPredominante:
+          type: number
+          format: double
+        cpfCnpjRemetente:
+          type: string
+        cpfCnpjDestinatario:
+          type: string
+        cpfCnpjExpedidor:
+          type: string
+        cpfCnpjRecebedor:
+          type: string
+        ufDestinatario:
+          type: string
+        municipioDestinatario:
+          type: string
+    DceDto:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        valorTotal:
+          type: number
+          format: double
+        nomeRemetente:
+          type: string
+        nomeDestinatario:
+          type: string
+        statusDce:
+          $ref: '#/components/schemas/StatusDce'
+        chaveAcesso:
+          type: string
+        dataAutorizacao:
+          type: string
+          format: date-time
+        dataEmissao:
+          type: string
+          format: date-time
+    DceEmissaoResponse:
+      type: object
+      properties:
+        dceResponses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DceResponse'
+        erroEmProcessamento:
+          type: boolean
+    DceEmitir:
+      type: object
+      properties:
+        idList:
+          type: array
+          items:
+            type: string
+        enviarEmail:
+          type: boolean
+    DceEntityReturn:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+    DceEnvolvidoIntegracao:
+      description: Dados de um envolvido (pessoa/empresa) na integraÃ§Ã£o do DC-e.
+      required:
+        - inscricaoFederal
+        - nome
+        - telefone
+        - endereco
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          description: "Nome fantasia, se houver."
+          type: string
+        telefone:
+          type: string
+        email:
+          description: E-mail de contato.
+          type: string
+        inscricaoEstadual:
+          description: InscriÃ§Ã£o estadual.
+          type: string
+        endereco:
+          $ref: '#/components/schemas/EnderecoIntegracao'
+    DceIntegracao:
+      required:
+        - idIntegracao
+        - remetente
+        - destinatario
+        - produtos
+      type: object
+      properties:
+        idIntegracao:
+          type: string
+        remetente:
+          $ref: '#/components/schemas/DceEnvolvidoIntegracao'
+        destinatario:
+          $ref: '#/components/schemas/DceEnvolvidoIntegracao'
+        produtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/DceIntegracaoProduto'
+        dataEmissao:
+          type: string
+          format: date-time
+    DceIntegracaoProduto:
+      required:
+        - descricao
+        - quantidade
+        - valorUnitario
+      type: object
+      properties:
+        descricao:
+          type: string
+          minLength: 1
+          maxLength: 120
+        quantidade:
+          type: number
+          format: double
+        valorUnitario:
+          type: number
+          format: double
+    DceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        serie:
+          type: string
+        numero:
+          type: string
+        sucesso:
+          type: boolean
+        motivo:
+          type: string
+        statusOperacao:
+          $ref: '#/components/schemas/StatusDce'
+        erroConfigurarCertificado:
+          type: boolean
+    DestinatarioIntegracao:
+      description: Dados do destinatário na integração do CT-e.
+      required:
+        - inscricaoFederal
+        - nome
+        - telefone
+        - endereco
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          description: "Nome fantasia, se houver."
+          type: string
+        telefone:
+          type: string
+        email:
+          description: E-mail de contato.
+          type: string
+        inscricaoEstadual:
+          description: Inscrição estadual.
+          type: string
+        endereco:
+          $ref: '#/components/schemas/EnderecoIntegracao_1'
+        consumidorFinal:
+          description: Indica se é consumidor final.
+          type: boolean
+    DetalhamentoEntregas:
+      type: object
+      properties:
+        nItem:
+          description: Número do item de prestação.
+          type: string
+        localInicioPrestacao:
+          description: Local de início da prestação.
+          $ref: '#/components/schemas/Municipio'
+        localTerminoPrestacao:
+          description: Local de término da prestação.
+          $ref: '#/components/schemas/Municipio'
+        valorPrestacao:
+          description: Valor da prestação no trecho.
+          type: string
+        valorReceber:
+          description: Valor a receber no trecho.
+          type: string
+        nfes:
+          description: NF-es relacionadas ao trecho.
+          type: array
+          items:
+            $ref: '#/components/schemas/NfeCreate'
+        docAnteriores:
+          description: Documentos anteriores relacionados.
+          type: array
+          items:
+            $ref: '#/components/schemas/DocAnterioresCreate'
+    Direcao:
+      type: string
+      enum:
+        - NORTE
+        - SUL
+        - LESTE
+        - OESTE
+    DocAnterioresCreate:
+      type: object
+      properties:
+        chaveCte:
+          type: string
+        tipoPrestacao:
+          $ref: '#/components/schemas/TipoPrestacao'
+        chavesNfe:
+          type: array
+          items:
+            type: string
+    Documento:
+      type: object
+      properties:
+        nfeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nfe'
+        nfList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nf'
+        outrosDocList:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutrosDoc'
+        dceDocList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DceDoc'
+    DocumentoDetalhamento:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+        numeroCte:
+          type: string
+        valor:
+          type: number
+          format: double
+        pesoBruto:
+          type: number
+          format: double
+        pesoLiquido:
+          type: number
+          format: double
+        quantidadeVolume:
+          type: number
+          format: double
+        produtoPredominante:
+          type: string
+        qtProdutoPredominante:
+          type: number
+          format: double
+        cpfCnpjRemetente:
+          type: string
+        cpfCnpjDestinatario:
+          type: string
+        cpfCnpjExpedidor:
+          type: string
+        cpfCnpjRecebedor:
+          type: string
+        ufDestinatario:
+          type: string
+    DocumentoTransporteAnterior:
+      type: object
+      properties:
+        cpfCnpj:
+          type: string
+        inscricaoEstual:
+          type: string
+        uf:
+          $ref: '#/components/schemas/IcmsUf'
+        razaoSocial:
+          type: string
+        informacoesPapelList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InformacoesPapel'
+        chaveAcessoEletronicoList:
+          type: array
+          items:
+            type: string
+    DocumentoTransporteAnteriorEletronico:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+    DocumentoTransporteAnteriorPapel:
+      type: object
+      properties:
+        tipoDocumentoOriginario:
+          $ref: '#/components/schemas/TipoDocumentoOriginario'
+        serie:
+          type: string
+        subSerie:
+          type: string
+        numero:
+          type: string
+        dataEmissao:
+          type: string
+          format: date-time
+    DocumentosAnterioresIntegracao:
+      required:
+        - emissor
+      type: object
+      properties:
+        chavesCte:
+          type: array
+          items:
+            type: string
+        emissor:
+          $ref: '#/components/schemas/EnvolvidoIntegracao'
+    DocumentosIntegracao:
+      description: Documentos de origem vinculados à carga.
+      type: object
+      properties:
+        chaveAcessoNFe:
+          type: array
+          items:
+            type: string
+        chaveAcessoDCe:
+          description: Lista de chaves de acesso de DCe.
+          type: array
+          items:
+            type: string
+        outros:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutroDocumentoIntegracao'
+      example:
+        chaveAcessoNFe:
+          - 25160208974214000170550010000323421000145023
+          - 35160203665157000124550010000454941000401441
+    DominioSistemasEnvioXmlResponse:
+      type: object
+      properties:
+        type:
+          type: string
+        lastStatusOn:
+          type: string
+        apiVersion:
+          type: string
+        boxeFile:
+          type: boolean
+        filesExpanded:
+          type: array
+          items:
+            $ref: '#/components/schemas/DominioSistemasFilesExpanded'
+        id:
+          type: string
+        status:
+          $ref: '#/components/schemas/DominioSistemasStatus'
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        chaveAcesso:
+          type: string
+    DominioSistemasEnvioXmlReturnWrapper:
+      type: object
+      properties:
+        dominioSistemasEnvioXmlResponse:
+          type: array
+          items:
+            $ref: '#/components/schemas/DominioSistemasEnvioXmlResponse'
+        sucesso:
+          type: boolean
+        message:
+          type: string
+    DominioSistemasFilesExpanded:
+      type: object
+      properties:
+        lastApiStatusOn:
+          type: string
+        lastBoxeStatusOn:
+          type: string
+        apiStatus:
+          $ref: '#/components/schemas/DominioSistemasStatus'
+        boxeStatus:
+          $ref: '#/components/schemas/DominioSistemasStatus'
+    DominioSistemasStatus:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Duplicata:
+      type: object
+      properties:
+        numero:
+          type: string
+        dataVencimento:
+          type: string
+          format: date-time
+        valorComponenteFrete:
+          type: number
+          format: double
+    EmitenteOcc:
+      type: object
+      properties:
+        codigoInterno:
+          type: string
+        cnpj:
+          type: string
+        fone:
+          type: string
+        ie:
+          type: string
+        uf:
+          $ref: '#/components/schemas/IcmsUf'
+    EmitirCtesReturnWrapper:
+      type: object
+      properties:
+        operacoesList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CteInfo'
+        realizadosSucesso:
+          type: integer
+          format: int32
+        naoRealizados:
+          type: integer
+          format: int32
+        erroConfigurarCertificado:
+          type: boolean
+        erroAvulso:
+          type: boolean
+        erroEmProcessamento:
+          type: boolean
+        enviarEmail:
+          type: boolean
+        averbacaoTransactionId:
+          type: string
+    Empresa:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        cnpj:
+          type: string
+        ie:
+          type: string
+        emailsAlternativos:
+          type: array
+          items:
+            type: string
+        telefone:
+          type: string
+        email:
+          type: string
+        endereco:
+          $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+        logomarca:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        certificado:
+          $ref: '#/components/schemas/Certificado'
+        crt:
+          $ref: '#/components/schemas/TipoCRT'
+    EmpresaCreate:
+      description: DTO de criação/atualização de Empresa usado nas integrações.
+      type: object
+      properties:
+        id:
+          description: Identificador da Empresa (quando existente).
+          type: string
+        nome:
+          description: Razão social da Empresa.
+          type: string
+        nomeFantasia:
+          description: Nome fantasia da Empresa.
+          type: string
+        cnpj:
+          description: CNPJ da Empresa.
+          type: string
+        ie:
+          description: Inscrição estadual (IE).
+          type: string
+        emailsAlternativos:
+          description: Lista de e-mails alternativos.
+          type: array
+          items:
+            type: string
+        telefone:
+          description: Telefone principal de contato.
+          type: string
+        email:
+          description: E-mail principal de contato.
+          type: string
+        endereco:
+          description: Endereço (localidade) da Empresa.
+          $ref: '#/components/schemas/Localidade'
+        observacao:
+          description: Observações gerais sobre a Empresa.
+          type: string
+        rntrc:
+          description: RNTRC relacionado à Empresa.
+          type: string
+        crt:
+          description: Código do regime tributário (CRT).
+          $ref: '#/components/schemas/TipoCRT'
+        cpfCnpjContabilidade:
+          description: CPF/CNPJ da contabilidade.
+          type: string
+        emailContabilidade:
+          description: E-mail de contato da contabilidade.
+          type: string
+        telefoneContabilidade:
+          description: Telefone de contato da contabilidade.
+          type: string
+        accountsEmpresaId:
+          description: Identificador da empresa no módulo Accounts.
+          type: string
+      example:
+        nome: Transporta Tudo
+        nomeFantasia: Transporta Tudo
+        cnpj: 12345678901234
+        ie: 123456
+        emailsAlternativos: "teste@teste.com,teste@teste.com"
+        telefone: 81999999999
+        email: teste@teste.com
+        endereco:
+          logradouro: R. AlfÃ¢ndega
+          bairro: Recife
+          cep: 50030030
+          numero: 35
+          complemento: ""
+          nomeMunicipio: Recife
+          uf: PE
+          pais: Brasil
+        observacao: Texto da observação. Escrito aqui.
+    EmpresaIntegracao:
+      description: Dados da empresa emissora para integração do CT-e.
+      required:
+        - inscricaoFederal
+        - inscricaoEstadual
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+        inscricaoEstadual:
+          type: string
+    EmpresaSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        cnpj:
+          type: string
+        ie:
+          type: string
+        emailsAlternativos:
+          type: array
+          items:
+            type: string
+        telefone:
+          type: string
+        email:
+          type: string
+        endereco:
+          $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+        logoUrl:
+          type: string
+        certificado:
+          $ref: '#/components/schemas/Certificado'
+        crt:
+          $ref: '#/components/schemas/TipoCRT'
+        loggedUserHasAccess:
+          type: boolean
+        situacao:
+          $ref: '#/components/schemas/SituacaoEmpresa'
+        accountsEmpresaId:
+          type: string
+    EmpresaView:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        cnpj:
+          type: string
+        ie:
+          type: string
+        emailsAlternativos:
+          type: array
+          items:
+            type: string
+        telefone:
+          type: string
+        email:
+          type: string
+        endereco:
+          $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+        logo:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        certificado:
+          $ref: '#/components/schemas/Certificado'
+        dataCadastramento:
+          type: string
+          format: date-time
+        situacao:
+          $ref: '#/components/schemas/SituacaoEmpresa'
+        empresaPrincipal:
+          type: boolean
+        integracaoDominioSistemas:
+          type: boolean
+        loggedUserHasAccess:
+          type: boolean
+        accountsEmpresaId:
+          type: string
+      example:
+        id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+        nome: Transporta Tudo
+        nomeFantasia: Transporta Tudo
+        cnpj: 12345678901234
+        ie: 123456
+        emailsAlternativos: "teste@teste.com,teste@teste.com"
+        telefone: 81999999999
+        email: teste@teste.com
+        endereco:
+          logradouro: R. AlfÃ¢ndega
+          bairro: Recife
+          cep: 50030030
+          numero: 35
+          complemento: ""
+          nomeMunicipio: Recife
+          uf: PE
+          pais: Brasil
+        observacao: Texto da observação. Escrito aqui.
+        logoUrl: https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg
+    EnderecoIntegracao:
+      required:
+        - logradouro
+        - numero
+        - bairro
+        - municipio
+        - uf
+        - cep
+      type: object
+      properties:
+        pais:
+          description: PaÃ­s do endereÃ§o.
+          type: string
+        logradouro:
+          type: string
+        numero:
+          type: string
+        bairro:
+          type: string
+        codMunicipio:
+          description: CÃ³digo IBGE do municÃ­pio.
+          type: string
+        municipio:
+          type: string
+        uf:
+          type: string
+        cep:
+          type: string
+        complemento:
+          description: Complemento do endereÃ§o.
+          type: string
+    EnderecoIntegracao_1:
+      required:
+        - logradouro
+        - numero
+        - bairro
+        - municipio
+        - uf
+        - cep
+      type: object
+      properties:
+        pais:
+          description: País do endereço.
+          type: string
+        logradouro:
+          type: string
+        numero:
+          type: string
+        bairro:
+          type: string
+        codMunicipio:
+          description: Código IBGE do município.
+          type: string
+        municipio:
+          type: string
+        uf:
+          type: string
+        cep:
+          type: string
+        complemento:
+          description: Complemento do endereço.
+          type: string
+    Entrega:
+      type: object
+      properties:
+        previsaoHora:
+          $ref: '#/components/schemas/PrevisaoHora'
+        horaInicio:
+          type: string
+          format: date-time
+        horaFim:
+          type: string
+          format: date-time
+        previsaoData:
+          $ref: '#/components/schemas/PrevisaoData'
+        dataInicio:
+          type: string
+          format: date-time
+        dataFim:
+          type: string
+          format: date-time
+    Envolvido:
+      type: object
+      properties:
+        id:
+          type: string
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumento'
+        cpfCnpj:
+          type: string
+        ie:
+          type: string
+        inscricaoSuframa:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        telefone:
+          type: string
+        email:
+          type: string
+        endereco:
+          $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+    EnvolvidoCreate:
+      description: DTO de criação/atualização de Envolvido usado nas integrações.
+      type: object
+      properties:
+        id:
+          description: Identificador do Envolvido (quando existente).
+          type: string
+        tipoDocumento:
+          description: "Tipo de documento: CPF ou CNPJ."
+          $ref: '#/components/schemas/TipoDocumento'
+        cpfCnpj:
+          description: Número do CPF ou CNPJ.
+          type: string
+        ie:
+          description: Inscrição estadual (IE).
+          type: string
+        inscricaoSuframa:
+          description: "Inscrição SUFRAMA, quando aplicável."
+          type: string
+        nome:
+          description: Nome ou razão social do Envolvido.
+          type: string
+        nomeFantasia:
+          description: Nome fantasia do Envolvido.
+          type: string
+        telefone:
+          description: Telefone principal de contato.
+          type: string
+        email:
+          description: E-mail principal de contato.
+          type: string
+        emailsAlternativos:
+          description: Lista de e-mails alternativos.
+          type: array
+          items:
+            type: string
+        endereco:
+          description: Endereço (localidade) do Envolvido.
+          $ref: '#/components/schemas/Localidade'
+        observacao:
+          description: Observações gerais sobre o Envolvido.
+          type: string
+      example:
+        nome: Transporta Tudo
+        nomeFantasia: Transporta Tudo
+        tipoDocumento: CNPJ
+        cpfCnpj: 12345678901234
+        ie: 123456
+        inscricaoSuframa: 4545454
+        telefone: 81999999999
+        email: teste@teste.com
+        endereco:
+          logradouro: R. AlfÃ¢ndega
+          bairro: Recife
+          cep: 50030030
+          numero: 35
+          complemento: ""
+          nomeMunicipio: Recife
+          uf: PE
+          pais: Brasil
+        observacao: Texto da observação. Escrito aqui.
+    EnvolvidoIntegracao:
+      description: Dados de um envolvido (pessoa/empresa) na integração do CT-e.
+      required:
+        - inscricaoFederal
+        - nome
+        - telefone
+        - endereco
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          description: "Nome fantasia, se houver."
+          type: string
+        telefone:
+          type: string
+        email:
+          description: E-mail de contato.
+          type: string
+        inscricaoEstadual:
+          description: Inscrição estadual.
+          type: string
+        endereco:
+          $ref: '#/components/schemas/EnderecoIntegracao_1'
+    EnvolvidoSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        cpfCnpj:
+          type: string
+        nome:
+          type: string
+        municipio:
+          $ref: '#/components/schemas/Municipio'
+        ie:
+          type: string
+        logradouro:
+          type: string
+        numero:
+          type: string
+        bairro:
+          type: string
+        cep:
+          type: string
+        pais:
+          type: string
+        emailsAlternativos:
+          type: array
+          items:
+            type: string
+    EnvolvidoView:
+      type: object
+      properties:
+        id:
+          type: string
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumento'
+        cpfCnpj:
+          type: string
+        ie:
+          type: string
+        inscricaoSuframa:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        telefone:
+          type: string
+        email:
+          type: string
+        emailsAlternativos:
+          type: array
+          items:
+            type: string
+        endereco:
+          $ref: '#/components/schemas/Localidade'
+        observacao:
+          type: string
+      example:
+        id: 99e39200-3bfb-465f-886f-85ee28e8cfda
+        nome: Transporta Tudo
+        nomeFantasia: Transporta Tudo
+        cpfCnpj: 12345678901234
+        ie: 123456
+        emailsAlternativos: "teste@teste.com,teste@teste.com"
+        telefone: 81999999999
+        email: teste@teste.com
+        endereco:
+          logradouro: R. AlfÃ¢ndega
+          bairro: Recife
+          cep: 50030030
+          numero: 35
+          complemento: ""
+          nomeMunicipio: Recife
+          uf: PE
+          pais: Brasil
+        observacao: Texto da observação. Escrito aqui.
+        logoUrl: https://images.freeimages.com/images/small-previews/e68/little-truck-1425528.jpg
+    Envolvidos:
+      type: object
+      properties:
+        remetente:
+          $ref: '#/components/schemas/Envolvido'
+        destinatario:
+          $ref: '#/components/schemas/Envolvido'
+        tomador:
+          $ref: '#/components/schemas/Envolvido'
+        expedidor:
+          $ref: '#/components/schemas/Envolvido'
+        recebedor:
+          $ref: '#/components/schemas/Envolvido'
+    ExportacaoCteResponse:
+      type: object
+      properties:
+        idCte:
+          type: string
+        pdfUrl:
+          type: string
+        xmlUrl:
+          type: string
+    Fatura:
+      type: object
+      properties:
+        numeroFatura:
+          type: string
+        valorOriginal:
+          type: string
+        valorDesconto:
+          type: string
+        valorLiquido:
+          type: string
+    FinalidadeEmissao:
+      type: string
+      enum:
+        - NORMAL
+        - COMPLEMENTAR
+        - ANULACAO
+        - SUBSTITUICAO
+        - SIMPLIFICADO
+        - SUBSTITUICAO_SIMPLIFICADO
+    FreteIntegracao:
+      description: Componentes do frete e adicionais.
+      type: object
+      properties:
+        freteValor:
+          description: Valor por frete/valor.
+          type: number
+          format: double
+        fretePeso:
+          description: Valor por peso.
+          type: number
+          format: double
+        pedagio:
+          description: Pedágio (quando aplicável).
+          type: number
+          format: double
+        coleta:
+          description: Coleta (se houver).
+          type: number
+          format: double
+        gris:
+          description: GRIS (gestão de risco).
+          type: number
+          format: double
+        adValorem:
+          description: Ad valorem.
+          type: number
+          format: double
+        outrosFretes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutrosFretesIntegracao'
+    Ibs:
+      type: object
+      properties:
+        aliquota:
+          type: number
+          format: double
+        valor:
+          type: number
+          format: double
+        reducao:
+          $ref: '#/components/schemas/Reducao'
+    IbsCbs:
+      type: object
+      properties:
+        valorBaseCalculo:
+          type: number
+          format: double
+        infIbsUF:
+          $ref: '#/components/schemas/InfIbsUF'
+        infIbsMun:
+          $ref: '#/components/schemas/InfIbsMun'
+        valorIbs:
+          type: number
+          format: double
+        infCbs:
+          $ref: '#/components/schemas/InfCbs'
+        infTributacaoRegular:
+          $ref: '#/components/schemas/InfTributacaoRegular'
+        ibsCreditoPresumido:
+          $ref: '#/components/schemas/InfCreditoPresumido'
+        cbsCreditoPresumido:
+          $ref: '#/components/schemas/InfCreditoPresumido'
+        compraGov:
+          $ref: '#/components/schemas/TributacaoCompraGov'
+    IbsCbs_1:
+      type: object
+      properties:
+        cst:
+          type: string
+        classificacaoTributaria:
+          type: string
+        valorBaseCalculo:
+          type: number
+          format: double
+        cbs:
+          $ref: '#/components/schemas/Cbs'
+        ibsEstadual:
+          $ref: '#/components/schemas/Ibs'
+        ibsMunicipal:
+          $ref: '#/components/schemas/Ibs'
+    Icms:
+      type: object
+      properties:
+        tipoIcms:
+          $ref: '#/components/schemas/TipoIcms'
+        valorBase:
+          type: number
+          format: double
+        porcentagemIcms:
+          type: number
+          format: double
+        valorIcms:
+          type: number
+          format: double
+        porcentagemReducao:
+          type: number
+          format: double
+        valorCredito:
+          type: number
+          format: double
+        valorIcmsRetido:
+          type: number
+          format: double
+    IcmsIntegracao:
+      description: Configurações de ICMS para o CT-e.
+      type: object
+      properties:
+        outrosTipos:
+          $ref: '#/components/schemas/OutrosTiposIntegracao'
+        normal:
+          $ref: '#/components/schemas/NormalIntegracao'
+        substituicao:
+          $ref: '#/components/schemas/SubstituicaoIntegracao'
+        reducao:
+          $ref: '#/components/schemas/ReducaoIntegracao'
+        outraUF:
+          $ref: '#/components/schemas/OutraUFIntegracao'
+    IcmsUf:
+      type: string
+      enum:
+        - DF
+        - GO
+        - MT
+        - MS
+        - RS
+        - SC
+        - PR
+        - SP
+        - RJ
+        - ES
+        - MG
+        - MA
+        - PI
+        - CE
+        - RN
+        - PB
+        - PE
+        - AL
+        - SE
+        - BA
+        - TO
+        - AP
+        - PA
+        - RR
+        - AM
+        - AC
+        - RO
+        - EX
+    Imposto:
+      type: object
+      properties:
+        tipoImposto:
+          $ref: '#/components/schemas/TipoIcms'
+        impostoNormal:
+          $ref: '#/components/schemas/ImpostoNormal'
+        impostoSubstituicao:
+          $ref: '#/components/schemas/ImpostoSubstituicao'
+        impostoReducao:
+          $ref: '#/components/schemas/ImpostoReducao'
+        impostoOutraUf:
+          $ref: '#/components/schemas/ImpostoOutraUf'
+        impostoOutros:
+          $ref: '#/components/schemas/ImpostoOutros'
+    ImpostoIbsCbs:
+      type: object
+      properties:
+        cst:
+          type: string
+        codigoClassTrib:
+          type: string
+        ibsCbs:
+          $ref: '#/components/schemas/IbsCbs'
+    ImpostoNormal:
+      type: object
+      properties:
+        valorBCIcms:
+          type: number
+          format: double
+        aliquotaIcms:
+          type: number
+          format: double
+        valorIcms:
+          type: number
+          format: double
+    ImpostoOutraUf:
+      type: object
+      properties:
+        valorBcIcms:
+          type: number
+          format: double
+        aliquotaIcms:
+          type: number
+          format: double
+        valorIcms:
+          type: number
+          format: double
+    ImpostoOutros:
+      type: object
+      properties:
+        reducaoBc:
+          type: number
+          format: double
+        valorBcIcms:
+          type: number
+          format: double
+        aliquotaIcms:
+          type: number
+          format: double
+        valorIcms:
+          type: number
+          format: double
+        valorCredito:
+          type: number
+          format: double
+    ImpostoReducao:
+      type: object
+      properties:
+        reducaoBc:
+          type: number
+          format: double
+        valorBcIcms:
+          type: number
+          format: double
+        aliquotaIcms:
+          type: number
+          format: double
+        valorIcms:
+          type: number
+          format: double
+    ImpostoSubstituicao:
+      type: object
+      properties:
+        bcIcmsSt:
+          type: number
+          format: double
+        valorIcmsSt:
+          type: number
+          format: double
+        aliquotaIcmsSt:
+          type: number
+          format: double
+        aliquotaSubstituicao:
+          type: number
+          format: double
+        valorCredito:
+          type: number
+          format: double
+    ImpostoUfTermino:
+      type: object
+      properties:
+        icmsUfTermino:
+          description: "Se true, habilita ICMS de UF de término."
+          type: boolean
+        perFundoCombatePobreza:
+          description: Percentual do Fundo de Combate à Pobreza.
+          type: number
+          format: double
+        valorFundoCombatePobreza:
+          description: Valor do Fundo de Combate à Pobreza.
+          type: number
+          format: double
+        perAliquotaIcmsUfFim:
+          description: Alíquota ICMS na UF de fim.
+          type: number
+          format: double
+        valorIcmsUfInicio:
+          description: Valor de ICMS da UF de início.
+          type: number
+          format: double
+        valorIcmsUfFim:
+          description: Valor de ICMS da UF de fim.
+          type: number
+          format: double
+        valorBcIcmsUfFim:
+          description: Base de cálculo do ICMS na UF fim.
+          type: number
+          format: double
+        perAliquotaInterestadual:
+          description: Alíquota interestadual.
+          type: number
+          format: double
+        perPercentualProvisorio:
+          description: Percentual provisório aplicado.
+          type: number
+          format: double
+        perDiferencialAliquota:
+          type: number
+          format: double
+    ImprimirCtesReturn:
+      type: object
+      properties:
+        idArquivo:
+          type: string
+        bytesDacteCte:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        bytesXmlCte:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        url:
+          type: string
+        alertaAverbacao:
+          type: boolean
+      example:
+        idArquivo: 029341de-df08-4821-9570-061bcc5ba067
+        bytesDacteCte: []
+        bytesXmlCte: []
+        url: ""
+    IndicadorIETomador:
+      type: string
+      enum:
+        - CONTRIBUINTE
+        - ISENTO
+        - NAO_CONTRIBUINTE
+    IndicadorNegociacao:
+      type: string
+      enum:
+        - NEGOCIAVEL
+        - NAO_NEGOCIAVEL
+    IndicadorSucessoTransacaoAssincrona:
+      type: string
+      enum:
+        - SUCCESS
+        - ERROR
+    InfCbs:
+      type: object
+      properties:
+        aliquotaCbs:
+          type: number
+          format: double
+        diferimento:
+          $ref: '#/components/schemas/CamposDiferimento'
+        devolucaoTributos:
+          $ref: '#/components/schemas/InfDevolucaoTributos'
+        reducaoAliquota:
+          $ref: '#/components/schemas/InfReducaoAliquota'
+        valorCbs:
+          type: number
+          format: double
+    InfCreditoPresumido:
+      type: object
+      properties:
+        codCredPres:
+          type: string
+        porcentagemCredPres:
+          type: number
+          format: double
+        valorCredPres:
+          type: number
+          format: double
+        valorCredPresCondSus:
+          type: number
+          format: double
+    InfDevolucaoTributos:
+      type: object
+      properties:
+        valorDevTrib:
+          type: number
+          format: double
+    InfIbsMun:
+      type: object
+      properties:
+        aliquotaIbsMun:
+          type: number
+          format: double
+        diferimento:
+          $ref: '#/components/schemas/CamposDiferimento'
+        devolucaoTributos:
+          $ref: '#/components/schemas/InfDevolucaoTributos'
+        reducaoAliquota:
+          $ref: '#/components/schemas/InfReducaoAliquota'
+        valorIbsMun:
+          type: number
+          format: double
+    InfIbsUF:
+      type: object
+      properties:
+        aliquotaIbsUf:
+          type: number
+          format: double
+        diferimento:
+          $ref: '#/components/schemas/CamposDiferimento'
+        devolucaoTributos:
+          $ref: '#/components/schemas/InfDevolucaoTributos'
+        reducaoAliquota:
+          $ref: '#/components/schemas/InfReducaoAliquota'
+        valorIbsUf:
+          type: number
+          format: double
+    InfReducaoAliquota:
+      type: object
+      properties:
+        porcentagemRedAliquota:
+          type: number
+          format: double
+        aliquotaEfetiva:
+          type: number
+          format: double
+    InfTributacaoRegular:
+      type: object
+      properties:
+        codSituacaoTributaria:
+          type: string
+        codClassTributaria:
+          type: string
+        aliqEfetivaUf:
+          type: number
+          format: double
+        valorTributoUf:
+          type: number
+          format: double
+        aliqEfetivaMun:
+          type: number
+          format: double
+        valorTributoMun:
+          type: number
+          format: double
+        aliqEfetivaCbs:
+          type: number
+          format: double
+        valorTributoCbs:
+          type: number
+          format: double
+    InfoBalsa:
+      type: object
+      properties:
+        identificadorBalsa:
+          type: string
+    InfoContainer:
+      type: object
+      properties:
+        numeroContainer:
+          type: string
+    InfomacaoDocAnterior:
+      type: object
+      properties:
+        tipoDocumentoAnterior:
+          $ref: '#/components/schemas/TipoDocumentoAnterior'
+        cpfCnpj:
+          type: string
+        razaoSocial:
+          type: string
+        inscricaoEstadual:
+          type: string
+        uf:
+          $ref: '#/components/schemas/IcmsUf'
+        documentoTransporteAnteriorPapelList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentoTransporteAnteriorPapel'
+        documentoTransporteAnteriorEletronicoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentoTransporteAnteriorEletronico'
+    InformacaoManuseio:
+      type: string
+      enum:
+        - CERTIFICADO_DO_EXPEDIDOR_PARA_EMBARQUE_DE_ANIMAL_VIVO
+        - ARTIGO_PERIGOSO_CONFORME_DECLARACAO_DE_EXPEDIDOR_ANEXA
+        - SOMENTE_EM_AERONAVE_CARGUEIRA
+        - ARTIGO_PERIGOSO_DECLARACAO_DO_EXPEDIDOR_NAO_REQUERIDA
+        - ARTIGO_PERIGOSO_EM_QUANTIDADE_ISENTA
+        - GELO_SECO_PARA_REFRIGERACAO
+        - NAO_RESTRITO
+        - ARTIGO_PERIGOSO_EM_CARGA_CONSOLIDADA
+        - AUTORIZACAO_DA_AUTORIDADE_GOVERNAMENTAL_ANEXA
+        - BATERIA_DE_IONS_DE_LITIO_EM_CONFORMIDADE_COM_A_PI965
+        - BATERIA_DE_IONS_DE_LITIO_EM_CONFORMIDADE_COM_A_PI966
+        - BATERIA_DE_IONS_DE_LITIO_EM_CONFORMIDADE_COM_A_PI967
+        - BATERIA_DE_IONS_DE_LITIO_EM_CONFORMIDADE_COM_A_PI968
+        - BATERIA_DE_IONS_DE_LITIO_EM_CONFORMIDADE_COM_A_PI969
+        - BATERIA_DE_IONS_DE_LITIO_EM_CONFORMIDADE_COM_A_PI70
+        - OUTRO
+    InformacoesCarga:
+      type: object
+      properties:
+        unidadeMedida:
+          $ref: '#/components/schemas/TipoUnidadeMedida'
+        tipoMedida:
+          type: string
+        quantidade:
+          type: number
+          format: double
+    InformacoesPapel:
+      type: object
+      properties:
+        dataEmissao:
+          type: string
+          format: date-time
+        numeroDocumento:
+          type: string
+        serie:
+          type: string
+        subserie:
+          type: string
+        tipoDocumento:
+          type: string
+    LacreCreate:
+      type: object
+      properties:
+        lacre:
+          description: Número/identificação do lacre.
+          type: string
+    Localidade:
+      type: object
+      properties:
+        logradouro:
+          type: string
+        bairro:
+          type: string
+        cep:
+          type: string
+        numero:
+          type: string
+        complemento:
+          type: string
+        nomeMunicipio:
+          type: string
+        uf:
+          type: string
+        pais:
+          type: string
+    MedidasIntegracao:
+      type: object
+      properties:
+        unidades:
+          description: Quantidade de unidades.
+          type: integer
+          format: int32
+        pesoBrutoKG:
+          description: Peso bruto em kg.
+          type: number
+          format: double
+        pesoLiquidoKg:
+          description: Peso líquido em kg.
+          type: number
+          format: double
+        pesoCubadoKg:
+          description: Peso cubado em kg.
+          type: number
+          format: double
+        volumeM3:
+          description: Volume em m³.
+          type: number
+          format: double
+        cubagemM3:
+          description: Cubagem em m³.
+          type: number
+          format: double
+        outrasMedidas:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutrasMedidasIntegracao'
+    Modal:
+      type: string
+      enum:
+        - RODO
+        - AEREO
+        - AQUA
+        - FERRO
+        - DUTO
+        - MULTIMODAL
+    ModalAereo:
+      type: object
+      properties:
+        dataEntregaPrevista:
+          type: string
+          format: date-time
+        classeTarifaria:
+          $ref: '#/components/schemas/ClasseTarifaria'
+        codigoTarifa:
+          type: string
+        valorTarifa:
+          type: number
+          format: double
+        produtoPerigosoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProdutoPerigoso'
+        numeroMinuta:
+          type: string
+        numeroConhecimento:
+          type: string
+        informacaoManuseioList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InformacaoManuseio'
+        dimencao:
+          type: string
+    ModalAereo_1:
+      type: object
+      properties:
+        previsaoEntrega:
+          type: string
+          format: date-time
+        dimensao:
+          type: string
+        cargaEspecial:
+          type: string
+        classeTarifaria:
+          $ref: '#/components/schemas/ClasseTarifaria'
+        valorTarifa:
+          type: number
+          format: double
+    ModalAquav:
+      type: object
+      properties:
+        valorPrestacao:
+          type: number
+          format: double
+        freteMarinha:
+          type: number
+          format: double
+        irin:
+          type: string
+        identificacaoNavio:
+          type: string
+        numeroViagem:
+          type: string
+        portoEmbarque:
+          type: string
+        portoDestino:
+          type: string
+        direcao:
+          $ref: '#/components/schemas/Direcao'
+        tipoNavegacao:
+          $ref: '#/components/schemas/TipoNavegacao'
+        numeroBooking:
+          type: string
+        numeroControle:
+          type: string
+        portoTransbordo:
+          type: string
+    ModalAquaviario:
+      type: object
+      properties:
+        valorPrestacao:
+          type: string
+        adicionalFreteMarinha:
+          type: string
+        irin:
+          type: string
+        identificacaoNavioRebocador:
+          type: string
+        numeroViagem:
+          type: string
+        direcao:
+          $ref: '#/components/schemas/Direcao'
+        infoContainer:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfoContainer'
+        infoBalsa:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfoBalsa'
+    ModalDuto:
+      type: object
+      properties:
+        dataInicio:
+          type: string
+          format: date-time
+        dataFim:
+          type: string
+          format: date-time
+        valor:
+          type: number
+          format: double
+    ModalDutoviario:
+      type: object
+      properties:
+        dataInicioPrestacao:
+          type: string
+          format: date-time
+        dataFimPrestacao:
+          type: string
+          format: date-time
+        valorTarifa:
+          type: string
+        classDuto:
+          $ref: '#/components/schemas/ClassificacaoDuto'
+        tipoContratacao:
+          $ref: '#/components/schemas/TipoContratacaoDuto'
+        codPontoEntrada:
+          type: string
+        codPontoSaida:
+          type: string
+        nContrato:
+          type: string
+    ModalMultimodal:
+      type: object
+      properties:
+        cotm:
+          type: string
+        indicadorNegociacao:
+          $ref: '#/components/schemas/IndicadorNegociacao'
+        seguroMultiModal:
+          $ref: '#/components/schemas/SerguroMultiModal'
+    ModalRodo:
+      type: object
+      properties:
+        previsaoEntrega:
+          type: string
+          format: date-time
+    ModalRodoviario:
+      type: object
+      properties:
+        rntrc:
+          type: string
+        ordemColetaAssociadaList:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrdemColetaAssociada'
+    Modal_1:
+      description: Modal de transporte e dados específicos por modal.
+      type: object
+      properties:
+        tipoModal:
+          description: Tipo de modal selecionado.
+          $ref: '#/components/schemas/TipoModal'
+        modalRodoviario:
+          description: Dados do modal rodoviário.
+          $ref: '#/components/schemas/ModalRodoviario'
+        modalAereo:
+          description: Dados do modal aéreo.
+          $ref: '#/components/schemas/ModalAereo'
+        modalAquaviario:
+          description: Dados do modal aquaviário.
+          $ref: '#/components/schemas/ModalAquaviario'
+        modalDutoviario:
+          description: Dados do modal dutoviário.
+          $ref: '#/components/schemas/ModalDutoviario'
+        modalMultimodal:
+          description: Dados do modal multimodal.
+          $ref: '#/components/schemas/ModalMultimodal'
+    Modal_2:
+      type: object
+      properties:
+        tipoModal:
+          $ref: '#/components/schemas/TipoModal'
+        modalRodo:
+          $ref: '#/components/schemas/ModalRodo'
+        modalDuto:
+          $ref: '#/components/schemas/ModalDuto'
+        modalAero:
+          $ref: '#/components/schemas/ModalAereo_1'
+        modalAquav:
+          $ref: '#/components/schemas/ModalAquav'
+    ModeloNotasFiscais:
+      type: string
+      enum:
+        - AVULSA
+        - PRODUTOR
+    Municipio:
+      type: object
+      properties:
+        uf:
+          $ref: '#/components/schemas/IcmsUf'
+        nomeMunicipio:
+          type: string
+    Nf:
+      type: object
+      properties:
+        numero:
+          type: string
+        serie:
+          type: string
+        valorIcms:
+          type: number
+          format: double
+        valorIcmsSt:
+          type: number
+          format: double
+        valorNota:
+          type: number
+          format: double
+        valorTotal:
+          type: number
+          format: double
+        cfop:
+          type: string
+        pesoTotal:
+          type: number
+          format: double
+        dataEmissao:
+          type: string
+          format: date-time
+        baseCalculoIcms:
+          type: number
+          format: double
+        baseCalculoIcmsSt:
+          type: number
+          format: double
+        modeloNotasFiscais:
+          $ref: '#/components/schemas/ModeloNotasFiscais'
+        numeroPedidoNf:
+          type: string
+        numeroRomaneio:
+          type: string
+        pin:
+          $ref: '#/components/schemas/Pin'
+    NfCreate:
+      type: object
+      properties:
+        serie:
+          description: Série da NF.
+          type: string
+        valorIcmsSt:
+          description: Valor do ICMS ST.
+          type: number
+          format: double
+        numero:
+          description: Número da NF.
+          type: string
+        valorTotal:
+          description: Valor total da NF.
+          type: number
+          format: double
+        cfop:
+          description: CFOP informado na NF.
+          type: string
+        pesoTotal:
+          description: Peso total da mercadoria.
+          type: number
+          format: double
+        valorNota:
+          description: Valor da mercadoria.
+          type: number
+          format: double
+        dataEmissao:
+          type: string
+          format: date-time
+        baseCalculoIcms:
+          description: Base de cálculo do ICMS.
+          type: number
+          format: double
+        valorIcms:
+          description: Valor de ICMS.
+          type: number
+          format: double
+        baseCalculoIcmsSt:
+          description: Base de cálculo do ICMS ST.
+          type: number
+          format: double
+        numeroPedidoNf:
+          description: Número do pedido relacionado.
+          type: string
+        numeroRomaneio:
+          description: Número do romaneio.
+          type: string
+        modeloNotasFiscais:
+          description: Modelo da NF.
+          $ref: '#/components/schemas/ModeloNotasFiscais'
+        pin:
+          description: Informações de PIN/unidades vinculadas.
+          $ref: '#/components/schemas/PinCreate'
+    Nfe:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+        pesoLiquido:
+          type: number
+          format: double
+        pesoBruto:
+          type: number
+          format: double
+        pesoCubado:
+          type: number
+          format: double
+        qtdVolumes:
+          type: integer
+          format: int32
+        volume:
+          type: number
+          format: double
+        valorMercadoria:
+          type: number
+          format: double
+        produtoPredominante:
+          type: string
+        qtProdutoPredominante:
+          type: number
+          format: double
+        cpfCnpjRemetente:
+          type: string
+        cpfCnpjDestinatario:
+          type: string
+        cpfCnpjExpedidor:
+          type: string
+        cpfCnpjRecebedor:
+          type: string
+        ufDestinatario:
+          type: string
+        municipioDestinatario:
+          type: string
+    NfeCreate:
+      type: object
+      properties:
+        chaveAcesso:
+          description: Chave de acesso da NF-e.
+          type: string
+        pin:
+          description: Informações de PIN/unidades vinculadas.
+          $ref: '#/components/schemas/PinCreate'
+    NormalIntegracao:
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+      type: object
+      properties:
+        aliquota:
+          type: number
+          format: double
+        valorICMS:
+          type: number
+          format: double
+        valorBaseCalculo:
+          type: number
+          format: double
+    Nota:
+      type: object
+      properties:
+        identificacao:
+          type: string
+        texto:
+          type: string
+    NotasContribuinte:
+      type: object
+      properties:
+        notas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nota'
+    NotasFisco:
+      type: object
+      properties:
+        notas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nota'
+    ObservacaoIntegracao:
+      description: Observação adicional para o CT-e.
+      required:
+        - campo
+        - texto
+      type: object
+      properties:
+        campo:
+          type: string
+        texto:
+          type: string
+    Observacoes:
+      type: object
+      properties:
+        observacaoGeral:
+          type: string
+        contribuenteObservacoes:
+          $ref: '#/components/schemas/NotasContribuinte'
+        fiscoObservacoes:
+          $ref: '#/components/schemas/NotasFisco'
+    Observacoes_1:
+      type: object
+      properties:
+        obs:
+          type: string
+        obsGerais:
+          type: string
+        obsFisco:
+          type: string
+        autXmlCteList:
+          type: array
+          items:
+            type: string
+    OperacaoImportacaoResponse:
+      type: object
+      properties:
+        nomeArquivo:
+          type: string
+        motivoErro:
+          type: string
+        sucesso:
+          type: boolean
+      example:
+        nomeArquivo: cte.xml
+        motivoErro: ""
+        sucesso: true
+    OrdemColetaAssociada:
+      type: object
+      properties:
+        serieOcc:
+          type: string
+        numeroOcc:
+          type: string
+        dataEmissao:
+          type: string
+          format: date-time
+        emitenteOcc:
+          $ref: '#/components/schemas/EmitenteOcc'
+    OutraUFIntegracao:
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+      type: object
+      properties:
+        aliquota:
+          type: number
+          format: double
+        valorICMS:
+          type: number
+          format: double
+        valorBaseCalculo:
+          type: number
+          format: double
+    OutrasMedidasIntegracao:
+      required:
+        - nomeMedida
+        - valorMedida
+        - tipoMedida
+      type: object
+      properties:
+        nomeMedida:
+          type: string
+        valorMedida:
+          type: number
+          format: double
+        tipoMedida:
+          $ref: '#/components/schemas/TipoUnidadeMedida'
+    OutroDocumentoCreate:
+      type: object
+      properties:
+        tipoDoc:
+          description: "Tipo do documento (CTRC, OS, etc.)."
+          $ref: '#/components/schemas/TipoDocumentoMercadoria'
+        descricao:
+          description: Descrição do documento.
+          type: string
+        numeroDocumento:
+          description: Número do documento.
+          type: string
+        valorDocumento:
+          description: Valor do documento.
+          type: number
+          format: double
+        dataEmissao:
+          type: string
+          format: date-time
+        pin:
+          description: Informações de PIN/unidades vinculadas.
+          $ref: '#/components/schemas/PinCreate'
+        chaveAcesso:
+          type: string
+    OutroDocumentoIntegracao:
+      required:
+        - tipo
+      type: object
+      properties:
+        tipo:
+          $ref: '#/components/schemas/TipoDocumentoMercadoria'
+        numero:
+          description: Número do documento.
+          type: string
+        dataEmissao:
+          description: Data de emissão do documento.
+          type: string
+          format: date-time
+        valor:
+          description: Valor total do documento.
+          type: number
+          format: double
+        descricao:
+          description: Descrição complementar.
+          type: string
+    OutrosDoc:
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+        pesoLiquido:
+          type: number
+          format: double
+        pesoBruto:
+          type: number
+          format: double
+        pesoCubado:
+          type: number
+          format: double
+        qtdVolumes:
+          type: integer
+          format: int32
+        volume:
+          type: number
+          format: double
+        valorMercadoria:
+          type: number
+          format: double
+        produtoPredominante:
+          type: string
+        qtProdutoPredominante:
+          type: number
+          format: double
+        cpfCnpjRemetente:
+          type: string
+        cpfCnpjDestinatario:
+          type: string
+        cpfCnpjExpedidor:
+          type: string
+        cpfCnpjRecebedor:
+          type: string
+        ufDestinatario:
+          type: string
+        municipioDestinatario:
+          type: string
+        tipoDoc:
+          $ref: '#/components/schemas/TipoDocumentoMercadoria'
+        descricao:
+          type: string
+        numeroDocumento:
+          type: string
+        dataEmissao:
+          type: string
+          format: date-time
+        valorDocumento:
+          type: number
+          format: double
+    OutrosFretesIntegracao:
+      required:
+        - nomeFrete
+        - valorFrete
+      type: object
+      properties:
+        nomeFrete:
+          description: Descrição do frete adicional.
+          type: string
+        valorFrete:
+          type: number
+          format: double
+    OutrosTiposIntegracao:
+      required:
+        - tipoICMS
+      type: object
+      properties:
+        tipoICMS:
+          $ref: '#/components/schemas/TipoICMSIntegracao'
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+      example:
+        size: 15
+        number: 1
+        totalElements: 101
+        totalPages: 7
+    ParametroEnvioEmailCte:
+      description: Parâmetros para envio de e-mail de CT-e.
+      required:
+        - idsCte
+      type: object
+      properties:
+        idsCte:
+          type: array
+          items:
+            type: string
+        destinatarios:
+          description: "Lista de destinatários; se vazio, usa destinatários padrã\
+            o."
+          type: array
+          items:
+            type: string
+    ParametrosImprimirCtes:
+      required:
+        - idCteList
+      type: object
+      properties:
+        idCteList:
+          type: array
+          items:
+            type: string
+        ordenarPorIntegracao:
+          description: Define se a ordem será por integração (true) ou padrão (false).
+          type: boolean
+      example:
+        idCteList:
+          - 9c015cc6-8471-4838-8391-e17fbc5a0a75
+          - 7d231cf5-5111-456b-93d0-df6401762adb
+        excel: true
+    ParametrosImprimirRelatorio:
+      required:
+        - idCteList
+      type: object
+      properties:
+        idCteList:
+          type: array
+          items:
+            type: string
+        excel:
+          description: Define se o relatório será gerado em Excel (true) ou PDF (false).
+          type: boolean
+      example:
+        idCteList:
+          - 9c015cc6-8471-4838-8391-e17fbc5a0a75
+          - 7d231cf5-5111-456b-93d0-df6401762adb
+        excel: true
+    PathComponentBuilder:
+      type: object
+    PeriodoValidadeCertificado:
+      type: string
+      enum:
+        - VALIDO_POR_MAIS_DE_30_DIAS
+        - RESTAM_MENOS_DE_30_DIAS
+        - RESTAM_MENOS_DE_15_DIAS
+        - RESTAM_HORAS
+        - VENCIDO
+    Pin:
+      type: object
+      properties:
+        codigo:
+          type: string
+    PinCreate:
+      description: PIN e unidades de transporte/carga vinculadas.
+      type: object
+      properties:
+        codigo:
+          description: Código do PIN.
+          type: string
+        tipoUnidade:
+          description: Tipo de unidade associada ao PIN.
+          $ref: '#/components/schemas/TipoUnidade'
+        unidadeTransporteList:
+          description: Unidades de transporte utilizadas.
+          type: array
+          items:
+            $ref: '#/components/schemas/UnidadeTransporte'
+        unidadeCargaList:
+          description: Unidades de carga utilizadas.
+          type: array
+          items:
+            $ref: '#/components/schemas/UnidadeCarga'
+    PrevisaoData:
+      type: string
+      enum:
+        - SEM_DATA_DEFINIDA
+        - NA_DATA
+        - ATE_A_DATA
+        - A_PARTIR_DA_DATA
+        - NO_PERIODO
+    PrevisaoFluxoCarga:
+      type: object
+      properties:
+        origem:
+          type: string
+        destino:
+          type: string
+    PrevisaoHora:
+      type: string
+      enum:
+        - SEM_HORA_DEFINIDA
+        - NO_HORARIO
+        - ATE_O_HORARIO
+        - A_PARTIR_DO_HORARIO
+        - NO_INTERVALO_DE_TEMPO
+    ProdutoPerigoso:
+      type: object
+      properties:
+        numeroOnu:
+          type: string
+        quantidadeVolumes:
+          type: integer
+          format: int32
+        quantidadeTipoVolume:
+          type: string
+        unidadeMedia:
+          $ref: '#/components/schemas/TipoVolume'
+    ProdutoPerigoso_1:
+      type: object
+      properties:
+        numeroOnu:
+          type: string
+        classeRisco:
+          type: string
+        grupoEmbalagem:
+          type: string
+    RateioAgrupador:
+      type: string
+      enum:
+        - TODOS_XML_UM_CTE
+        - POR_REMETENTE_E_DESTINATARIO
+        - POR_REMETENTE
+        - POR_DESTINATARIO
+        - POR_ESTADO_DESTINO
+        - UM_CTE_POR_XML
+    RateioDto:
+      type: object
+      properties:
+        agrupador:
+          $ref: '#/components/schemas/RateioAgrupador'
+        tipo:
+          $ref: '#/components/schemas/RateioTipo'
+    RateioTipo:
+      type: string
+      enum:
+        - POR_PESO
+        - POR_VOLUME
+        - POR_VALOR
+        - POR_NFE
+        - POR_CTE
+    Reducao:
+      type: object
+      properties:
+        percReducaoAliquota:
+          type: number
+          format: double
+        aliquotaEfetiva:
+          type: number
+          format: double
+    ReducaoIntegracao:
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+        - percentualReducao
+      type: object
+      properties:
+        aliquota:
+          type: number
+          format: double
+        valorICMS:
+          type: number
+          format: double
+        valorBaseCalculo:
+          type: number
+          format: double
+        percentualReducao:
+          type: number
+          format: double
+    RequestParam:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        campoPesquisa:
+          type: string
+    ResponsavelFrete:
+      type: string
+      enum:
+        - REMETENTE
+        - EXPEDIDOR
+        - DESTINATARIO
+        - RECEBEDOR
+        - OUTROS
+    RespostaSimples:
+      type: object
+      properties:
+        texto:
+          type: string
+    RetornoExportacaoXmlCtes:
+      type: object
+      properties:
+        idArquivo:
+          type: string
+        url:
+          type: string
+      example:
+        idArquivo: 9384aa84-80e0-420f-9ab5-6320ded10283
+        url: http://teste.hivecloud/9384aa8480e0420f9ab6320ded10283
+    RetornoExportacaoXmlDcesDto:
+      type: object
+      properties:
+        idArquivo:
+          type: string
+        url:
+          type: string
+    SeguroCarga:
+      type: object
+      properties:
+        cte:
+          $ref: '#/components/schemas/Cte'
+        nomeSeguradora:
+          type: string
+        cnpjSeguradora:
+          type: string
+        numeroApolice:
+          type: string
+        numeroAverbacao:
+          type: string
+        numeroProtocolo:
+          type: string
+    SerguroMultiModal:
+      type: object
+      properties:
+        numeroApolice:
+          type: string
+        numeroAverbacao:
+          type: string
+        nomeSeguradora:
+          type: string
+        cnpjResponsavel:
+          type: string
+    ServicoMultiModalAvancado:
+      type: object
+      properties:
+        servicoMultimodal:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServicoMultimodal'
+    ServicoMultimodal:
+      type: object
+      properties:
+        chaveAcessoMultimodal:
+          type: string
+    ServletUriComponentsBuilder:
+      type: object
+      properties:
+        scheme:
+          type: string
+        ssp:
+          type: string
+        userInfo:
+          type: string
+        host:
+          type: string
+        port:
+          type: string
+        pathBuilder:
+          $ref: '#/components/schemas/CompositePathComponentBuilder'
+        queryParams:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        fragment:
+          type: string
+        uriVariables:
+          type: object
+          additionalProperties: {}
+        encodeTemplate:
+          type: boolean
+        charset:
+          $ref: '#/components/schemas/Charset'
+        originalPath:
+          type: string
+    SituacaoEmpresa:
+      type: string
+      enum:
+        - ATIVADA
+        - DESATIVADA
+    SobrescritasIntegracao:
+      description: Campos de sobrescrita para tributação.
+      type: object
+      properties:
+        icms:
+          $ref: '#/components/schemas/IcmsIntegracao'
+        cfop:
+          type: string
+    StatusAverbacao:
+      type: string
+      enum:
+        - SEMAVERBACAO
+        - AVERBADO
+        - FALHA_AVERBACAO
+    StatusCte:
+      type: string
+      enum:
+        - EMDIGITACAO
+        - VALIDADO
+        - ASSINADO
+        - EMPROCESSAMENTO
+        - REJEITADO
+        - DENEGADO
+        - CANCELADO
+        - AUTORIZADO
+        - ENVIADO
+    StatusCte_1:
+      type: string
+      enum:
+        - EMDIGITACAO
+        - VALIDADO
+        - ASSINADO
+        - EMPROCESSAMENTO
+        - REJEITADO
+        - DENEGADO
+        - CANCELADO
+        - AUTORIZADO
+        - ENVIADO
+    StatusDce:
+      type: string
+      enum:
+        - EM_DIGITACAO
+        - VALIDADO
+        - ASSINADO
+        - EM_PROCESSAMENTO
+        - REJEITADO
+        - CANCELADO
+        - AUTORIZADO
+    StatusTransacaoAssincrona:
+      type: string
+      enum:
+        - NOTSTARTED
+        - EXECUTING
+        - COMPLETE
+    SubcontratacaoRedespacho:
+      description: Dados de subcontratação/redespacho vinculados ao CT-e.
+      required:
+        - tipoServico
+        - documentosAnteriores
+      type: object
+      properties:
+        tipoServico:
+          $ref: '#/components/schemas/TipoServicoSubcontratacaoRedespachoIntegracao'
+        documentosAnteriores:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentosAnterioresIntegracao'
+    Substituicao:
+      type: object
+      properties:
+        chaveAcessoSubstituicao:
+          type: string
+        tomadorAlterado:
+          type: boolean
+        tomadorContribuinte:
+          type: boolean
+        chaveAcessoAnulacao:
+          type: string
+        tipoDocumentoEmitido:
+          $ref: '#/components/schemas/TipoDocumentoEmitido'
+        chaveCteEmitido:
+          type: string
+        chaveNfeEmitido:
+          type: string
+        cpfCnpj:
+          type: string
+        modelo:
+          type: string
+        serie:
+          type: string
+        subSerie:
+          type: string
+        numero:
+          type: string
+        valor:
+          type: number
+          format: double
+        dataEmissao:
+          type: string
+          format: date-time
+    SubstituicaoCteResponse:
+      type: object
+      properties:
+        cteId:
+          type: string
+        serie:
+          type: integer
+          format: int32
+        numero:
+          type: integer
+          format: int32
+    SubstituicaoIntegracao:
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+        - valorCredito
+      type: object
+      properties:
+        aliquota:
+          type: number
+          format: double
+        valorICMS:
+          type: number
+          format: double
+        valorBaseCalculo:
+          type: number
+          format: double
+        valorCredito:
+          type: number
+          format: double
+    TipoCRT:
+      type: string
+      enum:
+        - SIMPLES_NACIONAL
+        - SIMPLES_NACIONAL_EXCESSO
+        - NORMAL
+        - MEI
+    TipoCTe:
+      type: string
+      enum:
+        - NORMAL
+        - SUBSTITUICAO
+        - COMPLEMENTAR
+        - ANULACAO
+        - SIMPLIFICADO
+        - SUBSTITUICAO_SIMPLIFICADO
+    TipoCarga:
+      type: string
+      enum:
+        - CONTEINER
+        - ULD
+        - PALLET
+        - OUTROS
+    TipoCertificado:
+      type: string
+      enum:
+        - A1
+        - A3
+        - CS
+    TipoContratacaoDuto:
+      type: string
+      enum:
+        - PONTO_A_PONTO
+        - CAPACIDADE_ENTRADA
+        - CAPACIDADE_SAIDA
+    TipoDocumento:
+      type: string
+      enum:
+        - CNPJ
+        - CPF
+    TipoDocumentoAnterior:
+      type: string
+      enum:
+        - PAPEL
+        - ELETRONICO
+    TipoDocumentoCarga:
+      type: string
+      enum:
+        - NF
+        - NFE
+        - DCE
+        - OUTROS
+    TipoDocumentoEmitido:
+      type: string
+      enum:
+        - CHAVE_ACESSO_CTE
+        - CHAVE_ACESSO_NFE
+        - INFORMACAO_NF_OU_CT
+    TipoDocumentoMercadoria:
+      type: string
+      enum:
+        - DECLARACAO
+        - DUTOVIARIO
+        - CF_E_SAT
+        - NFC_E
+        - OUTROS
+    TipoDocumentoOriginario:
+      type: string
+      enum:
+        - ATRE
+        - DTA
+        - CONHECIMENTO_AEREO_INTERNACIONAL
+        - CONHECIMENTO_CARTA_DE_PORTE_INTERNACIONAL
+        - CONHECIMENTO_AVULSO
+        - TIF
+        - BL
+    TipoEmissao:
+      type: string
+      enum:
+        - NORMAL
+        - FSDA
+        - SVCRS
+        - SVCSP
+        - CONTINGENCIA
+    TipoEmissao_1:
+      type: string
+      enum:
+        - NORMAL
+        - FSDA
+        - SVCRS
+        - SVCSP
+        - CONTINGENCIA
+    TipoICMSIntegracao:
+      type: string
+      enum:
+        - ISENTO
+        - DIFERIDO
+        - SIMPLESNACIONAL
+        - NAOTRIBUTADO
+    TipoIcms:
+      type: string
+      enum:
+        - NORMAL
+        - ISENTO
+        - NAOTRIBUTADA
+        - SIMPLESNACIONAL
+        - SUBSTITUICAO
+        - REDUCAO
+        - OUTRA_UF
+        - DIFERIDO
+        - OUTROS
+    TipoModal:
+      type: string
+      enum:
+        - RODO
+        - AEREO
+        - AQUA
+        - FERRO
+        - DUTO
+        - MULTIMODAL
+    TipoModalIntegracao:
+      type: string
+      enum:
+        - RODOVIARIO
+        - AEREO
+    TipoNavegacao:
+      type: string
+      enum:
+        - CABOTAGEM
+        - INTERIOR
+    TipoPrestacao:
+      type: string
+      enum:
+        - TOTAL
+        - PARCIAL
+    TipoServico:
+      type: string
+      enum:
+        - NORMAL
+        - SUBCONTRATACAO
+        - REDESPACHO
+        - REDESPACHO_INTERMEDIARIO
+        - VINCULADO_MULTIMODAL
+    TipoServicoSubcontratacaoRedespachoIntegracao:
+      type: string
+      enum:
+        - SUBCONTRATACAO
+        - REDESPACHO
+    TipoServico_1:
+      type: string
+      enum:
+        - NORMAL
+        - SUBCONTRATACAO
+        - REDESPACHO
+        - REDESPACHO_INTERMEDIARIO
+        - VINCULADO_MULTIMODAL
+    TipoTransporte:
+      type: string
+      enum:
+        - RODOVIARIO_TRACAO
+        - RODOVIARIO_REBOQUE
+        - NAVIO
+        - BALSA
+        - AERONAVE
+        - VAGAO
+        - OUTROS
+    TipoTransporteIntegracao:
+      description: Modal e dados específicos do transporte.
+      required:
+        - tipoTransporte
+      type: object
+      properties:
+        tipoTransporte:
+          $ref: '#/components/schemas/TipoModalIntegracao'
+        aereo:
+          $ref: '#/components/schemas/AereoIntegracao'
+    TipoUnidade:
+      type: string
+      enum:
+        - TRANSPORTE
+        - CARGA
+    TipoUnidadeMedida:
+      type: string
+      enum:
+        - M3
+        - KG
+        - TON
+        - UNIDADE
+        - LITROS
+        - MMBTU
+    TipoVolume:
+      type: string
+      enum:
+        - KG
+        - KG_G
+        - L
+        - TI
+        - OUTROS
+    TomadorIntegracao:
+      description: Dados do tomador e sua atividade.
+      required:
+        - inscricaoFederal
+        - nome
+        - telefone
+        - endereco
+        - atividade
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          description: "Nome fantasia, se houver."
+          type: string
+        telefone:
+          type: string
+        email:
+          description: E-mail de contato.
+          type: string
+        inscricaoEstadual:
+          description: Inscrição estadual.
+          type: string
+        endereco:
+          $ref: '#/components/schemas/EnderecoIntegracao_1'
+        atividade:
+          $ref: '#/components/schemas/AtividadeTomador'
+    TransactionID:
+      type: object
+      properties:
+        id:
+          type: string
+      example:
+        id: 9384aa84-80e0-420f-9ab5-6320ded10283
+    TributacaoCompraGov:
+      type: object
+      properties:
+        aliquotaIbsUf:
+          type: number
+          format: double
+        valorTribIbsUf:
+          type: number
+          format: double
+        aliquotaIbsMun:
+          type: number
+          format: double
+        valorTribIbsMun:
+          type: number
+          format: double
+        aliquotaCbs:
+          type: number
+          format: double
+        valorTribCbs:
+          type: number
+          format: double
+    UnidadeCarga:
+      type: object
+      properties:
+        tipoCarga:
+          description: Tipo da unidade de carga.
+          $ref: '#/components/schemas/TipoCarga'
+        identificadorCarga:
+          description: Identificador da unidade de carga.
+          type: string
+        quantidadeRateada:
+          description: Quantidade rateada nesta unidade.
+          type: string
+        lacreList:
+          description: Lacres aplicados na unidade de carga.
+          type: array
+          items:
+            $ref: '#/components/schemas/LacreCreate'
+    UnidadeTransporte:
+      type: object
+      properties:
+        tipoTransporte:
+          description: Tipo da unidade de transporte.
+          $ref: '#/components/schemas/TipoTransporte'
+        identificadorTransporte:
+          description: Identificador do transporte.
+          type: string
+        quantidadeRateada:
+          description: Quantidade rateada nesta unidade.
+          type: string
+        lacreList:
+          description: Lacres aplicados na unidade.
+          type: array
+          items:
+            $ref: '#/components/schemas/LacreCreate'
+        unidadeCargaList:
+          description: Unidades de carga contidas.
+          type: array
+          items:
+            $ref: '#/components/schemas/UnidadeCarga'
+    Valores:
+      type: object
+      properties:
+        componenteFreteList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponenteFrete_1'
+        icms:
+          $ref: '#/components/schemas/Icms'
+        ibsCbs:
+          $ref: '#/components/schemas/IbsCbs_1'
+        nfeList:
+          type: array
+          items:
+            type: string
+        nfList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nf'
+        dceList:
+          type: array
+          items:
+            type: string
+        outrosDocList:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutrosDoc'
+        valorTotalFrete:
+          type: number
+          format: double
+    ValoresImpostos:
+      type: object
+      properties:
+        componenteFreteList:
+          description: Componentes de frete (adicionais).
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponenteFrete'
+        imposto:
+          description: Imposto ICMS e variações.
+          $ref: '#/components/schemas/Imposto'
+        valorTotalServico:
+          description: Valor total do serviço de transporte.
+          type: string
+        valorAReceber:
+          description: Valor a receber do tomador/cliente.
+          type: string
+        cfop:
+          description: CFOP do serviço.
+          $ref: '#/components/schemas/Cfop'
+        impostoIbsCbs:
+          description: Dados de IBS/CBS quando aplicável.
+          $ref: '#/components/schemas/ImpostoIbsCbs'
+    Veiculo:
+      type: object
+      properties:
+        chassi:
+          type: string
+        codigoModelo:
+          type: string
+        valorFrete:
+          type: string
+        valorUnitario:
+          type: string
+        codigoCor:
+          type: string
+        cor:
+          type: string
+    VeiculoNovo:
+      type: object
+      properties:
+        codigoCor:
+          type: string
+        descricaoCor:
+          type: string
+        codigoModelo:
+          type: string
+        chassi:
+          type: string
+        valorUnitario:
+          type: number
+          format: double
+        valorFrete:
+          type: number
+          format: double
+    Void:
+      type: object
+    byte:
+      type: object
+    Error:
+      description: Um Objeto de erro
+      properties:
+        mensagem:
+          description: Descrição do erro
+          type: string
+      type: object
+  securitySchemes:
+    tokenAuth:
+      type: http
+      scheme: bearer
+      description: "Header de Autorização usando o padrão BEARER. Examplo: \"Authorization:\
+        \ Bearer {tokenAuth}\""
+    tenantAuth:
+      type: apiKey
+      in: header
+      name: tenantID
+      description: ID do Tenant que se quer integrar
+  responses:
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Unauthorized
+    Forbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Forbidden
+security:
+  - tokenAuth: []
+    tenantAuth: []
