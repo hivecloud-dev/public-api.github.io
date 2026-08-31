@@ -1,0 +1,2332 @@
+---
+openapi: 3.0.3
+info:
+  title: Documentação da integração interna do MDFE
+  description: Esta é a documentação das interfaces REST do MDFE
+  contact:
+    name: Equipe de desenvolvimento
+    email: desenvolvimento@hivecloud.com.br
+  version: 1.0
+servers:
+  - url: /mdfe/api
+    description: Servidor Local com /mdfe
+  - url: /api
+    description: Servidor Local sem /mdfe
+tags:
+  - name: Integra Cancelar Mdfe
+  - name: Integra Consultar Mdfe
+  - name: Integra Emitir Mdfe
+  - name: Integra Encerrar Mdfe
+  - name: Integra Exportacao Mdfe
+  - name: Integra Mdfe
+  - name: Integra Mdfe
+  - name: Integrar Empresas
+  - name: Integrar Imprimir Documento Mdfe
+paths:
+  /v1/integracoes/mdfes/cancelar:
+    post:
+      tags:
+        - Integra Cancelar Mdfe
+      operationId: IntegraCancelarMdfeControllerImp.cancelarMdfe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelarMdfe'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: cancelarMdfe
+  /v1/integracoes/mdfes/cancelar/list:
+    post:
+      tags:
+        - Integra Cancelar Mdfe
+      operationId: IntegraCancelarMdfeControllerImp.list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CancelarMdfeModal'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
+  /v1/integracoes/mdfes/cancelar/{id}/consultar-status:
+    get:
+      tags:
+        - Integra Cancelar Mdfe
+      operationId: IntegraCancelarMdfeControllerImp.cancelarMdfeConsutlarStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: cancelarMdfeConsutlarStatus
+  /v1/integracoes/mdfes/cancelar/{id}/obter-resultado:
+    get:
+      tags:
+        - Integra Cancelar Mdfe
+      operationId: IntegraCancelarMdfeControllerImp.cancelarMdfeObterResultado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CancelarMdfeReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: cancelarMdfeObterResultado
+  /v1/integracoes/mdfes/consultar:
+    post:
+      tags:
+        - Integra Consultar Mdfe
+      operationId: IntegraConsultarMdfeControllerImp.consultarMdfe
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarMdfe
+  /v1/integracoes/mdfes/consultar/{id}/consultar-status:
+    get:
+      tags:
+        - Integra Consultar Mdfe
+      operationId: IntegraConsultarMdfeControllerImp.consultarMdfeConsutlarStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarMdfeConsutlarStatus
+  /v1/integracoes/mdfes/consultar/{id}/obter-resultado:
+    get:
+      tags:
+        - Integra Consultar Mdfe
+      operationId: IntegraConsultarMdfeControllerImp.consultarMdfeObterResultado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConsultarMdfeReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarMdfeObterResultado
+  /v1/integracoes/mdfes/emitir:
+    post:
+      tags:
+        - Integra Emitir Mdfe
+      operationId: IntegraEmitirMdfeControllerImp.emitirMdfe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmitirMdfe'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: emitirMdfe
+  /v1/integracoes/mdfes/emitir/list:
+    post:
+      tags:
+        - Integra Emitir Mdfe
+      operationId: IntegraEmitirMdfeControllerImp.list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MdfeInfoRetorno'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
+  /v1/integracoes/mdfes/emitir/{id}/consultar-status:
+    get:
+      tags:
+        - Integra Emitir Mdfe
+      operationId: IntegraEmitirMdfeControllerImp.consultarStatusMdfe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: consultarStatusMdfe
+  /v1/integracoes/mdfes/emitir/{id}/obter-resultado:
+    get:
+      tags:
+        - Integra Emitir Mdfe
+      operationId: IntegraEmitirMdfeControllerImp.obterResultadoMdfe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MdfeRetorno'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: obterResultadoMdfe
+  /v1/integracoes/mdfes/encerrar:
+    post:
+      tags:
+        - Integra Encerrar Mdfe
+      operationId: IntegraEncerrarMdfeControllerImp.encerrarMdfe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EncerrarMdfe'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionID'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: encerrarMdfe
+  /v1/integracoes/mdfes/encerrar/list:
+    post:
+      tags:
+        - Integra Encerrar Mdfe
+      operationId: IntegraEncerrarMdfeControllerImp.list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EncerrarMdfeModal'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
+  /v1/integracoes/mdfes/encerrar/{id}/consultar-status:
+    get:
+      tags:
+        - Integra Encerrar Mdfe
+      operationId: IntegraEncerrarMdfeControllerImp.encerrarMdfeConsutlarStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsultaStatusTransacao'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: encerrarMdfeConsutlarStatus
+  /v1/integracoes/mdfes/encerrar/{id}/obter-resultado:
+    get:
+      tags:
+        - Integra Encerrar Mdfe
+      operationId: IntegraEncerrarMdfeControllerImp.encerrarMdfeObterResultado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EncerrarMdfeReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: encerrarMdfeObterResultado
+  /v1/integracoes/mdfes/exportar-mdfe:
+    post:
+      tags:
+        - Integra Exportacao Mdfe
+      operationId: IntegraExportacaoMdfeControllerImp.exportarMdfe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetornoExportacaoXmlMdfes'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: exportarMdfe
+  /v1/integracoes/mdfe:
+    post:
+      tags:
+        - Integra Mdfe
+      operationId: IntegraMdfeControllerImp.integrarMdfe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MdfeIntegracao'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEntityReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: integrarMdfe
+  /v1/integracoes/mdfes:
+    get:
+      tags:
+        - Integra Mdfe
+      operationId: IntegraMdfeV1ControllerImp.list
+      parameters:
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: empresa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dataEmissaoInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataEmissaoFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: numeroInicial
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: numeroFinal
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: serie
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: situacao
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/StatusMdfe'
+        - name: placa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: placaTracao
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: motorista
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ufInicio
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ufTermino
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: chaveAcesso
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: buscaChaveDocumento
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: numeroDoc
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tipoEmitente
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoEmitente'
+        - name: carregamentoPosterior
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: statusAberbacao
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MdfeDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
+  /v1/integracoes/mdfes/remover:
+    delete:
+      tags:
+        - Integra Mdfe
+      operationId: IntegraMdfeV1ControllerImp.removerMdfes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+              uniqueItems: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: removerMdfes
+  /v1/integracoes/mdfes/{id}:
+    get:
+      tags:
+        - Integra Mdfe
+      operationId: IntegraMdfeV1ControllerImp.getMdfe
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MdfeDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: getMdfe
+  /v1/integracoes/empresas:
+    get:
+      tags:
+        - Integrar Empresas
+      operationId: IntegrarEmpresasControllerImp.list
+      parameters:
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nome
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpj
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: filtrarEmpresaAtivada
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EmpresaDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: list
+    post:
+      tags:
+        - Integrar Empresas
+      operationId: IntegrarEmpresasControllerImp.post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: post
+  /v1/integracoes/empresas/{id}:
+    get:
+      tags:
+        - Integrar Empresas
+      operationId: IntegrarEmpresasControllerImp.get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpresaDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: get
+    put:
+      tags:
+        - Integrar Empresas
+      operationId: IntegrarEmpresasControllerImp.put
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaCreate'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Void'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: put
+    delete:
+      tags:
+        - Integrar Empresas
+      operationId: IntegrarEmpresasControllerImp.delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema: {}
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: delete
+  /v1/integracoes/mdfes/imprimir-documento-mdfe:
+    post:
+      tags:
+        - Integrar Imprimir Documento Mdfe
+      operationId: IntegrarImprimirDocumentoMdfeControllerImp.imprimirDocumentoMdfe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParametrosImprimirMdfes'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImprimirMdfesReturn'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: imprimirDocumentoMdfe
+components:
+  schemas:
+    AsyncTransactionStatus:
+      type: string
+      enum:
+        - NOTSTARTED
+        - EXECUTING
+        - COMPLETE
+    AsyncTransactionSuccessIndicator:
+      type: string
+      enum:
+        - SUCCESS
+        - ERROR
+    AutorizadoXmlDto:
+      type: object
+      properties:
+        id:
+          type: string
+        cpfCnpj:
+          type: string
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumento'
+    Banco:
+      type: object
+      properties:
+        codigo:
+          type: string
+        nome:
+          type: string
+    CancelarMdfe:
+      required:
+        - idMdfeList
+        - dataCancelamento
+        - motivoCancelamento
+      type: object
+      properties:
+        idMdfeList:
+          type: array
+          items:
+            type: string
+        dataCancelamento:
+          type: string
+          format: date-time
+        motivoCancelamento:
+          type: string
+          minLength: 15
+          maxLength: 255
+    CancelarMdfeModal:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        nomeMotorista:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusMdfe'
+    CancelarMdfeReturn:
+      type: object
+      properties:
+        id:
+          type: string
+        sucesso:
+          type: boolean
+        mensagem:
+          type: array
+          items:
+            type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/StatusMdfe'
+    CargaLotacaoIntegracao:
+      required:
+        - LocalCarregamento
+        - LocalDescarregamento
+      type: object
+      properties:
+        LocalCarregamento:
+          $ref: '#/components/schemas/LocalidadeCargaLotacaoIntegracao'
+        LocalDescarregamento:
+          $ref: '#/components/schemas/LocalidadeCargaLotacaoIntegracao'
+    CategoriaCombinacaoVeicular:
+      type: string
+      enum:
+        - EIXOS_2
+        - EIXOS_3
+        - EIXOS_4
+        - EIXOS_5
+        - EIXOS_6
+        - EIXOS_7
+        - EIXOS_8
+        - EIXOS_9
+        - EIXOS_10
+        - EIXOS_ACIMA_10
+    Certificado:
+      type: object
+      properties:
+        validade:
+          type: string
+          format: date-time
+        tipoCertificado:
+          type: string
+        token:
+          type: string
+        exibido30Dias:
+          type: boolean
+        exibido15Dias:
+          type: boolean
+        exibidoNoDia:
+          type: boolean
+        periodoValidadeCertificado:
+          $ref: '#/components/schemas/PeriodoValidadeCertificado'
+    Charset:
+      type: object
+      properties:
+        name:
+          type: string
+        aliases:
+          type: array
+          items:
+            type: string
+        aliasSet:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+    CiotDto:
+      type: object
+      properties:
+        ciot:
+          type: string
+        situacao:
+          $ref: '#/components/schemas/SituacaoCiot'
+        isContingencia:
+          type: boolean
+    ComponentePagamentoFreteIntegracao:
+      required:
+        - tipoComponente
+        - valor
+      type: object
+      properties:
+        tipoComponente:
+          $ref: '#/components/schemas/TipoComponenteIntegracao'
+        valor:
+          type: number
+          format: double
+        descricao:
+          type: string
+    CompositePathComponentBuilder:
+      type: object
+      properties:
+        builders:
+          type: array
+          items:
+            $ref: '#/components/schemas/PathComponentBuilder'
+    CondutorDto:
+      type: object
+      properties:
+        xNome:
+          type: string
+        cpf:
+          type: string
+        cnh:
+          type: string
+        celular:
+          type: string
+    ConsultaStatusTransacao:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/AsyncTransactionStatus'
+        indicadorSucesso:
+          $ref: '#/components/schemas/AsyncTransactionSuccessIndicator'
+        porcentagemConclusao:
+          type: integer
+          format: int32
+        listaMensagem:
+          type: array
+          items:
+            type: string
+    ConsultarMdfeReturn:
+      type: object
+      properties:
+        id:
+          type: string
+        sucesso:
+          type: boolean
+        mensagem:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/StatusMdfe'
+        chaveAcesso:
+          type: string
+    CreateEntityReturn:
+      type: object
+      properties:
+        id:
+          type: string
+    DadosGeraisIntegracao:
+      required:
+        - valorTotal
+        - pesoTotalKg
+      type: object
+      properties:
+        dataEmissao:
+          type: string
+          format: date-time
+        serie:
+          type: string
+        numero:
+          type: string
+        valorTotal:
+          type: number
+          format: double
+        pesoTotalKg:
+          type: number
+          format: double
+        produtoPredominante:
+          $ref: '#/components/schemas/ProdutoPredominanteIntegracao'
+    DocumentoDto:
+      type: object
+      properties:
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumento_1'
+        numero:
+          type: string
+        serie:
+          type: integer
+          format: int32
+        chaveAcesso:
+          type: string
+        valor:
+          type: number
+          format: double
+        peso:
+          type: number
+          format: double
+        codigoMunicipioDescarregamento:
+          type: string
+        nomeMunicipioDescarregamento:
+          type: string
+    EmitirMdfe:
+      type: object
+      properties:
+        idList:
+          type: array
+          items:
+            type: string
+        mensagemList:
+          type: array
+          items:
+            type: string
+        isIdIntegracao:
+          type: boolean
+        enviarEmailParaEmitente:
+          type: boolean
+        idEmitente:
+          type: string
+        outrosEmail:
+          type: array
+          items:
+            type: string
+    EmpresaCreate:
+      required:
+        - nome
+        - tipoEmitente
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        cnpj:
+          type: string
+        ie:
+          type: string
+        telefone:
+          type: string
+        email:
+          type: string
+        tipoEmitente:
+          $ref: '#/components/schemas/TipoEmitente_1'
+        rntrc:
+          type: string
+        endereco:
+          $ref: '#/components/schemas/LocalidadeDto'
+        emailsAlternativos:
+          type: array
+          items:
+            type: string
+        observacao:
+          type: string
+        logo:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        cpfCnpjContabilidade:
+          type: string
+        emailContabilidade:
+          type: string
+        telefoneContabilidade:
+          type: string
+        accountsEmpresaId:
+          type: string
+        codBancoProprietario:
+          type: string
+        codAgenciaProprietario:
+          type: string
+        pixProprietario:
+          type: string
+        contaBancariaProprietario:
+          type: string
+        tipoContaBancariaProprietario:
+          type: string
+    EmpresaDto:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        nomeFantasia:
+          type: string
+        email:
+          type: string
+        telefone:
+          type: string
+        ie:
+          type: string
+        rntrc:
+          type: string
+        tipoEmitente:
+          type: string
+        endereco:
+          $ref: '#/components/schemas/LocalidadeDto'
+        emailsAlternativos:
+          type: array
+          items:
+            type: string
+        cnpj:
+          type: string
+        certificado:
+          $ref: '#/components/schemas/Certificado'
+        logomarca:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        dataCadastramento:
+          type: string
+          format: date-time
+        observacao:
+          type: string
+        empresa:
+          $ref: '#/components/schemas/SituacaoEmpresa'
+        situacao:
+          $ref: '#/components/schemas/SituacaoEmpresa'
+        cpfCnpjContabilidade:
+          type: string
+        emailContabilidade:
+          type: string
+        telefoneContabilidade:
+          type: string
+        empresaPrincipal:
+          type: boolean
+        codBancoProprietario:
+          type: string
+        codAgenciaProprietario:
+          type: string
+        pixProprietario:
+          type: string
+        contaBancariaProprietario:
+          type: string
+        tipoContaBancariaProprietario:
+          type: string
+        accountsEmpresaId:
+          type: string
+        loggedUserHasAccess:
+          type: boolean
+    EmpresaIntegracao:
+      required:
+        - inscricaoFederal
+        - inscricaoEstadual
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+        inscricaoEstadual:
+          type: string
+    EncerrarMdfe:
+      required:
+        - idMdfeList
+        - dataEncerramento
+        - municipio
+      type: object
+      properties:
+        idMdfeList:
+          type: array
+          items:
+            type: string
+        dataEncerramento:
+          type: string
+          format: date-time
+        municipio:
+          $ref: '#/components/schemas/Municipio'
+        dataEvento:
+          type: string
+    EncerrarMdfeModal:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        nomeMotorista:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusMdfe'
+        municipioDescarregamento:
+          type: string
+    EncerrarMdfeReturn:
+      type: object
+      properties:
+        id:
+          type: string
+        sucesso:
+          type: boolean
+        mensagem:
+          type: array
+          items:
+            type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/StatusMdfe'
+    ImprimirMdfesReturn:
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+        idFile:
+          type: string
+        mensagem:
+          type: string
+        bytesDamdfeMdfe:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        bytesXmlMdfe:
+          type: array
+          items:
+            $ref: '#/components/schemas/byte'
+        url:
+          type: string
+    InclusaoCondutorDto:
+      type: object
+      properties:
+        id:
+          type: string
+        numeroSequencial:
+          type: integer
+          format: int32
+        dataInclusao:
+          type: string
+          format: date-time
+        usuario:
+          type: string
+        nomeCondutor:
+          type: string
+        cpfCondutor:
+          type: string
+    IndicadorPagamentoIntegracao:
+      type: string
+      enum:
+        - A_VISTA
+        - A_PRAZO
+    InfCIOTDto:
+      type: object
+      properties:
+        ciot:
+          type: string
+        cpf:
+          type: string
+        cnpj:
+          type: string
+        integracao:
+          type: boolean
+    InfoCiotIntegracao:
+      required:
+        - inscricaoFederal
+        - ciot
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+        ciot:
+          type: string
+    InfoContratanteIntegracao:
+      required:
+        - inscricaoFederal
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+    InfoPedagioIntegracao:
+      type: object
+      properties:
+        valePedagioList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValePedagioIntegracao'
+        categoriaCombinacaoVeicular:
+          $ref: '#/components/schemas/CategoriaCombinacaoVeicular'
+    InfoPrazoPagamentoIntegracao:
+      required:
+        - numeroParcela
+        - vencimento
+        - valor
+      type: object
+      properties:
+        numeroParcela:
+          type: string
+        vencimento:
+          type: string
+          format: date-time
+        valor:
+          type: number
+          format: double
+    InformacaoBancariaIntegracao:
+      required:
+        - codBanco
+        - codAgencia
+      type: object
+      properties:
+        codBanco:
+          type: string
+        codAgencia:
+          type: string
+        cnpjipef:
+          type: string
+        pix:
+          type: string
+    LocalidadeCargaLotacaoIntegracao:
+      type: object
+      properties:
+        cep:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+    LocalidadeDto:
+      required:
+        - logradouro
+        - bairro
+        - cep
+        - numero
+        - nomeMunicipio
+        - uf
+        - pais
+      type: object
+      properties:
+        logradouro:
+          type: string
+        bairro:
+          type: string
+        cep:
+          type: string
+        numero:
+          type: string
+        codigoMunicipio:
+          type: string
+        nomeMunicipio:
+          type: string
+        codigoUf:
+          type: string
+        uf:
+          type: string
+        pais:
+          type: string
+        complemento:
+          type: string
+    LocalidadeIntegracao:
+      required:
+        - uf
+      type: object
+      properties:
+        uf:
+          $ref: '#/components/schemas/UfEnumIntegracao'
+        municipio:
+          type: string
+    MdfeDto:
+      type: object
+      properties:
+        id:
+          type: string
+        versaoMdfe:
+          $ref: '#/components/schemas/MdfeVersaoDto'
+        emitente:
+          $ref: '#/components/schemas/EmpresaDto'
+        tipoEmitente:
+          $ref: '#/components/schemas/TipoEmitente_1'
+        serie:
+          type: integer
+          format: int32
+        numero:
+          type: integer
+          format: int32
+        chaveAcesso:
+          type: string
+        ufCarregamento:
+          $ref: '#/components/schemas/Uf'
+        ufDescarregamento:
+          $ref: '#/components/schemas/Uf'
+        ufPercursoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Uf'
+        statusMdfe:
+          $ref: '#/components/schemas/StatusMdfe_1'
+        tipoEmissao:
+          $ref: '#/components/schemas/TipoEmissao'
+        xmlExportado:
+          type: boolean
+        protocoloRecebimento:
+          type: string
+        numeroProtocoloAutorizacao:
+          type: string
+        protocoloCancelamento:
+          type: string
+        numeroProtocoloEncerramento:
+          type: string
+        versaoDados:
+          type: string
+        motivoCancelamentoMdfe:
+          type: string
+        motivoRejeicao:
+          type: string
+        valorCarga:
+          type: number
+          format: double
+        pesoCarga:
+          type: number
+          format: double
+        numeroRecebimento:
+          type: string
+        rntrc:
+          type: string
+        ciot:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfCIOTDto'
+        ciotIntegracao:
+          type: array
+          items:
+            $ref: '#/components/schemas/CiotDto'
+        modal:
+          $ref: '#/components/schemas/Modal'
+        documentos:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentoDto'
+        indCarregamentoPosterior:
+          type: boolean
+        usuarioCancelamento:
+          type: string
+        usuarioEncerramento:
+          type: string
+        usuarioEmissao:
+          type: string
+        usuarioCadastramento:
+          type: string
+        damdfeImpresso:
+          type: boolean
+        integrationId:
+          type: string
+        condutorList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CondutorDto'
+        dadosVeiculo:
+          $ref: '#/components/schemas/VeicDto'
+        tipoRodado:
+          $ref: '#/components/schemas/TipoRodado'
+        autorizadoXmlList:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutorizadoXmlDto'
+        informacoesInteresseFisco:
+          type: string
+        informacoesInteresseContribuinte:
+          type: string
+        statusAverbacao:
+          $ref: '#/components/schemas/StatusAverbacao'
+        inclusaoCondutorList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InclusaoCondutorDto'
+        dataEmissao:
+          type: string
+          format: date-time
+        dataEnvio:
+          type: string
+          format: date-time
+        dataAutorizacao:
+          type: string
+          format: date-time
+        dataCancelamento:
+          type: string
+          format: date-time
+        dataEncerramento:
+          type: string
+          format: date-time
+    MdfeEmissaoRetorno:
+      type: object
+      properties:
+        id:
+          type: string
+        sucesso:
+          type: boolean
+        mensagem:
+          type: array
+          items:
+            type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/StatusMdfe'
+        cStat:
+          type: string
+        idMdfe:
+          type: string
+    MdfeInfoRetorno:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        status:
+          $ref: '#/components/schemas/StatusMdfe_1'
+        nomeMotorista:
+          type: string
+        statusCiot:
+          $ref: '#/components/schemas/StatusCiot'
+    MdfeIntegracao:
+      required:
+        - idIntegracao
+        - empresa
+        - inicio
+        - termino
+        - dadosGerais
+        - modal
+      type: object
+      properties:
+        idIntegracao:
+          type: string
+        empresa:
+          $ref: '#/components/schemas/EmpresaIntegracao'
+        ufsPercurso:
+          type: array
+          items:
+            $ref: '#/components/schemas/UfEnumIntegracao'
+        observacaoContribuinte:
+          type: string
+        observacaoFisco:
+          type: string
+        canalVerde:
+          type: boolean
+        tipoTransportador:
+          $ref: '#/components/schemas/TipoTransportadorIntegracao'
+        inicio:
+          $ref: '#/components/schemas/LocalidadeIntegracao'
+        termino:
+          $ref: '#/components/schemas/LocalidadeIntegracao'
+        dadosGerais:
+          $ref: '#/components/schemas/DadosGeraisIntegracao'
+        modal:
+          $ref: '#/components/schemas/ModalIntegracao'
+        notas:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotaIntegracao'
+        sobrescritas:
+          $ref: '#/components/schemas/SobrescritasIntegracao'
+    MdfeRetorno:
+      type: object
+      properties:
+        mdfesRetorno:
+          type: array
+          items:
+            $ref: '#/components/schemas/MdfeEmissaoRetorno'
+        erroConfigurarCertificado:
+          type: boolean
+        erroAceiteAvulso:
+          type: boolean
+        erroEmProcessamento:
+          type: boolean
+    MdfeVersaoDto:
+      type: object
+      properties:
+        versao:
+          type: string
+        versaoDocumento:
+          type: string
+    Modal:
+      type: string
+      enum:
+        - RODOVIARIO
+        - AEREO
+        - DUTOVIARIO
+        - AQUAVIARIO
+    ModalIntegracao:
+      required:
+        - rodoviario
+      type: object
+      properties:
+        rodoviario:
+          $ref: '#/components/schemas/ModalRodoviarioIntegracao'
+    ModalRodoviarioIntegracao:
+      type: object
+      properties:
+        rntrc:
+          type: string
+        motoristas:
+          type: array
+          items:
+            $ref: '#/components/schemas/MotoristaIntegracao'
+        veiculos:
+          type: array
+          items:
+            $ref: '#/components/schemas/VeiculoIntegracao'
+        ciotList:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfoCiotIntegracao'
+        contratantes:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfoContratanteIntegracao'
+        pagamentoFrete:
+          type: array
+          items:
+            $ref: '#/components/schemas/PagamentoFreteIntegracao'
+        pedagio:
+          $ref: '#/components/schemas/InfoPedagioIntegracao'
+    MotoristaIntegracao:
+      required:
+        - nome
+        - cpf
+      type: object
+      properties:
+        nome:
+          type: string
+        cpf:
+          type: string
+    Municipio:
+      type: object
+      properties:
+        uf:
+          $ref: '#/components/schemas/Uf'
+        codigoUf:
+          type: string
+        nomeMunicipio:
+          type: string
+        codigoMunicipio:
+          type: string
+        cep:
+          type: string
+    NotaIntegracao:
+      required:
+        - chave
+        - tipoDocumento
+        - municipio
+      type: object
+      properties:
+        chave:
+          type: string
+        tipoDocumento:
+          $ref: '#/components/schemas/TipoDocumentoIntegracao'
+        municipio:
+          $ref: '#/components/schemas/LocalidadeIntegracao'
+    PagamentoFreteIntegracao:
+      required:
+        - ValorTotalContrato
+        - indicadorPagamento
+        - informacaoBancariaIntegracao
+      type: object
+      properties:
+        nome:
+          type: string
+        inscricaoFederal:
+          type: string
+        idEstrangeiro:
+          type: string
+        ValorTotalContrato:
+          type: number
+          format: double
+        indicadorPagamento:
+          $ref: '#/components/schemas/IndicadorPagamentoIntegracao'
+        indicadorAltoDesempenho:
+          type: boolean
+        componentePagamentoFreteIntegracaos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentePagamentoFreteIntegracao'
+        prazoPagamento:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfoPrazoPagamentoIntegracao'
+        informacaoBancariaIntegracao:
+          $ref: '#/components/schemas/InformacaoBancariaIntegracao'
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+    ParametrosImprimirMdfes:
+      required:
+        - idMdfeList
+      type: object
+      properties:
+        idMdfeList:
+          type: array
+          items:
+            type: string
+        ordenarPorIntegracao:
+          type: boolean
+    PathComponentBuilder:
+      type: object
+    PeriodoValidadeCertificado:
+      type: string
+      enum:
+        - VALIDO_POR_MAIS_DE_30_DIAS
+        - RESTAM_MENOS_DE_30_DIAS
+        - RESTAM_MENOS_DE_15_DIAS
+        - RESTAM_HORAS
+        - VENCIDO
+    ProdutoPredominanteIntegracao:
+      required:
+        - tipoCarga
+        - descricaoProduto
+      type: object
+      properties:
+        codigoEan:
+          type: string
+        codigoNcm:
+          type: string
+        tipoCarga:
+          $ref: '#/components/schemas/TipoCargaIntegracao'
+        descricaoProduto:
+          type: string
+        cargaLotacao:
+          $ref: '#/components/schemas/CargaLotacaoIntegracao'
+    PropDto:
+      type: object
+      properties:
+        cnpj:
+          type: string
+        cpf:
+          type: string
+        rntrc:
+          type: string
+        xNome:
+          type: string
+        ie:
+          type: string
+        uf:
+          $ref: '#/components/schemas/Uf'
+        tpProp:
+          $ref: '#/components/schemas/TipoProprietario'
+    PropriedadeVeiculoIntegracao:
+      type: string
+      enum:
+        - TERCEIRO
+        - PROPRIO
+    ProprietarioIntegracao:
+      required:
+        - inscricaoFederal
+        - inscricaoEstadual
+        - uf
+        - RNTRC
+        - nome
+        - tipoProprietario
+      type: object
+      properties:
+        inscricaoFederal:
+          type: string
+        inscricaoEstadual:
+          type: string
+        uf:
+          type: string
+        RNTRC:
+          type: string
+        nome:
+          type: string
+        tipoProprietario:
+          $ref: '#/components/schemas/TipoProprietarioIntegracao'
+    RequestParam:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        campoPesquisa:
+          type: string
+    RetornoExportacaoXmlMdfes:
+      type: object
+      properties:
+        idArquivo:
+          type: string
+        url:
+          type: string
+    SeguroCargaIntegracao:
+      type: object
+      properties:
+        seguroCargaItemList:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeguroCargaItemIntegracao'
+    SeguroCargaItemIntegracao:
+      required:
+        - inscricaoFederalResponsavelSeguro
+        - tipoResponsavelSeguroIntegracao
+      type: object
+      properties:
+        inscricaoFederalResponsavelSeguro:
+          type: string
+        nomeSeguradora:
+          type: string
+        inscricaoFederalSeguradora:
+          type: string
+        numeroApolice:
+          type: string
+        inscricaoFederalContranteList:
+          type: array
+          items:
+            type: string
+        numeroAverbacaoList:
+          type: array
+          items:
+            type: string
+        tipoResponsavelSeguroIntegracao:
+          $ref: '#/components/schemas/TipoResponsavelSeguroIntegracao'
+    ServletUriComponentsBuilder:
+      type: object
+      properties:
+        scheme:
+          type: string
+        ssp:
+          type: string
+        userInfo:
+          type: string
+        host:
+          type: string
+        port:
+          type: string
+        pathBuilder:
+          $ref: '#/components/schemas/CompositePathComponentBuilder'
+        queryParams:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        fragment:
+          type: string
+        uriVariables:
+          type: object
+          additionalProperties: {}
+        encodeTemplate:
+          type: boolean
+        charset:
+          $ref: '#/components/schemas/Charset'
+        originalPath:
+          type: string
+    SituacaoCiot:
+      type: string
+      enum:
+        - REJEITADO
+        - APROVADO
+        - CANCELADO
+        - ENCERRADO
+        - EM_DIGITACAO
+    SituacaoEmpresa:
+      type: string
+      enum:
+        - ATIVADA
+        - DESATIVADA
+    SobrescritasIntegracao:
+      type: object
+      properties:
+        seguroCarga:
+          $ref: '#/components/schemas/SeguroCargaIntegracao'
+    StatusAverbacao:
+      type: string
+      enum:
+        - SEM_AVERBACAO
+        - AVERBADO
+        - ENCERRADO
+    StatusCiot:
+      type: string
+      enum:
+        - REJEITADO
+        - APROVADO
+        - CANCELADO
+        - ENCERRADO
+        - EM_DIGITACAO
+    StatusMdfe:
+      type: string
+      enum:
+        - VALIDADO
+        - EMDIGITACAO
+        - REJEITADO
+        - DENEGADO
+        - EMPROCESSAMENTO
+        - CANCELADO
+        - ENCERRADO
+        - AUTORIZADO
+        - ASSINADO
+        - CONTINGENCIA
+    StatusMdfe_1:
+      type: string
+      enum:
+        - VALIDADO
+        - EMDIGITACAO
+        - REJEITADO
+        - DENEGADO
+        - EMPROCESSAMENTO
+        - CANCELADO
+        - ENCERRADO
+        - AUTORIZADO
+        - ASSINADO
+        - CONTINGENCIA
+    TipoCargaIntegracao:
+      type: string
+      enum:
+        - GRANEL_SOLIDO
+        - GRANEL_LIQUIDO
+        - FRIGORIFICADA
+        - CONTEINERIZADA
+        - CARGA_GERAL
+        - NEOGRANEL
+        - PERIGOSA_GRANEL_SOLIDO
+        - PERIGOSA_GRANEL_LIQUIDO
+        - PERIGOSA_CARGA_FRIGORIFICADA
+        - PERIGOSA_CONTEINERIZADA
+        - PERIGOSA_CARGA_GERAL
+    TipoCarroceria:
+      type: string
+      enum:
+        - NAOAPLICAVEL
+        - ABERTA
+        - FECHADA_BAU
+        - GRANELEIRA
+        - PORTACONTAINER
+        - SIDER
+    TipoCarroceriaIntegracao:
+      type: string
+      enum:
+        - NAOAPLICAVEL
+        - ABERTA
+        - FECHADA_BAU
+        - GRANELEIRA
+        - PORTACONTAINER
+        - SIDER
+    TipoComponenteIntegracao:
+      type: string
+      enum:
+        - VALE_PEDAGIO
+        - IMPOSTOS_TAXAS_CONTRIBUICOES
+        - DESPESAS
+        - FRETE
+        - OUTROS
+    TipoContaBancariaDto:
+      type: string
+      enum:
+        - CONTA_CORRENTE
+        - CONTA_POUPANCA
+        - CONTA_PAGAMENTO
+    TipoDocumento:
+      type: string
+      enum:
+        - CNPJ
+        - CPF
+    TipoDocumentoIntegracao:
+      type: string
+      enum:
+        - NFE
+        - CTE
+    TipoDocumento_1:
+      type: string
+      enum:
+        - NFE
+        - NF
+        - CTE
+        - CT
+    TipoEmissao:
+      type: string
+      enum:
+        - NORMAL
+        - CONTINGENCIA
+    TipoEmitente:
+      type: string
+      enum:
+        - SERVICO
+        - PROPRIO
+        - GLOBALIZADO
+    TipoEmitente_1:
+      type: string
+      enum:
+        - SERVICO
+        - PROPRIO
+        - GLOBALIZADO
+    TipoPropriedade:
+      type: string
+      enum:
+        - PROPRIO
+        - TERCEIRO
+    TipoProprietario:
+      type: string
+      enum:
+        - TAC_AGREGADO
+        - TAC_INDEPENDENTE
+        - OUTROS
+    TipoProprietarioIntegracao:
+      type: string
+      enum:
+        - TAC_AGREGADO
+        - TAC_INDEPENDENTE
+        - OUTROS
+    TipoResponsavelSeguroIntegracao:
+      type: string
+      enum:
+        - EMITENTE
+        - CONTRATANTE
+    TipoRodado:
+      type: string
+      enum:
+        - TRUCK
+        - TOCO
+        - CAVALOMECANICO
+        - VAN
+        - UTILITARIO
+        - OUTROS
+    TipoRodadoIntegracao:
+      type: string
+      enum:
+        - NAOAPLICAVEL
+        - TRUCK
+        - TOCO
+        - CAVALOMECANICO
+        - VAN
+        - UTILITARIO
+        - OUTROS
+    TipoTransportadorIntegracao:
+      type: string
+      enum:
+        - ETC
+        - TAC
+        - CTC
+    TipoValePedagioIntegracao:
+      type: string
+      enum:
+        - TAG
+        - CUPOM
+        - CARTAO
+        - PLACA
+    TipoVeiculoIntegracao:
+      type: string
+      enum:
+        - TRACAO
+        - REBOQUE
+    TransactionID:
+      type: object
+      properties:
+        id:
+          type: string
+    Uf:
+      type: string
+      enum:
+        - DF
+        - GO
+        - MT
+        - MS
+        - RS
+        - SC
+        - PR
+        - SP
+        - RJ
+        - ES
+        - MG
+        - MA
+        - PI
+        - CE
+        - RN
+        - PB
+        - PE
+        - AL
+        - SE
+        - BA
+        - TO
+        - AP
+        - PA
+        - RR
+        - AM
+        - AC
+        - RO
+        - EX
+    UfEnumIntegracao:
+      type: string
+      enum:
+        - DF
+        - GO
+        - MT
+        - MS
+        - RS
+        - SC
+        - PR
+        - SP
+        - RJ
+        - ES
+        - MG
+        - MA
+        - PI
+        - CE
+        - RN
+        - PB
+        - PE
+        - AL
+        - SE
+        - BA
+        - TO
+        - AP
+        - PA
+        - RR
+        - AM
+        - AC
+        - RO
+        - EX
+    ValePedagioIntegracao:
+      required:
+        - inscricaoFederalFornecedor
+        - inscricaoFederalPagante
+        - numeroComprovante
+        - valor
+      type: object
+      properties:
+        inscricaoFederalFornecedor:
+          type: string
+        inscricaoFederalPagante:
+          type: string
+        numeroComprovante:
+          type: string
+        valor:
+          type: number
+          format: double
+        tipoVale:
+          $ref: '#/components/schemas/TipoValePedagioIntegracao'
+    VeicDto:
+      type: object
+      properties:
+        cInt:
+          type: string
+        placa:
+          type: string
+        tara:
+          type: number
+          format: double
+        capKG:
+          type: number
+          format: double
+        capM3:
+          type: number
+          format: double
+        prop:
+          $ref: '#/components/schemas/PropDto'
+        tpPropriedade:
+          $ref: '#/components/schemas/TipoPropriedade'
+        uf:
+          $ref: '#/components/schemas/Uf'
+        tpCar:
+          $ref: '#/components/schemas/TipoCarroceria'
+        renavam:
+          type: string
+        cpfCnpjProprietario:
+          type: string
+        bancoProprietario:
+          $ref: '#/components/schemas/Banco'
+        codAgenciaProprietario:
+          type: string
+        contaBancariaProprietario:
+          type: string
+        tipoContaBancariaProprietario:
+          $ref: '#/components/schemas/TipoContaBancariaDto'
+        cnpjIpefProprietario:
+          type: string
+        pixProprietario:
+          type: string
+        numeroEixos:
+          type: integer
+          format: int32
+    VeiculoIntegracao:
+      required:
+        - placa
+        - tara
+        - tipoVeiculo
+        - tipoCarroceria
+        - tipoRodado
+        - propriedadeVeiculo
+      type: object
+      properties:
+        placa:
+          type: string
+        uf:
+          type: string
+        renavam:
+          type: string
+        tara:
+          type: number
+          format: double
+        capacidadeM3:
+          type: number
+          format: double
+        capacidadeKg:
+          type: number
+          format: double
+        proprietario:
+          $ref: '#/components/schemas/ProprietarioIntegracao'
+        tipoVeiculo:
+          $ref: '#/components/schemas/TipoVeiculoIntegracao'
+        tipoCarroceria:
+          $ref: '#/components/schemas/TipoCarroceriaIntegracao'
+        tipoRodado:
+          $ref: '#/components/schemas/TipoRodadoIntegracao'
+        propriedadeVeiculo:
+          $ref: '#/components/schemas/PropriedadeVeiculoIntegracao'
+    Void:
+      type: object
+    byte:
+      type: object
+    Error:
+      description: Um Objeto de erro
+      properties:
+        mensagem:
+          description: Descrição do erro
+          type: string
+      type: object
+  securitySchemes:
+    tokenAuth:
+      type: http
+      scheme: bearer
+      description: "Header de Autorização usando o padrão BEARER. Examplo: \"Authorization:\
+        \ Bearer {tokenAuth}\""
+    tenantAuth:
+      type: apiKey
+      in: header
+      name: tenantID
+      description: ID do Tenant que se quer integrar
+  responses:
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Unauthorized
+    Forbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Forbidden
+security:
+  - tokenAuth: []
+    tenantAuth: []
