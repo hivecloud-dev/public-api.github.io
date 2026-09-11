@@ -4291,6 +4291,34 @@ components:
         valorBaseCalculo:
           type: "number"
           format: "decimal"
+    ICMSOutrosIntegracao:
+      description: "ICMS - Outros (CST 90)."
+      type: "object"
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+      properties:
+        aliquota:
+          description: "Alíquota de ICMS."
+          type: "number"
+          format: "decimal"
+        valorICMS:
+          description: "Valor do ICMS."
+          type: "number"
+          format: "decimal"
+        valorBaseCalculo:
+          description: "Base de cálculo do ICMS. Quando não informado, considera o valor do frete."
+          type: "number"
+          format: "decimal"
+        percentualReducao:
+          description: "Percentual de redução da base de cálculo."
+          type: "number"
+          format: "decimal"
+        valorCredito:
+          description: "Valor do crédito outorgado."
+          type: "number"
+          format: "decimal"
     SobrescritasIntegracao:
       description: "Muitos campos são preenchidos automaticamente, caso haja a necessidade de inibir esse comportamento e inserir os valores diretamente, utilizar esses campos"
       type: "object"
@@ -4317,6 +4345,10 @@ components:
               properties:
                 outraUF:
                   $ref: "#/components/schemas/ICMSOutraUFIntegracao"
+            - type: "object"
+              properties:
+                outros:
+                  $ref: "#/components/schemas/ICMSOutrosIntegracao"
 
     ArquivoXmlCte:
       type: object
