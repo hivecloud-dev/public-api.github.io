@@ -15,22 +15,26 @@ servers:
 tags:
   - name: Central Emissao
   - name: Dominio Sistemas
+  - name: Autenticacao Atm
+    description: "Controlador de integração para consulta de habilitação e credenciais\
+      \ de\r\nautenticação ATM de um emitente.\r\n\r\n<p>Consumido pelo cliente MDFE\
+      \ — substitui a operação SOAP legada\r\nFindAutenticacaoATMRequestBody.</p>"
   - name: Consulta Situacao Cte
     description: Controlador para consultas de situação de CT-e via integração.
   - name: Consultas
   - name: Cte
   - name: Cte
-    description: Controlador de integraï¿½ï¿½o para consulta e manutenï¿½ï¿½o de CT-es.
+    description: Controlador de integração para consulta e manutenção de CT-es.
   - name: Dce
-    description: Controlador para emissÃ£o de DC-e via integraÃ§Ã£o.
+    description: Controlador para emissão de DC-e via integração.
   - name: Emitir Cte
     description: Controlador para emissão de CT-e via integração.
   - name: Empresas
-    description: Controlador de integraï¿½ï¿½o para CRUD de Empresas.
+    description: Controlador de integração para CRUD de Empresas.
   - name: Cte
     description: Controlador para envio de e-mails de CT-e via integração.
   - name: Envolvidos
-    description: Controlador de integraï¿½ï¿½o para CRUD de Envolvidos.
+    description: Controlador de integração para CRUD de Envolvidos.
   - name: Cte
     description: Controlador para exportação de XML de CT-e via integração.
   - name: Importação
@@ -38,12 +42,39 @@ tags:
   - name: Imprimir
   - name: Imprimir
 paths:
+  /v1/integracoes/autenticacao-atm:
+    get:
+      tags:
+        - Autenticacao Atm
+      operationId: IntegrarAutenticacaoAtmControllerImp.findAutenticacaoAtm
+      description: "Retorna a habilitação de averbação e as credenciais de autenticaç\
+        ão ATM\r\nconfiguradas para o emitente informado por CNPJ.\r\n\r\n<p>Manté\
+        m paridade com o SOAP legado: a senha é retornada em texto claro\r\n(decisã\
+        o de produto).</p>"
+      parameters:
+        - name: cnpjEmitente
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: habilitação de averbação e credenciais ATM configuradas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutenticacaoAtmDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: findAutenticacaoAtm
   /v1/central-emissao/cte:
     post:
       tags:
         - Central Emissao
       operationId: CentralEmissaoControllerImp.criarCte
-      description: Cria CT-e via integraï¿½ï¿½o facilitada a partir de arquivo.
+      description: Cria CT-e via integração facilitada a partir de arquivo.
       parameters:
         - name: empresaId
           in: header
@@ -66,7 +97,7 @@ paths:
                   format: binary
       responses:
         200:
-          description: successful operation
+          description: lista com o CT-e integrado.
           content:
             application/json:
               schema:
@@ -262,6 +293,11 @@ paths:
           schema:
             type: string
             example: '03516074750841100570055100000881505109416071'
+        - name: empresaId
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: dados da NFE
@@ -345,7 +381,7 @@ paths:
       tags:
         - Cte
       operationId: IntegrarCtesControllerImp.list
-      description: Lista CT-es com paginaï¿½ï¿½o e filtros.
+      description: Lista CT-es com paginação e filtros.
       parameters:
         - name: empresaId
           in: header
@@ -575,7 +611,7 @@ paths:
             type: string
       responses:
         200:
-          description: pï¿½gina com CT-es.
+          description: página com CT-es.
           content:
             application/json:
               schema:
@@ -590,7 +626,7 @@ paths:
                   content:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Cte'
+                      $ref: '#/components/schemas/CteDto'
                   param:
                     $ref: '#/components/schemas/RequestParam'
                   requestUrl:
@@ -647,12 +683,304 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: criarCteComplementar
+  /v1/integracoes/ctes/mdfe:
+    get:
+      tags:
+        - Cte
+      operationId: IntegrarCtesControllerImp.listParaMdfe
+      description: "Lista e conta CT-es aplicando os defaults de filtro usados pelo\
+        \ cliente MDFE:\r\n{@code tipoCte} é sempre restrito a NORMAL e SIMPLIFICADO\
+        \ e {@code statusCte}\r\nexclui CANCELADO quando não informado (ADO-97988).\r\
+        \n\r\n<p>Consumido pelo cliente MDFE — substitui as operações SOAP legadas\r\
+        \nFindCteRequestBody e FindAndCountCteRequestBody. O {@link CteMdfeParam}\r\
+        \nrecebido (filtros do {@code CteParam} + filtros exclusivos do MDFE) é\r\n\
+        convertido para {@link CteMdfeListagemQuery} via {@link RequestParamMapper}\
+        \ —\r\nnão reaproveita {@link #list(String, CteParam)}/{@code CteListIdQuery},\
+        \ para não\r\nvazar defaults e filtros específicos do MDFE (idList/integrationIdList)\
+        \ para o\r\nendpoint genérico usado por outros consumidores (ver {@code cte.query/CLAUDE.md}).</p>"
+      parameters:
+        - name: empresaId
+          in: header
+          required: false
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: campoPesquisa
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: dataEmissaoInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataEmissaoFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataAutorizacaoInicial
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dataAutorizacaoFinal
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: numeroInicial
+          description: Número inicial para filtro.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: numeroFinal
+          description: Número final para filtro.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: numerosList
+          description: Lista de números específicos para filtro.
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+        - name: serie
+          description: Série do documento.
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: tipoServico
+          description: Tipo de serviço do CT-e.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoServico_1'
+        - name: tipoCte
+          description: "Tipo do CT-e (normal, complementar, etc.) — espelho {@link\
+            \ TipoCTeDto}."
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoCTeDto'
+        - name: statusCte
+          description: Status atual do CT-e.
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/StatusCte_1'
+        - name: tipoEmissao
+          description: "Tipo de emissão (normal, contingência)."
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoEmissao_1'
+        - name: dacteImpresso
+          description: "Se true, DACTE já foi impresso."
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: xmlExportado
+          description: "Se true, XML já foi exportado."
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: ufInicial
+          description: UF de origem.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: ufFinal
+          description: UF de destino.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: modal
+          description: "Modal de transporte — espelho {@link TipoModal}."
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TipoModal'
+        - name: nomeTomador
+          description: Nome do tomador.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjTomador
+          description: CPF/CNPJ do tomador.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeRemetente
+          description: Nome do remetente.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjRemetente
+          description: CPF/CNPJ do remetente.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeDestinatario
+          description: Nome do destinatário.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjDestinatario
+          description: CPF/CNPJ do destinatário.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeExpedidor
+          description: Nome do expedidor.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjExpedidor
+          description: CPF/CNPJ do expedidor.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: nomeRecebedor
+          description: Nome do recebedor.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cpfCnpjRecebedor
+          description: CPF/CNPJ do recebedor.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: usuarioCadastro
+          description: Usuário responsável pelo cadastro.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: usuarioCancelamento
+          description: Usuário que cancelou o CT-e.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: usuarioEmissor
+          description: Usuário emissor do CT-e.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: empresaId
+          description: Empresa à qual o CT-e pertence.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: chaveAcesso
+          description: Chave de acesso do CT-e.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: idIntegracao
+          description: Identificador de integração externo.
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: idList
+          description: Lista de identificadores internos para filtro.
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: integrationIdList
+          description: Lista de identificadores de integração externos para filtro.
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: cpfCnpjEmitente
+          description: CPF/CNPJ do emitente do CT-e.
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: página com CT-es.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pageMetadata:
+                    $ref: '#/components/schemas/PageMetadata'
+                  nextLink:
+                    type: string
+                  previousLink:
+                    type: string
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CteMdfeDto'
+                  param:
+                    $ref: '#/components/schemas/RequestParam'
+                  requestUrl:
+                    $ref: '#/components/schemas/ServletUriComponentsBuilder'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: listParaMdfe
   /v1/integracoes/ctes/substituir-cte/{id}:
     post:
       tags:
         - Cte
       operationId: IntegrarCtesControllerImp.substituirCte
-      description: Cria CT-e de substituiï¿½ï¿½o para o ID informado.
+      description: Cria CT-e de substituição para o ID informado.
       parameters:
         - name: arg0
           in: path
@@ -671,6 +999,63 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: substituirCte
+  /v1/integracoes/ctes/xml:
+    post:
+      tags:
+        - Cte
+      operationId: IntegrarCtesControllerImp.findXml
+      description: "Retorna o XML e os dados de seguro/averbação de uma lista de CT-es.\r\
+        \n\r\n<p>Consumido pelo cliente MDFE — substitui a operação SOAP legada\r\n\
+        FindCteXmlRequestBody.</p>"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: XML e dados de seguro/averbação de cada CT-e encontrado.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CteXmlSeguroDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: findXml
+  /v1/integracoes/ctes/xml/chaves:
+    post:
+      tags:
+        - Cte
+      operationId: IntegrarCtesControllerImp.findXmlPorChaves
+      description: "Retorna o XML e os dados de seguro/averbação dos CT-es AUTORIZADOS\
+        \ a partir das chaves\r\nde acesso, filtrando pelo emitente quando informado.\r\
+        \n\r\n<p>Consumido pelo cliente MDFE — substitui a operação SOAP legada\r\n\
+        FindCteRequestBody com {@code loadWith XML} (ADO-97988).</p>"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CteXmlPorChaveRequestDto'
+      responses:
+        200:
+          description: XML e dados de seguro/averbação de cada CT-e encontrado.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CteXmlSeguroDto'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      x-operation-name: findXmlPorChaves
   /v1/integracoes/ctes/{id}:
     get:
       tags:
@@ -1204,7 +1589,7 @@ paths:
       tags:
         - Empresas
       operationId: IntegrarEmpresasControllerImp.list
-      description: Lista Empresas com paginaï¿½ï¿½o e filtros.
+      description: Lista Empresas com paginação e filtros.
       parameters:
         - name: pageNumber
           in: query
@@ -1329,7 +1714,7 @@ paths:
               $ref: '#/components/schemas/EmpresaCreate'
       responses:
         200:
-          description: localizaï¿½ï¿½o e ID criado.
+          description: localização e ID criado.
           content:
             application/json:
               schema: {}
@@ -1380,7 +1765,7 @@ paths:
               $ref: '#/components/schemas/EmpresaCreate'
       responses:
         200:
-          description: sem conteï¿½do.
+          description: sem conteúdo.
           content:
             application/json:
               schema:
@@ -1409,7 +1794,7 @@ paths:
               additionalProperties: {}
       responses:
         200:
-          description: sem conteï¿½do.
+          description: sem conteúdo.
           content:
             application/json:
               schema: {}
@@ -1431,7 +1816,7 @@ paths:
             type: string
       responses:
         200:
-          description: sem conteï¿½do.
+          description: sem conteúdo.
           content:
             application/json:
               schema: {}
@@ -1445,7 +1830,7 @@ paths:
       tags:
         - Envolvidos
       operationId: IntegrarEnvolvidosControllerImp.list
-      description: Lista Envolvidos com paginaï¿½ï¿½o e filtros.
+      description: Lista Envolvidos com paginação e filtros.
       parameters:
         - name: pageNumber
           in: query
@@ -1498,7 +1883,7 @@ paths:
               type: string
       responses:
         200:
-          description: pï¿½gina com os resultados.
+          description: página com os resultados.
           content:
             application/json:
               schema:
@@ -1562,7 +1947,7 @@ paths:
               $ref: '#/components/schemas/EnvolvidoCreate'
       responses:
         200:
-          description: localizaï¿½ï¿½o e ID criado.
+          description: localização e ID criado.
           content:
             application/json:
               schema:
@@ -1637,7 +2022,7 @@ paths:
               $ref: '#/components/schemas/EnvolvidoCreate'
       responses:
         200:
-          description: resposta sem conteï¿½do.
+          description: resposta sem conteúdo.
           content:
             application/json:
               schema: {}
@@ -1665,7 +2050,7 @@ paths:
               additionalProperties: {}
       responses:
         200:
-          description: resposta sem conteï¿½do.
+          description: resposta sem conteúdo.
           content:
             application/json:
               schema: {}
@@ -1687,7 +2072,7 @@ paths:
             type: string
       responses:
         200:
-          description: resposta sem conteï¿½do.
+          description: resposta sem conteúdo.
           content:
             application/json:
               schema: {}
@@ -1920,6 +2305,18 @@ components:
         - ENERGIA
         - OUTROS
         - TRANSPORTE
+    AutenticacaoAtmDto:
+      description: "Habilitação de averbação e credenciais de autenticação ATM de\
+        \ um emitente.\r\n\r\n<p>Consumido pelo cliente MDFE — substitui a operaçã\
+        o SOAP legada\r\nFindAutenticacaoATMRequestBody. Mantém paridade com o legado:\
+        \ a senha é retornada\r\nem texto claro por decisão de produto — não \"corrigir\"\
+        \ isoladamente aqui.</p>"
+      type: object
+      properties:
+        podeAverbar:
+          type: boolean
+        averbacaoAtmProperties:
+          $ref: '#/components/schemas/AverbacaoAtmPropertiesDto'
     Avancado:
       type: object
       properties:
@@ -1937,6 +2334,15 @@ components:
           type: array
           items:
             type: string
+    AverbacaoAtmPropertiesDto:
+      type: object
+      properties:
+        usuario:
+          type: string
+        senha:
+          type: string
+        codigoatm:
+          type: string
     CamposDiferimento:
       type: object
       properties:
@@ -1968,7 +2374,7 @@ components:
           type: number
           format: double
         pesoLiquido:
-          description: Peso lï¿½quido total.
+          description: Peso líquido total.
           type: number
           format: double
         quantidadeVolumes:
@@ -2257,50 +2663,6 @@ components:
           format: int32
       example:
         id: 99e39200-3bfb-465f-886f-85ee28e8cfda
-    Cte:
-      type: object
-      properties:
-        id:
-          type: string
-        numero:
-          type: integer
-          format: int32
-        serie:
-          type: integer
-          format: int32
-        ufInicial:
-          type: string
-        ufFinal:
-          type: string
-        valorTotalFrete:
-          type: number
-          format: double
-        nomeRemetente:
-          type: string
-        nomeTombador:
-          type: string
-        nomeDestinatario:
-          type: string
-        statusCte:
-          $ref: '#/components/schemas/StatusCte_1'
-        tipoEmissao:
-          $ref: '#/components/schemas/TipoEmissao_1'
-        xmlExportado:
-          type: boolean
-        dacteImpresso:
-          type: boolean
-        dataAutorizacao:
-          type: string
-          format: date-time
-        dataEmissao:
-          type: string
-          format: date-time
-        integrado:
-          type: boolean
-        statusAverbacao:
-          $ref: '#/components/schemas/StatusAverbacao'
-        protocoloAverbacao:
-          type: string
     CteCancelarRequest:
       required:
         - motivoCancelamento
@@ -2389,6 +2751,50 @@ components:
           $ref: '#/components/schemas/DadosEmitente'
         cteObservacoesCustomizadas:
           $ref: '#/components/schemas/CteObservacoesCustomizadas'
+    CteDto:
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        ufInicial:
+          type: string
+        ufFinal:
+          type: string
+        valorTotalFrete:
+          type: number
+          format: double
+        nomeRemetente:
+          type: string
+        nomeTombador:
+          type: string
+        nomeDestinatario:
+          type: string
+        statusCte:
+          $ref: '#/components/schemas/StatusCte_1'
+        tipoEmissao:
+          $ref: '#/components/schemas/TipoEmissao_1'
+        xmlExportado:
+          type: boolean
+        dacteImpresso:
+          type: boolean
+        dataAutorizacao:
+          type: string
+          format: date-time
+        dataEmissao:
+          type: string
+          format: date-time
+        integrado:
+          type: boolean
+        statusAverbacao:
+          $ref: '#/components/schemas/StatusAverbacao'
+        protocoloAverbacao:
+          type: string
     CteEmitir:
       description: Parâmetros para emissão de CT-e via integração.
       required:
@@ -2577,6 +2983,67 @@ components:
           - campo: Lei da Transparência
             texto: O valor aproximado de tributos incidentes sobre o preço deste serviço
               é de R$ 0.0
+    CteMdfeDto:
+      description: "CT-e da listagem consumida pelo cliente MDFE ({@code GET v1/integracoes/ctes/mdfe}).\r\
+        \n\r\n<p>Além dos campos de {@link CteDto}, expõe os dados que o MDFE lia\
+        \ de\r\n{@code CteIntegrationType} na operação SOAP legada FindAndCountCteRequestBody\
+        \ (ADO-97988).</p>"
+      type: object
+      properties:
+        id:
+          type: string
+        numero:
+          type: integer
+          format: int32
+        serie:
+          type: integer
+          format: int32
+        ufInicial:
+          type: string
+        ufFinal:
+          type: string
+        valorTotalFrete:
+          type: number
+          format: double
+        nomeRemetente:
+          type: string
+        nomeTombador:
+          type: string
+        nomeDestinatario:
+          type: string
+        statusCte:
+          $ref: '#/components/schemas/StatusCte_1'
+        tipoEmissao:
+          $ref: '#/components/schemas/TipoEmissao_1'
+        xmlExportado:
+          type: boolean
+        dacteImpresso:
+          type: boolean
+        dataAutorizacao:
+          type: string
+          format: date-time
+        dataEmissao:
+          type: string
+          format: date-time
+        integrado:
+          type: boolean
+        statusAverbacao:
+          $ref: '#/components/schemas/StatusAverbacao'
+        protocoloAverbacao:
+          type: string
+        chaveAcesso:
+          type: string
+        tipoCte:
+          type: string
+        nomeEmitente:
+          type: string
+        nomeTomador:
+          type: string
+        valorTotalDocumento:
+          type: number
+          format: double
+        averbado:
+          type: boolean
     CteObservacoesCustomizadas:
       type: object
       properties:
@@ -2702,6 +3169,8 @@ components:
             $ref: '#/components/schemas/SeguroCarga'
         mdfeId:
           type: string
+        eventos:
+          $ref: '#/components/schemas/Eventos'
       example:
         statusCte: AUTORIZADO
         dataAutorizacao: 2021-08-28T09:30:00-0300
@@ -2939,6 +3408,50 @@ components:
           obsFisco: Observação Fisco
           autXmlCteList:
             - 77546684509
+    CteXmlPorChaveRequestDto:
+      description: "Filtro da busca de XML/seguro de CT-es autorizados por chave de\
+        \ acesso.\r\n\r\n<p>Consumido pelo cliente MDFE — substitui a operação SOAP\
+        \ legada FindCteRequestBody\r\ncom {@code loadWith XML} (ADO-97988).</p>"
+      type: object
+      properties:
+        cpfCnpjEmitente:
+          description: "Opcional, como no SOAP legado: quando ausente, a busca nã\
+            o filtra por emitente."
+          type: string
+        chavesAcesso:
+          type: array
+          items:
+            type: string
+          minLength: 0
+          maxLength: 200
+    CteXmlSeguroDetailDto:
+      description: "Dados de seguro/apólice de um CT-e.\r\n\r\n<p>Consumido pelo cliente\
+        \ MDFE — substitui parte da operação SOAP legada\r\nFindCteXmlRequestBody.</p>"
+      type: object
+      properties:
+        cnpjSeguradora:
+          type: string
+        nomeSeguradora:
+          type: string
+        numeroApolice:
+          type: string
+        cpfCnpjResponsavelSeguro:
+          type: string
+        numeroAverbacao:
+          type: string
+    CteXmlSeguroDto:
+      description: "XML e dados de seguro/averbação de um CT-e.\r\n\r\n<p>Consumido\
+        \ pelo cliente MDFE — substitui a operação SOAP legada\r\nFindCteXmlRequestBody.</p>"
+      type: object
+      properties:
+        chaveAcesso:
+          type: string
+        xml:
+          type: string
+        seguroList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CteXmlSeguroDetailDto'
     DadosCarga:
       type: object
       properties:
@@ -3154,6 +3667,10 @@ components:
           type: boolean
         msgConsultaNfe:
           type: string
+        arquivos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportarCteNfeFiles'
       example:
         remetente:
           id: 99e39200-3bfb-465f-886f-85ee28e8cfda
@@ -3336,7 +3853,7 @@ components:
           type: integer
           format: int32
     DceEnvolvidoIntegracao:
-      description: Dados de um envolvido (pessoa/empresa) na integraÃ§Ã£o do DC-e.
+      description: Dados de um envolvido (pessoa/empresa) na integração do DC-e.
       required:
         - inscricaoFederal
         - nome
@@ -3357,7 +3874,7 @@ components:
           description: E-mail de contato.
           type: string
         inscricaoEstadual:
-          description: InscriÃ§Ã£o estadual.
+          description: Inscrição estadual.
           type: string
         endereco:
           $ref: '#/components/schemas/EnderecoIntegracao'
@@ -3945,7 +4462,7 @@ components:
       type: object
       properties:
         pais:
-          description: PaÃ­s do endereÃ§o.
+          description: País do endereço.
           type: string
         logradouro:
           type: string
@@ -3954,7 +4471,7 @@ components:
         bairro:
           type: string
         codMunicipio:
-          description: CÃ³digo IBGE do municÃ­pio.
+          description: Código IBGE do município.
           type: string
         municipio:
           type: string
@@ -3963,7 +4480,7 @@ components:
         cep:
           type: string
         complemento:
-          description: Complemento do endereÃ§o.
+          description: Complemento do endereço.
           type: string
     EnderecoIntegracao_1:
       required:
@@ -4216,6 +4733,13 @@ components:
           $ref: '#/components/schemas/Envolvido'
         recebedor:
           $ref: '#/components/schemas/Envolvido'
+    Eventos:
+      type: object
+      properties:
+        listaInsucessoEntrega:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsucessoEntregaView'
     ExportacaoCteResponse:
       type: object
       properties:
@@ -4364,6 +4888,8 @@ components:
           $ref: '#/components/schemas/ReducaoIntegracao'
         outraUF:
           $ref: '#/components/schemas/OutraUFIntegracao'
+        outros:
+          $ref: '#/components/schemas/OutrosIntegracao'
     IcmsUf:
       type: string
       enum:
@@ -4395,6 +4921,25 @@ components:
         - AC
         - RO
         - EX
+    ImportarCteNfeFiles:
+      type: object
+      properties:
+        fileName:
+          type: string
+        chaveAcesso:
+          type: string
+        message:
+          type: string
+        success:
+          type: boolean
+        numero:
+          type: string
+        ctesJaUtilizandoEsseDocumento:
+          type: array
+          items:
+            type: string
+        alertarDocumentoJaUtilizado:
+          type: boolean
     Imposto:
       type: object
       properties:
@@ -4745,6 +5290,28 @@ components:
         subserie:
           type: string
         tipoDocumento:
+          type: string
+    InsucessoEntregaView:
+      type: object
+      properties:
+        tipoEvento:
+          type: string
+        dataHoraEvento:
+          type: string
+          format: date-time
+        dataHoraTentativaEntrega:
+          type: string
+          format: date-time
+        motivo:
+          type: integer
+          format: int32
+        justificativaMotivo:
+          type: string
+        chavesAcessoNfe:
+          type: array
+          items:
+            type: string
+        usuarioResponsavel:
           type: string
     LacreCreate:
       type: object
@@ -5388,6 +5955,28 @@ components:
         valorFrete:
           type: number
           format: double
+    OutrosIntegracao:
+      required:
+        - aliquota
+        - valorICMS
+        - valorBaseCalculo
+      type: object
+      properties:
+        aliquota:
+          type: number
+          format: double
+        valorICMS:
+          type: number
+          format: double
+        valorBaseCalculo:
+          type: number
+          format: double
+        percentualReducao:
+          type: number
+          format: double
+        valorCredito:
+          type: number
+          format: double
     OutrosTiposIntegracao:
       required:
         - tipoICMS
@@ -5642,7 +6231,7 @@ components:
       type: object
       properties:
         cte:
-          $ref: '#/components/schemas/Cte'
+          $ref: '#/components/schemas/CteDto'
         nomeSeguradora:
           type: string
         cnpjSeguradora:
@@ -5852,6 +6441,21 @@ components:
         - NORMAL
         - MEI
     TipoCTe:
+      type: string
+      enum:
+        - NORMAL
+        - SUBSTITUICAO
+        - COMPLEMENTAR
+        - ANULACAO
+        - SIMPLIFICADO
+        - SUBSTITUICAO_SIMPLIFICADO
+    TipoCTeDto:
+      description: "Espelho REST do enum de domínio {@code com.hivelog.cte.domain.enuns.TipoCTe}\r\
+        \n(normal, complementar, substituição, etc.). Usado como tipo de filtro em\r\
+        \n{@code *Param} — nunca o enum de {@code cte.domain.enuns} direto (regra\r\
+        \n{@code paramNaoPodeDependerDoDominio}); a conversão para o tipo de domí\
+        nio\r\nacontece no {@code RequestParamMapper} (ver {@code cte.query/CLAUDE.md}).\r\
+        \nSufixo {@code Dto} exigido pela regra {@code classesDoDtoDevemTerSufixoDto}.\n"
       type: string
       enum:
         - NORMAL
