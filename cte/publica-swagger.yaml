@@ -4321,6 +4321,10 @@ components:
         accountsEmpresaId:
           description: Identificador da empresa no módulo Accounts.
           type: string
+        situacao:
+          description: Situação inicial da Empresa no cadastro (opcional; ausente
+            equivale a ATIVADA). Ignorada em alterações.
+          $ref: '#/components/schemas/SituacaoEmpresa'
       example:
         nome: Transporta Tudo
         nomeFantasia: Transporta Tudo
