@@ -1141,6 +1141,8 @@ components:
           type: string
         tipoContaBancariaProprietario:
           type: string
+        situacao:
+          $ref: '#/components/schemas/SituacaoEmpresa'
     EmpresaDto:
       type: object
       properties:
