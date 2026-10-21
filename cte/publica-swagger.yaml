@@ -2872,6 +2872,10 @@ components:
         embutirImposto:
           description: "Se true, considera imposto embutido no frete."
           type: boolean
+        destacarIcms:
+          description: "Controla o destaque de ICMS por emissão. true=ICMS como componente separado (destacado); false=ICMS embutido no frete; ausente=usa a configuração de tributação do CNPJ."
+          type: boolean
+          nullable: true
         classificacaoTributariaIbsCbs:
           description: Código da classificação tributária para cálculo dos impostos
             IBS e CBS.
