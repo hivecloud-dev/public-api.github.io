@@ -2872,10 +2872,6 @@ components:
         embutirImposto:
           description: "Se true, considera imposto embutido no frete."
           type: boolean
-        destacarIcms:
-          description: "Controla o destaque de ICMS por emissão. true=ICMS como componente separado (destacado); false=ICMS embutido no frete; ausente=usa a configuração de tributação do CNPJ."
-          type: boolean
-          nullable: true
         classificacaoTributariaIbsCbs:
           description: Código da classificação tributária para cálculo dos impostos
             IBS e CBS.
@@ -2989,9 +2985,11 @@ components:
               é de R$ 0.0
     CteMdfeDto:
       description: "CT-e da listagem consumida pelo cliente MDFE ({@code GET v1/integracoes/ctes/mdfe}).\r\
-        \n\r\n<p>Além dos campos de {@link CteDto}, expõe os dados que o MDFE lia\
-        \ de\r\n{@code CteIntegrationType} na operação SOAP legada FindAndCountCteRequestBody\
-        \ (ADO-97988).</p>"
+        \n\r\n<p>Expõe os dados que o MDFE lia de {@code CteIntegrationType} na operaç\
+        ão SOAP legada\r\nFindAndCountCteRequestBody (ADO-97988). Não estende {@link\
+        \ CteDto} — é um contrato próprio,\r\nsem os campos que o MDFE não consome\
+        \ (ex: {@code nomeTombador}, typo legado duplicado de\r\n{@code nomeTomador}\
+        \ em {@link CteDto}).</p>"
       type: object
       properties:
         id:
@@ -3010,8 +3008,6 @@ components:
           type: number
           format: double
         nomeRemetente:
-          type: string
-        nomeTombador:
           type: string
         nomeDestinatario:
           type: string
@@ -3138,6 +3134,8 @@ components:
         localFimPrestaco:
           type: string
         nomeUsuarioCriacao:
+          type: string
+        nomeUsuarioAlteracao:
           type: string
         nomeUsuarioEmissao:
           type: string
@@ -3643,6 +3641,8 @@ components:
           $ref: '#/components/schemas/EnvolvidoSummary'
         destinatario:
           $ref: '#/components/schemas/EnvolvidoSummary'
+        recebedor:
+          $ref: '#/components/schemas/EnvolvidoSummary'
         valorTotalCarga:
           type: number
           format: double
@@ -3675,6 +3675,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImportarCteNfeFiles'
+        dataHoraEmissao:
+          type: string
+          format: date-time
       example:
         remetente:
           id: 99e39200-3bfb-465f-886f-85ee28e8cfda
