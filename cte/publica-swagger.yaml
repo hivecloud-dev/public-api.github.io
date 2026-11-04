@@ -3588,6 +3588,8 @@ components:
           format: date-time
         globalizado:
           type: boolean
+        antecipacao:
+          type: boolean
         responsavelFrete:
           $ref: '#/components/schemas/ResponsavelFrete'
         remetente:
