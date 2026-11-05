@@ -13,12 +13,6 @@ servers:
   - url: /api
     description: Servidor Local sem /cte
 tags:
-  - name: Central Emissao
-  - name: Dominio Sistemas
-  - name: Autenticacao Atm
-    description: "Controlador de integração para consulta de habilitação e credenciais\
-      \ de\r\nautenticação ATM de um emitente.\r\n\r\n<p>Consumido pelo cliente MDFE\
-      \ — substitui a operação SOAP legada\r\nFindAutenticacaoATMRequestBody.</p>"
   - name: Consulta Situacao Cte
     description: Controlador para consultas de situação de CT-e via integração.
   - name: Consultas
@@ -42,142 +36,6 @@ tags:
   - name: Imprimir
   - name: Imprimir
 paths:
-  /v1/integracoes/autenticacao-atm:
-    get:
-      tags:
-        - Autenticacao Atm
-      operationId: IntegrarAutenticacaoAtmControllerImp.findAutenticacaoAtm
-      description: "Retorna a habilitação de averbação e as credenciais de autenticaç\
-        ão ATM\r\nconfiguradas para o emitente informado por CNPJ.\r\n\r\n<p>Manté\
-        m paridade com o SOAP legado: a senha é retornada em texto claro\r\n(decisã\
-        o de produto).</p>"
-      parameters:
-        - name: cnpjEmitente
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: habilitação de averbação e credenciais ATM configuradas.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AutenticacaoAtmDto'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: findAutenticacaoAtm
-  /v1/central-emissao/cte:
-    post:
-      tags:
-        - Central Emissao
-      operationId: CentralEmissaoControllerImp.criarCte
-      description: Cria CT-e via integração facilitada a partir de arquivo.
-      parameters:
-        - name: empresaId
-          in: header
-          required: true
-          schema:
-            type: string
-        - name: body
-          in: query
-          required: false
-          schema:
-            type: string
-      requestBody:
-        content:
-          text/plain:
-            schema:
-              type: object
-              properties:
-                arquivo:
-                  type: string
-                  format: binary
-      responses:
-        200:
-          description: lista com o CT-e integrado.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CteView'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: criarCte
-  /v1/central-emissao/cte/emitir-sincrono:
-    post:
-      tags:
-        - Central Emissao
-      operationId: CentralEmissaoControllerImp.emitirCteSincrono
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CteEmitir'
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmitirCtesReturnWrapper'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: emitirCteSincrono
-  /v1/central-emissao/cte/exportar:
-    post:
-      tags:
-        - Central Emissao
-      operationId: CentralEmissaoControllerImp.exportarCte
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ExportacaoCteResponse'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: exportarCte
-  /v1/central-emissao/cte/{id}/exportar:
-    get:
-      tags:
-        - Central Emissao
-      operationId: CentralEmissaoControllerImp.exportarCte
-      parameters:
-        - name: arg0
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExportacaoCteResponse'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: exportarCte
   /v1/integracoes/ctes/consultar-situacao:
     post:
       tags:
@@ -1439,76 +1297,6 @@ paths:
         "403":
           $ref: '#/components/responses/Forbidden'
       x-operation-name: obterDce
-  /v1/ctes/dominio-sistemas/consultar-situacao/{id}/consultar-status:
-    get:
-      tags:
-        - Dominio Sistemas
-      operationId: DominioSistemasControllerImp.consultarSituacaoTransactionInfo
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConsultaStatusTransacao'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: consultarSituacaoTransactionInfo
-  /v1/ctes/dominio-sistemas/consultar-situacao/{id}/obter-resultado:
-    get:
-      tags:
-        - Dominio Sistemas
-      operationId: DominioSistemasControllerImp.consultarSituacaoReturnValue
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DominioSistemasEnvioXmlReturnWrapper'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: consultarSituacaoReturnValue
-  /v1/ctes/dominio-sistemas/enviar-xml:
-    post:
-      tags:
-        - Dominio Sistemas
-      operationId: DominioSistemasControllerImp.enviarXml
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransactionID'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: enviarXml
   /v1/integracoes/ctes/emitir:
     post:
       tags:
@@ -2305,18 +2093,6 @@ components:
         - ENERGIA
         - OUTROS
         - TRANSPORTE
-    AutenticacaoAtmDto:
-      description: "Habilitação de averbação e credenciais de autenticação ATM de\
-        \ um emitente.\r\n\r\n<p>Consumido pelo cliente MDFE — substitui a operaçã\
-        o SOAP legada\r\nFindAutenticacaoATMRequestBody. Mantém paridade com o legado:\
-        \ a senha é retornada\r\nem texto claro por decisão de produto — não \"corrigir\"\
-        \ isoladamente aqui.</p>"
-      type: object
-      properties:
-        podeAverbar:
-          type: boolean
-        averbacaoAtmProperties:
-          $ref: '#/components/schemas/AverbacaoAtmPropertiesDto'
     Avancado:
       type: object
       properties:
@@ -2334,15 +2110,6 @@ components:
           type: array
           items:
             type: string
-    AverbacaoAtmPropertiesDto:
-      type: object
-      properties:
-        usuario:
-          type: string
-        senha:
-          type: string
-        codigoatm:
-          type: string
     CamposDiferimento:
       type: object
       properties:
@@ -2817,23 +2584,6 @@ components:
           - 9c015cc6-8471-4838-8391-e17fbc5a0a75
           - 7d231cf5-5111-456b-93d0-df6401762adb
         enviarEmail: true
-    CteInfo:
-      type: object
-      properties:
-        id:
-          type: string
-        serie:
-          type: string
-        numero:
-          type: string
-        sucesso:
-          type: boolean
-        motivo:
-          type: string
-        statusOperacao:
-          $ref: '#/components/schemas/CteStatus'
-        erroConfigurarCertificado:
-          type: boolean
     CteIntegracao:
       required:
         - idIntegracao
@@ -3079,19 +2829,6 @@ components:
         sucesso: true
         motivo: Impossível Cancelar um CT-e gerado através de integração
         statusOperacao: EMPROCESSAMENTO
-    CteStatus:
-      type: string
-      enum:
-        - EM_EMDIGITACAO
-        - VALIDADO
-        - ASSINADO
-        - ENVIADO
-        - REJEITADO
-        - DENEGADO
-        - CANCELADO
-        - EM_PROCESSAMENTO
-        - AUTORIZADO
-        - ENVIADO_POR_EMAIL
     CteView:
       type: object
       properties:
@@ -4140,62 +3877,6 @@ components:
         chaveAcessoNFe:
           - 25160208974214000170550010000323421000145023
           - 35160203665157000124550010000454941000401441
-    DominioSistemasEnvioXmlResponse:
-      type: object
-      properties:
-        type:
-          type: string
-        lastStatusOn:
-          type: string
-        apiVersion:
-          type: string
-        boxeFile:
-          type: boolean
-        filesExpanded:
-          type: array
-          items:
-            $ref: '#/components/schemas/DominioSistemasFilesExpanded'
-        id:
-          type: string
-        status:
-          $ref: '#/components/schemas/DominioSistemasStatus'
-        numero:
-          type: integer
-          format: int32
-        serie:
-          type: integer
-          format: int32
-        chaveAcesso:
-          type: string
-    DominioSistemasEnvioXmlReturnWrapper:
-      type: object
-      properties:
-        dominioSistemasEnvioXmlResponse:
-          type: array
-          items:
-            $ref: '#/components/schemas/DominioSistemasEnvioXmlResponse'
-        sucesso:
-          type: boolean
-        message:
-          type: string
-    DominioSistemasFilesExpanded:
-      type: object
-      properties:
-        lastApiStatusOn:
-          type: string
-        lastBoxeStatusOn:
-          type: string
-        apiStatus:
-          $ref: '#/components/schemas/DominioSistemasStatus'
-        boxeStatus:
-          $ref: '#/components/schemas/DominioSistemasStatus'
-    DominioSistemasStatus:
-      type: object
-      properties:
-        code:
-          type: string
-        message:
-          type: string
     Duplicata:
       type: object
       properties:
@@ -4220,29 +3901,6 @@ components:
           type: string
         uf:
           $ref: '#/components/schemas/IcmsUf'
-    EmitirCtesReturnWrapper:
-      type: object
-      properties:
-        operacoesList:
-          type: array
-          items:
-            $ref: '#/components/schemas/CteInfo'
-        realizadosSucesso:
-          type: integer
-          format: int32
-        naoRealizados:
-          type: integer
-          format: int32
-        erroConfigurarCertificado:
-          type: boolean
-        erroAvulso:
-          type: boolean
-        erroEmProcessamento:
-          type: boolean
-        enviarEmail:
-          type: boolean
-        averbacaoTransactionId:
-          type: string
     Empresa:
       type: object
       properties:
@@ -4753,15 +4411,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InsucessoEntregaView'
-    ExportacaoCteResponse:
-      type: object
-      properties:
-        idCte:
-          type: string
-        pdfUrl:
-          type: string
-        xmlUrl:
-          type: string
     Fatura:
       type: object
       properties:
