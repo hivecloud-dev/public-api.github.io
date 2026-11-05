@@ -13,13 +13,6 @@ servers:
   - url: /api
     description: Servidor Local sem /mdfe
 tags:
-  - name: Central Emissao Mdfe
-    description: "Endpoint facilitado de MDF-e da Central de Emissao.\r\n<p>\r\nEspelha\
-      \ o {@code CentralEmissaoControllerImp} do CT-e: a criacao e separada da\r\n\
-      emissao (este controller cria; o emitir-sincrono vem na fatia seguinte). O\r\
-      \npayload e minimo ({@link com.hivelog.mdfe.rest.v1.dto.mdfe.integracao.MdfeCentralEmissaoDto})\
-      \ e toda a orquestracao\r\n(derivacao dos CT-e, montagem do MdfeIntegracao,\
-      \ geracao e CIOT) roda no service."
   - name: Integra Cancelar Mdfe
   - name: Integra Consultar Mdfe
   - name: Integra Emitir Mdfe
@@ -30,123 +23,6 @@ tags:
   - name: Integrar Empresas
   - name: Integrar Imprimir Documento Mdfe
 paths:
-  /v1/central-emissao/mdfe:
-    post:
-      tags:
-        - Central Emissao Mdfe
-      operationId: CentralEmissaoMdfeControllerImp.criarMdfe
-      description: "Cria um MDF-e a partir de CT-e ja emitidos (rascunho, ainda nao\
-        \ emitido)."
-      parameters:
-        - name: empresaId
-          in: header
-          required: true
-          schema:
-            type: string
-        - name: body
-          in: query
-          required: false
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                arquivos:
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-        description: XMLs de CT-e (opcional).
-      responses:
-        200:
-          description: id do MDF-e criado + resultado do CIOT.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CriacaoMdfeFacilitadoResponseDto'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: criarMdfe
-  /v1/central-emissao/mdfe/emitir-sincrono:
-    post:
-      tags:
-        - Central Emissao Mdfe
-      operationId: CentralEmissaoMdfeControllerImp.emitirMdfeSincrono
-      description: "Emite o MDF-e de forma \"sincrona\", espelhando o {@code /cte/emitir-sincrono}.\r\
-        \nComo o motor do MDF-e e assincrono, o service faz polling interno: 200 com\
-        \ o\r\nresultado quando conclui a tempo, 202 com o transactionId quando estoura\
-        \ o\r\ntempo (a Central segue o acompanhamento)."
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmitirMdfeDto'
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmissaoMdfeSincronaResponseDto'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: emitirMdfeSincrono
-  /v1/central-emissao/mdfe/exportar:
-    post:
-      tags:
-        - Central Emissao Mdfe
-      operationId: CentralEmissaoMdfeControllerImp.exportarMdfes
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ExportacaoMdfeResponseDto'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: exportarMdfes
-  /v1/central-emissao/mdfe/{id}/exportar:
-    get:
-      tags:
-        - Central Emissao Mdfe
-      operationId: CentralEmissaoMdfeControllerImp.exportarMdfe
-      parameters:
-        - name: arg0
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExportacaoMdfeResponseDto'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-      x-operation-name: exportarMdfe
   /v1/integracoes/mdfes/cancelar:
     post:
       tags:
@@ -1078,29 +954,6 @@ components:
           $ref: '#/components/schemas/SituacaoCiot'
         isContingencia:
           type: boolean
-    CiotResultadoDto:
-      description: "Resultado do tratamento de CIOT durante a criacao facilitada do\
-        \ MDF-e.\r\n<p>\r\nA falha na emissao do CIOT NAO bloqueia a criacao do MDF-e\
-        \ (decisao de\r\nproduto): o MDF-e e criado e este objeto deixa claro o que\
-        \ aconteceu com o\r\nCIOT, inclusive para quem encaminhar quando der erro:\r\
-        \n<p>\r\n- {@code NAO_APLICAVEL}: carga propria (sem CIOT).\r\n- {@code MANUAL}:\
-        \ numero informado pelo cliente, anexado ao MDF-e.\r\n- {@code AUTORIZADO}:\
-        \ emitido na e-Frete; {@code codigo} preenchido e anexado.\r\n- {@code SALVO}:\
-        \ CIOT montado e salvo junto ao MDF-e (ciotIntegracao, situacao\r\nEM_DIGITACAO).\
-        \ Ainda nao emitido na e-Frete � sem {@code codigo}.\r\n- {@code ERRO}: nao\
-        \ foi possivel emitir. {@code encaminhamento} indica se o\r\nproblema e falta\
-        \ de informacao (volta para o CLIENTE) ou outro (OPERADOR).\r\nO MDF-e foi\
-        \ criado sem CIOT e nao podera ser autorizado ate resolver."
-      type: object
-      properties:
-        situacao:
-          $ref: '#/components/schemas/Situacao'
-        codigo:
-          type: string
-        mensagem:
-          type: string
-        encaminhamento:
-          $ref: '#/components/schemas/Encaminhamento'
     ComponentePagamentoFreteIntegracaoDto:
       required:
         - tipoComponente
@@ -1170,18 +1023,6 @@ components:
       properties:
         id:
           type: string
-    CriacaoMdfeFacilitadoResponseDto:
-      description: "Resposta da criacao facilitada de MDF-e.\r\n<p>\r\nCarrega o objeto\
-        \ completo do MDF-e criado (mesmo retorno do GET /v1/mdfes/{id})\r\ne o {@link\
-        \ CiotResultadoDto} — porque a falha do CIOT nao bloqueia a criacao, mas\r\
-        \nprecisa ser comunicada de forma clara (emitido, manual, nao aplicavel ou\
-        \ erro)."
-      type: object
-      properties:
-        mdfe:
-          $ref: '#/components/schemas/MdfeDto'
-        ciot:
-          $ref: '#/components/schemas/CiotResultadoDto'
     DadosGeraisIntegracaoDto:
       required:
         - valorTotal
@@ -1224,29 +1065,6 @@ components:
         codigoMunicipioDescarregamento:
           type: string
         nomeMunicipioDescarregamento:
-          type: string
-    EmissaoMdfeSincronaResponseDto:
-      type: object
-      properties:
-        operacoesList:
-          type: array
-          items:
-            $ref: '#/components/schemas/MdfeInfo'
-        realizadosSucesso:
-          type: integer
-          format: int32
-        naoRealizados:
-          type: integer
-          format: int32
-        erroConfigurarCertificado:
-          type: boolean
-        erroAvulso:
-          type: boolean
-        erroEmProcessamento:
-          type: boolean
-        enviarEmail:
-          type: boolean
-        averbacaoTransactionId:
           type: string
     EmitirMdfeDto:
       type: object
@@ -1405,11 +1223,6 @@ components:
           type: string
         inscricaoEstadual:
           type: string
-    Encaminhamento:
-      type: string
-      enum:
-        - CLIENTE
-        - OPERADOR
     EncerrarMdfeDto:
       required:
         - idMdfeList
@@ -1464,17 +1277,6 @@ components:
           format: int32
         status:
           $ref: '#/components/schemas/StatusMdfe'
-    ExportacaoMdfeResponseDto:
-      type: object
-      properties:
-        idMdfe:
-          type: string
-        pdfUrl:
-          type: string
-        xmlUrl:
-          type: string
-        ciotPdfUrl:
-          type: string
     ImprimirMdfesReturnDto:
       type: object
       properties:
@@ -1780,25 +1582,6 @@ components:
           type: string
         idMdfe:
           type: string
-    MdfeInfo:
-      type: object
-      properties:
-        id:
-          type: string
-        serie:
-          type: string
-        numero:
-          type: string
-        sucesso:
-          type: boolean
-        motivo:
-          type: string
-        statusOperacao:
-          type: string
-        erroConfigurarCertificado:
-          type: boolean
-        ciot:
-          $ref: '#/components/schemas/CiotResultadoDto'
     MdfeInfoRetornoDto:
       type: object
       properties:
@@ -2160,14 +1943,6 @@ components:
           $ref: '#/components/schemas/Charset'
         originalPath:
           type: string
-    Situacao:
-      type: string
-      enum:
-        - NAO_APLICAVEL
-        - MANUAL
-        - AUTORIZADO
-        - SALVO
-        - ERRO
     SituacaoCadastroEmpresa:
       type: string
       enum:
@@ -2264,14 +2039,6 @@ components:
         - GRANELEIRA
         - PORTACONTAINER
         - SIDER
-    TipoComponenteIntegracaoDto:
-      type: string
-      enum:
-        - VALE_PEDAGIO
-        - IMPOSTOS_TAXAS_CONTRIBUICOES
-        - DESPESAS
-        - FRETE
-        - OUTROS
     TipoChavePixDto:
       type: string
       enum:
@@ -2280,6 +2047,14 @@ components:
         - TELEFONE
         - EMAIL
         - CHAVE_ALEATORIA
+    TipoComponenteIntegracaoDto:
+      type: string
+      enum:
+        - VALE_PEDAGIO
+        - IMPOSTOS_TAXAS_CONTRIBUICOES
+        - DESPESAS
+        - FRETE
+        - OUTROS
     TipoContaBancariaDto:
       type: string
       enum:
