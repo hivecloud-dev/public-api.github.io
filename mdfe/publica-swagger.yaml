@@ -1199,6 +1199,8 @@ components:
           type: boolean
         codBancoProprietario:
           type: string
+        bancoProprietario:
+          $ref: '#/components/schemas/Banco'
         codAgenciaProprietario:
           type: string
         pixProprietario:
