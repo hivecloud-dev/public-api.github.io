@@ -1200,7 +1200,7 @@ components:
         codBancoProprietario:
           type: string
         bancoProprietario:
-          $ref: '#/components/schemas/Banco'
+          $ref: '#/components/schemas/BancoDto'
         codAgenciaProprietario:
           type: string
         pixProprietario:
