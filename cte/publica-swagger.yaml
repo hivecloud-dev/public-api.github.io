@@ -2110,6 +2110,8 @@ components:
           type: array
           items:
             type: string
+        subcontratado:
+          $ref: '#/components/schemas/SubcontratadoDto'
     CamposDiferimento:
       type: object
       properties:
@@ -6031,6 +6033,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DocumentosAnterioresIntegracao'
+    SubcontratadoDto:
+      type: object
+      properties:
+        cnpj:
+          type: string
+        componentesFrete:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponenteFrete'
     Substituicao:
       type: object
       properties:
