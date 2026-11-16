@@ -3206,6 +3206,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InfomacaoDocAnterior'
+        ctesAntecipacao:
+          type: array
+          items:
+            $ref: '#/components/schemas/CteAntecipacaoDto'
         servicoMultiModalAvancado:
           $ref: '#/components/schemas/ServicoMultiModalAvancado'
         cobranca:
@@ -3327,8 +3331,12 @@ components:
           format: date-time
         globalizado:
           type: boolean
-        antecipacao:
-          type: boolean
+        tipoDePagamentoAntecipado:
+          type: string
+          nullable: true
+          enum:
+            - ANTECIPACAO
+            - FORNECIMENTO
         responsavelFrete:
           $ref: '#/components/schemas/ResponsavelFrete'
         remetente:
@@ -4890,6 +4898,11 @@ components:
       type: object
       properties:
         numeroContainer:
+          type: string
+    CteAntecipacaoDto:
+      type: object
+      properties:
+        chaveAcesso:
           type: string
     InfomacaoDocAnterior:
       type: object
